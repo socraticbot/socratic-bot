@@ -1,0 +1,44 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "socratic-telegram"
+version = "0.1.1"
+description = "Socratic Telegram server"
+authors = ["Will Payne <wtpayne@gmail.com>"]
+readme = "README.md"
+packages = [
+  { include = "socratic" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+socratic-chat = { path = "../../pylibs/chat", develop = true }
+socratic-zoo = { path = "../../pylibs/zoo", develop = true }
+setuptools = "^69.0.3"
+python-telegram-bot = {version="^20.8", extras=["all"]}
+python-dotenv = "^1.0.1"
+sqlitedict = "^2.1.0"
+pydantic = "^2.6.1"
+dill = "^0.3.8"
+requests = "^2.31.0"
+
+[tool.poetry.group.dev.dependencies]
+pyright = "^1.1.342"
+black = "^24.1.1"
+isort = "^5.13.2"
+pylint = "^3.0.3"
+pytest = "^8.0.0"
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+
+[tool.pyright]
+reportMissingTypeArgument = true  # Report generic classes used without type arguments
+strictListInference = true  # Use union types when inferring types of lists elements, instead of Any
+
+[tool.pylint."messages control"]
+ignore = ["setup.py", "__init__.py"]
+ignore-paths = ["tests"]

@@ -1,0 +1,41 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "socratic-chatserver"
+version = "0.1.0"
+description = "Socratic chat server"
+authors = ["Liu, Minsheng <lambda@liu.ms>"]
+readme = "README.md"
+packages = [
+  { include = "socratic" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pydantic = "^2.5.2"
+fastapi = "^0.109.0"
+uvicorn = "^0.25.0"
+socratic-chat = { path = "../../pylibs/chat", develop = true }
+socratic-zoo = { path = "../../pylibs/zoo", develop = true }
+setuptools = "^69.0.3"
+
+[tool.poetry.group.dev.dependencies]
+pyright = "^1.1.342"
+black = "^24.1.1"
+isort = "^5.13.2"
+pylint = "^3.0.3"
+pytest = "^8.0.0"
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+
+[tool.pyright]
+reportMissingTypeArgument = true  # Report generic classes used without type arguments
+strictListInference = true  # Use union types when inferring types of lists elements, instead of Any
+
+[tool.pylint."messages control"]
+ignore = ["setup.py", "__init__.py"]
+ignore-paths = ["tests"]

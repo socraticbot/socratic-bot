@@ -1,0 +1,14 @@
+# -*- coding: utf-8 -*-
+_txt:                 Welcome to the Socratic copilot. Please select a category:-
+Interview:
+  _txt:               Please select an interview topic:-
+  Sales:              Ask a question about the tradeoff building customer relationships versus meeting sales targets.
+  Finance:            Ask a question about the tradeoff between projects with potential for revenue growth versus those with potential for cost reduction.
+  Project Management: Ask a question about the tradeoff between scope, schedule and budget.
+Zuzalu:
+  _txt:               Please select a Zuzalu discussion topic:-
+  Citizenship:        Ask a question about criteria and values associated with Zuzalu citizenship.
+  Software values:    Ask a question about the values associated with Zuzalu software development.
+Vitalia:
+  _txt:               Please select a Vitalia discussion topic:-
+  Longevity:          Ask a question about a tradeoffs associated with longevity research.

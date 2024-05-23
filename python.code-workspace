@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "pylibs/chat"
+		},
+		{
+			"path": "pylibs/zoo"
+		},
+		{
+			"path": "pyprojs/chatserver"
+		},
+		{
+			"path": "pyprojs/telegram"
+		}
+	],
+	"settings": {
+	}
+}

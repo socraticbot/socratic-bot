@@ -1,0 +1,29 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "socratic"
+version = "0.1.0"
+description = "Tooling"
+authors = ["Liu, Minsheng <lambda@liu.ms>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+python-telegram-bot = "^21.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pyright = "^1.1.342"
+black = "^24.1.1"
+isort = "^5.13.2"
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+
+[tool.isort]
+profile = "black"
+line_length = 100
+auto_identify_namespace_packages = false
+force_single_line = true # pyright doesn't like implicit namespace + single line (related to https://github.com/microsoft/pyright/issues/2882?)
+known_first_party = ["socratic"]
