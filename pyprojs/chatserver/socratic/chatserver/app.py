@@ -38,6 +38,9 @@ TOKEN = os.environ.get("SOCRATIC_CHATSERVER_TOKEN", None)
 if not TOKEN:
     raise RuntimeError("SOCRATIC_CHATSERVER_TOKEN environment variable must be set.")
 
+if not os.environ.get("OPENAI_API_KEY", None):
+    raise RuntimeError("OPENAI_API_KEY environment variable must be set.")
+
 
 def check_token(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)]):
     """
