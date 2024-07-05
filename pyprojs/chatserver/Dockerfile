@@ -1,7 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.12-slim
-
-ARG SOCRATIC_CHATSERVER_TOKEN="51454e50-57fc-4d3b-9fc0-d92f1912799f"
+FROM python:3.12.3-slim
 
 # Set environment variables to reduce Python buffering and enable Python unbuffered mode
 ENV PYTHONDONTWRITEBYTECODE 1
