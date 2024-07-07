@@ -2,8 +2,8 @@
 FROM python:3.12.3-slim
 
 # Set environment variables to reduce Python buffering and enable Python unbuffered mode
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Install system dependencies
 RUN apt-get update \
