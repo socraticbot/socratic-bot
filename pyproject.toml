@@ -6,7 +6,7 @@ build-backend = "poetry.core.masonry.api"
 name = "socratic"
 version = "0.1.0"
 description = "Tooling"
-authors = ["Liu, Minsheng <lambda@liu.ms>"]
+authors = ["Schrenk, Veronica <veronica@socratic.bot>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
