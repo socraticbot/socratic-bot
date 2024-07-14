@@ -227,7 +227,7 @@ async def _process_direction(direction: str, messages: list[Message]):
 
 @model.entry
 async def entry(
-    topic: str = "Ask the question about the pros and cons of remote working.",
+    topic: str = "Ask a question about individual cognitive sovereignty as prerequisite for community sense-making.",
     background: Optional[str] = None,
 ):
     """Entry point for conversation model "trivial"."""

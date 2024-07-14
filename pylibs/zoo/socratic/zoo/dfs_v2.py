@@ -291,7 +291,7 @@ async def _make_final_result(
 @model.entry
 async def entry():
     """Entry point."""
-    initial_plan = await make_plan(topic="Remote working vs in-office working.")
+    initial_plan = await make_plan(topic="Individual cognitive sovereignty as prerequisite for community sense-making.")
     plan = initial_plan.plan
     segments: List[SegmentResult] = []
 
