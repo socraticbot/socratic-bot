@@ -115,24 +115,24 @@ class _ConversationForest:
 
 
 class _InMemoryRepository:
-    forests: list[_ConversationForest]
+    forests: dict[UUID, _ConversationForest]
 
     def __init__(self):
-        self.forests = []
+        self.forests = {}
 
     def add_forest(self, forest: _ConversationForest):
         """
         Adds a conversation.
         """
-        self.forests.append(forest)
+        self.forests[forest.id] = forest
 
-    def forest_with_id(self, conversation_id) -> _ConversationForest:
+    def forest_with_id(self, conversation_id: UUID) -> _ConversationForest:
         """
         Returns a conversation with the given ID.
         """
-        for forest in self.forests:
-            if forest.id == conversation_id:
-                return forest
+        forest = self.forests.get(conversation_id, None)
+        if forest:
+            return forest
         raise HTTPException(status_code=404, detail=f"Unknown conversation {conversation_id}.")
 
 
