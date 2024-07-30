@@ -1,6 +1,7 @@
 """FastAPI app."""
 
 from dataclasses import dataclass
+import json
 import os
 from time import time
 from typing import Annotated
@@ -14,6 +15,7 @@ from fastapi import FastAPI
 from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
 from fastapi.security import HTTPBearer
+from lru import LRU
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 
@@ -34,6 +36,7 @@ app.add_middleware(
 
 
 security = HTTPBearer()
+
 TOKEN = os.environ.get("SOCRATIC_CHATSERVER_TOKEN", None)
 if not TOKEN:
     raise RuntimeError("SOCRATIC_CHATSERVER_TOKEN environment variable must be set.")
@@ -115,10 +118,10 @@ class _ConversationForest:
 
 
 class _InMemoryRepository:
-    forests: dict[UUID, _ConversationForest]
+    forests: LRU
 
     def __init__(self):
-        self.forests = {}
+        self.forests = LRU(150)
 
     def add_forest(self, forest: _ConversationForest):
         """
@@ -173,26 +176,39 @@ class CreateConversationResponse(BaseModel):
     message: str
 
 
+initial_message_memo = LRU(20)
+
+
 @app.post("/new", dependencies=[Depends(check_token)])
 async def create_conversation(request: CreateConversationRequest) -> CreateConversationResponse:
     """
     Create a new conversation.
     """
     model, input_params = _resolve_request(request)
-    executor = StepExecutor(model, [], [], {})
-    initial_message_id = executor.next_scope_id
-    assistant_reply = await executor.run(**input_params)
-    initial_message = _MessagePack(
-        initial_message_id,
-        time(),
-        Message(is_assistant=True, message=assistant_reply),
-        executor.workflow_results.copy(),
-        False,
-    )
+
+    # Re-use the same opening message for the same input parameters to save cost.
+    cache_key = f"{model}:{json.dumps(input_params)}"
+    if cache_key in initial_message_memo:
+        initial_message = initial_message_memo[cache_key]
+    else:
+        executor = StepExecutor(model, [], [], {})
+        initial_message_id = executor.next_scope_id
+        assistant_reply = await executor.run(**input_params)
+        initial_message = _MessagePack(
+            initial_message_id,
+            time(),
+            Message(is_assistant=True, message=assistant_reply),
+            executor.workflow_results.copy(),
+            False,
+        )
+        initial_message_memo[cache_key] = initial_message
+
     forest = _ConversationForest(request.name, input_params, initial_message)
     repo.add_forest(forest)
     return CreateConversationResponse(
-        conversation_id=forest.id, message_id=initial_message.id, message=assistant_reply
+        conversation_id=forest.id,
+        message_id=initial_message.id,
+        message=initial_message.message.message,
     )
 
 
