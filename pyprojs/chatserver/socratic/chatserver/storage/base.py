@@ -22,9 +22,13 @@ class ConversationForest:
     messages: list[MessagePack]
 
     def __init__(
-        self, name: str, input_params: dict[str, Any], messages: Optional[list[MessagePack]] = None
+        self,
+        name: str,
+        input_params: dict[str, Any],
+        id: Optional[UUID] = None,
+        messages: Optional[list[MessagePack]] = None,
     ):
-        self.id = uuid4()
+        self.id = id or uuid4()
         self.name = name
         self.input_params = input_params
         self.messages = messages or []

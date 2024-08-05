@@ -22,7 +22,7 @@ from starlette.middleware.cors import CORSMiddleware
 from socratic.chat import StepExecutor
 from socratic.chat.conversation_model import ConversationModel
 from socratic.chat.schemas import Message
-from socratic.chatserver.storage import ConversationForest, InMemoryRepository, MessagePack
+from socratic.chatserver.storage import get_repository, ConversationForest, MessagePack
 from socratic.zoo import dfs_v1
 from socratic.zoo import dfs_v2
 
@@ -64,9 +64,6 @@ async def read_root():
     return "It deploys!"
 
 
-repo = InMemoryRepository()
-
-
 class CreateConversationRequest(BaseModel):
     """
     Request to create a new conversation.
@@ -105,7 +102,9 @@ initial_message_memo = LRU(20)
 
 
 @app.post("/new", dependencies=[Depends(check_token)])
-async def create_conversation(request: CreateConversationRequest) -> CreateConversationResponse:
+async def create_conversation(
+    request: CreateConversationRequest, repo=Depends(get_repository)
+) -> CreateConversationResponse:
     """
     Create a new conversation.
     """
@@ -159,7 +158,9 @@ class ReplyConversationResponse(BaseModel):
 
 
 @app.post("/reply", dependencies=[Depends(check_token)])
-async def reply_conversation(request: ReplyConversationRequest) -> ReplyConversationResponse:
+async def reply_conversation(
+    request: ReplyConversationRequest, repo=Depends(get_repository)
+) -> ReplyConversationResponse:
     """
     Add a user reply to a conversation.
     """
