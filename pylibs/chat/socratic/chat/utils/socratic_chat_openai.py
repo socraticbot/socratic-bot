@@ -1,5 +1,6 @@
 """Provides SocraticChatOpenAI."""
 
+import os
 from typing import Any
 from typing import Optional
 from typing import TypeVar
@@ -7,12 +8,20 @@ from typing import cast
 from uuid import uuid4
 
 from langchain.callbacks.manager import AsyncCallbackManagerForLLMRun
+from langchain.callbacks import PromptLayerCallbackHandler
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema import BaseMessage
 from langchain.schema.output import ChatResult
 from langchain.schema.output_parser import StrOutputParser
 from pydantic import BaseModel
+
+try:
+    import promptlayer
+
+    promptlayer.api_key = os.getenv("PROMPTLAYER_API_KEY")
+except ImportError:
+    promptlayer = None
 
 from ..event_logging import Event
 from ..event_logging import EventPhase
@@ -122,9 +131,16 @@ class SocraticChatModel:
     def __init__(self, model: str = "gpt-4-turbo-preview") -> None:
         self.model = model
 
+    def _get_callbacks(self):
+        callbacks = []
+        if promptlayer.api_key:
+            callbacks.append(PromptLayerCallbackHandler())
+
+        return callbacks
+
     async def gen_string(self, prompt: ChatPromptTemplate, **kwargs) -> str:
         """Generate a string."""
-        chat_model = SocraticChatOpenAI(model=self.model)
+        chat_model = SocraticChatOpenAI(model=self.model, callbacks=self._get_callbacks())
         chain = prompt | chat_model | self._to_string
         chain_output = await chain.ainvoke(input=kwargs)
         assert isinstance(chain_output, str)
@@ -133,7 +149,9 @@ class SocraticChatModel:
     async def gen_json(self, prompt: ChatPromptTemplate, model_cls: type[T], **kwargs) -> T:
         """Generate a JSON."""
         chat_model = SocraticChatOpenAI(
-            model=self.model, model_kwargs={"response_format": {"type": "json_object"}}
+            model=self.model,
+            model_kwargs={"response_format": {"type": "json_object"}},
+            callbacks=self._get_callbacks(),
         )
         chain = prompt | chat_model | self._to_string
         chain_output = await chain.ainvoke(input=kwargs)
