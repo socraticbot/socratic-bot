@@ -22,6 +22,7 @@ from starlette.middleware.cors import CORSMiddleware
 from socratic.chat import StepExecutor
 from socratic.chat.conversation_model import ConversationModel
 from socratic.chat.schemas import Message
+from socratic.chatserver.storage import ConversationForest, InMemoryRepository, MessagePack
 from socratic.zoo import dfs_v1
 from socratic.zoo import dfs_v2
 
@@ -63,83 +64,7 @@ async def read_root():
     return "It deploys!"
 
 
-@dataclass
-class _MessagePack:
-    id: UUID
-    timestamp: float
-    message: Message
-    workflow_results: dict[str, Any]
-    is_done: bool
-    parent_id: Optional[UUID] = None
-
-
-class _ConversationForest:
-    id: UUID
-    name: str
-    input_params: dict[str, Any]
-    messages: list[_MessagePack]
-
-    def __init__(self, name: str, input_params: dict[str, Any], initial_message: _MessagePack):
-        self.id = uuid4()
-        self.name = name
-        self.input_params = input_params
-        self.messages = [initial_message]
-
-    def message_with_id(self, message_id: UUID) -> _MessagePack:
-        """
-        Returns a message pack with the given ID.
-        """
-        for message in self.messages:
-            if message.id == message_id:
-                return message
-        raise HTTPException(status_code=404, detail=f"Unknown message {message_id}.")
-
-    def message_list_with_id(self, last_message_id: Optional[UUID]) -> list[_MessagePack]:
-        """
-        Returns a list of messages ending with the specified message.
-        """
-        if last_message_id is None:
-            assistant_messages = [x for x in self.messages if x.message.is_assistant]
-            last_message_id = assistant_messages[-1].id
-        current = self.message_with_id(last_message_id)
-        messages: list[_MessagePack] = [current]
-        while current.parent_id is not None:
-            current = self.message_with_id(current.parent_id)
-            messages.append(current)
-        messages.reverse()
-        return messages
-
-    def append_message(self, message: _MessagePack):
-        """
-        Adds a message.
-        """
-        self.messages.append(message)
-        self.messages.sort(key=lambda x: x.timestamp)
-
-
-class _InMemoryRepository:
-    forests: LRU
-
-    def __init__(self):
-        self.forests = LRU(150)
-
-    def add_forest(self, forest: _ConversationForest):
-        """
-        Adds a conversation.
-        """
-        self.forests[forest.id] = forest
-
-    def forest_with_id(self, conversation_id: UUID) -> _ConversationForest:
-        """
-        Returns a conversation with the given ID.
-        """
-        forest = self.forests.get(conversation_id, None)
-        if forest:
-            return forest
-        raise HTTPException(status_code=404, detail=f"Unknown conversation {conversation_id}.")
-
-
-repo = _InMemoryRepository()
+repo = InMemoryRepository()
 
 
 class CreateConversationRequest(BaseModel):
@@ -194,7 +119,7 @@ async def create_conversation(request: CreateConversationRequest) -> CreateConve
         executor = StepExecutor(model, [], [], {})
         initial_message_id = executor.next_scope_id
         assistant_reply = await executor.run(**input_params)
-        initial_message = _MessagePack(
+        initial_message = MessagePack(
             initial_message_id,
             time(),
             Message(is_assistant=True, message=assistant_reply),
@@ -203,8 +128,10 @@ async def create_conversation(request: CreateConversationRequest) -> CreateConve
         )
         initial_message_memo[cache_key] = initial_message
 
-    forest = _ConversationForest(request.name, input_params, initial_message)
+    forest = ConversationForest(request.name, input_params)
     repo.add_forest(forest)
+    repo.add_message(forest.id, initial_message)
+
     return CreateConversationResponse(
         conversation_id=forest.id,
         message_id=initial_message.id,
@@ -246,11 +173,11 @@ async def reply_conversation(request: ReplyConversationRequest) -> ReplyConversa
     if parent.is_done:
         raise HTTPException(status_code=400, detail="Cannot reply to a complete conversation.")
 
-    parent = _MessagePack(
+    parent = MessagePack(
         uuid4(), time(), Message(is_assistant=False, message=request.message), {}, False, parent.id
     )
     messages.append(parent)
-    forest.append_message(parent)
+    repo.add_message(forest.id, parent)
 
     scope_ids = [x.id for x in messages if x.message.is_assistant]
     chat_history = [x.message.message for x in messages]
@@ -271,7 +198,7 @@ async def reply_conversation(request: ReplyConversationRequest) -> ReplyConversa
         k: v for k, v in executor.workflow_results.items() if k.startswith(str(next_scope_id))
     }
 
-    message_pack = _MessagePack(
+    message_pack = MessagePack(
         next_scope_id,
         time(),
         Message(is_assistant=True, message=executor.chat_history[-1]),
@@ -279,5 +206,5 @@ async def reply_conversation(request: ReplyConversationRequest) -> ReplyConversa
         executor.has_ended,
         parent.id,
     )
-    forest.append_message(message_pack)
+    repo.add_message(forest.id, message_pack)
     return ReplyConversationResponse(id=message_pack.id, message=message_pack.message.message)
