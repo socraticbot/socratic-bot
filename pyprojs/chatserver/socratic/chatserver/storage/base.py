@@ -14,6 +14,16 @@ class MessagePack:
     is_done: bool
     parent_id: Optional[UUID] = None
 
+    def copy(self):
+        return MessagePack(
+            uuid4(),
+            self.timestamp,
+            self.message,
+            self.workflow_results.copy(),
+            self.is_done,
+            self.parent_id,
+        )
+
 
 class ConversationForest:
     id: UUID

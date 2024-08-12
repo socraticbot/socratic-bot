@@ -113,7 +113,7 @@ async def create_conversation(
     # Re-use the same opening message for the same input parameters to save cost.
     cache_key = f"{model}:{json.dumps(input_params)}"
     if cache_key in initial_message_memo:
-        initial_message = initial_message_memo[cache_key]
+        initial_message = initial_message_memo[cache_key].copy()
     else:
         executor = StepExecutor(model, [], [], {})
         initial_message_id = executor.next_scope_id
