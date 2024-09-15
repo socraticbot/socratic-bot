@@ -1,6 +1,7 @@
 """Provides StepExecutor."""
 
 from contextlib import ExitStack
+import traceback
 from typing import Any
 from uuid import UUID
 from uuid import uuid4
@@ -62,8 +63,13 @@ class StepExecutor:
         def get_workflow_cache() -> tuple[bool, Any]:
             if recording:
                 return False, None
-            result = self.workflow_results[current_call_id()]
-            return True, result
+            try:
+                result = self.workflow_results[current_call_id()]
+                return True, result
+            except KeyError as e:
+                print(f"Failed to get workflow cache entry, key={current_call_id()}")
+                traceback.print_exc()
+                return False, None
 
         def on_workflow_done(_workflow, _input, result: Any):
             if not recording:
