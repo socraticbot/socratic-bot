@@ -12,44 +12,38 @@ export interface TutorModel {
 
 export const AVAILABLE_MODELS: TutorModel[] = [
   {
-    id: 'mistral/mistral-large-latest',
-    name: 'Mistral Large',
-    provider: 'Mistral',
-    description: 'Powerful reasoning and instruction following',
+    id: 'meta/llama-3.1-8b',
+    name: 'Llama 3.1 8B',
+    provider: 'Meta',
+    description: 'Efficient and capable open-source model',
   },
   {
-    id: 'mistral/devstral-2',
-    name: 'Devstral 2',
-    provider: 'Mistral',
-    description: 'Fast and efficient for quick responses',
-  },
-  {
-    id: 'openai/gpt-4',
-    name: 'GPT-4',
+    id: 'openai/gpt-5-nano',
+    name: 'GPT-5 Nano',
     provider: 'OpenAI',
-    description: 'Deep reasoning and nuanced understanding',
+    description: 'Compact and fast GPT-5 variant',
   },
   {
-    id: 'openai/gpt-4-turbo',
-    name: 'GPT-4 Turbo',
-    provider: 'OpenAI',
-    description: 'Faster GPT-4 with extended context',
-  },
-  {
-    id: 'anthropic/claude-3-5-sonnet-20241022',
-    name: 'Claude Sonnet',
-    provider: 'Anthropic',
-    description: 'Balanced performance and speed',
-  },
-  {
-    id: 'anthropic/claude-3-opus-20240229',
-    name: 'Claude Opus',
+    id: 'anthropic/claude-opus-4.5',
+    name: 'Claude Opus 4.5',
     provider: 'Anthropic',
     description: 'Most capable for complex reasoning',
   },
+  {
+    id: 'xai/grok-4.1-fast-reasoning',
+    name: 'Grok 4.1 Fast Reasoning',
+    provider: 'xAI',
+    description: 'Fast reasoning with deep understanding',
+  },
+  {
+    id: 'deepseek/deepseek-v3.2',
+    name: 'DeepSeek V3.2',
+    provider: 'DeepSeek',
+    description: 'Advanced reasoning and code capabilities',
+  },
 ];
 
-export const DEFAULT_MODEL = AVAILABLE_MODELS[0]; // Mistral Large
+export const DEFAULT_MODEL = AVAILABLE_MODELS[0]; // Llama 3.1 8B
 
 /**
  * Get model by ID
