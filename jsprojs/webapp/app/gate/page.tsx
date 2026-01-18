@@ -89,53 +89,28 @@ export default function GatePage() {
         />
       </div>
 
-      {/* Password Form - Positioned directly over the password field in the image */}
+      {/* Password Input - Positioned directly over the password field in the image */}
       {/* The password field in the pixel art is in the lower portion, centered */}
       <div className="absolute inset-0 flex items-end justify-center z-10" style={{ paddingBottom: '10%', pointerEvents: 'none' }}>
-        <div className="max-w-sm w-full bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-5 border border-gray-300 mx-6" style={{ pointerEvents: 'auto' }}>
-          <div className="text-center mb-4">
-            <h1 className="text-xl font-serif text-gray-800 mb-1">Socratic.bot</h1>
-            <p className="text-sm text-gray-600">Enter password to access the chat</p>
-          </div>
-
-          <form onSubmit={handlePasswordSubmit} className="space-y-3">
-            <div>
-              <label htmlFor="password" className="block text-xs font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none"
-                placeholder="Enter password"
-                autoFocus
-                disabled={isLoading}
-              />
-            </div>
-
-            {error && (
-              <div className="text-red-600 text-xs text-center">{error}</div>
-            )}
-
-            <button
-              type="submit"
-              disabled={isLoading || !password}
-              className="w-full bg-black text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? 'Verifying...' : 'Access Chat'}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => router.push('/landing')}
-              className="w-full text-gray-600 text-xs hover:text-gray-800 transition-colors"
-            >
-              Back
-            </button>
-          </form>
-        </div>
+        <form onSubmit={handlePasswordSubmit} className="max-w-sm w-full mx-6" style={{ pointerEvents: 'auto' }}>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && password && !isLoading) {
+                handlePasswordSubmit(e as any);
+              }
+            }}
+            className="w-full px-4 py-3 text-base border-2 border-gray-400 rounded-lg bg-white/95 backdrop-blur-sm focus:ring-2 focus:ring-black focus:border-black outline-none shadow-lg"
+            placeholder="Enter password"
+            autoFocus
+            disabled={isLoading}
+          />
+          {error && (
+            <div className="text-red-600 text-xs text-center mt-2 bg-white/95 px-2 py-1 rounded">{error}</div>
+          )}
+        </form>
       </div>
     </div>
   );
