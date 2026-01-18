@@ -63,7 +63,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[#FDFBF9]">
       {/* Office Image */}
-      <div className="w-full">
+      <div className="w-full mt-16">
         <Image
           src="/socraticoffice.png"
           alt="Socratic Office"
