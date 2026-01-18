@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import ModelSelector from './components/ModelSelector';
+import ModelSelector from '../components/ModelSelector';
 import { TutorModel, getDefaultModel } from '@/lib/models';
 
 interface Message {
