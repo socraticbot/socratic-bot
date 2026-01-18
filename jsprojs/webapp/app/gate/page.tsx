@@ -71,30 +71,29 @@ export default function GatePage() {
 
   // Show password gate
   return (
-    <div className="min-h-screen bg-[#FDFBF9] flex flex-col">
-      {/* Gate Image - Dynamically sized with viewport, matching /about page */}
-      <div className="w-full flex-shrink-0 bg-[#FDFBF9]" style={{ height: '40vh', minHeight: '300px', maxHeight: '500px' }}>
-        <div className="w-full h-full flex items-center justify-center overflow-hidden">
-          <img
-            src="/gate.png"
-            alt="Socratic Gate"
-            className="max-w-full max-h-full object-contain"
-            style={{ width: 'auto', height: '100%' }}
-          />
-        </div>
+    <div className="min-h-screen bg-[#FDFBF9] relative overflow-hidden">
+      {/* Gate Image - Full screen background */}
+      <div className="fixed inset-0 w-full h-full">
+        <img
+          src="/gate.png"
+          alt="Socratic Gate"
+          className="w-full h-full object-cover"
+          style={{ objectPosition: 'center' }}
+        />
       </div>
 
-      {/* Password Form - Centered below image */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 border border-gray-200">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-serif text-gray-800 mb-2">Socratic.bot</h1>
-            <p className="text-gray-600">Enter password to access the chat</p>
+      {/* Password Form - Positioned over the password field in the image */}
+      {/* The password field in the pixel art appears to be in the lower portion, centered */}
+      <div className="fixed inset-0 flex items-end justify-center pb-32 px-6">
+        <div className="max-w-md w-full bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-6 border border-gray-300">
+          <div className="text-center mb-4">
+            <h1 className="text-xl font-serif text-gray-800 mb-1">Socratic.bot</h1>
+            <p className="text-sm text-gray-600">Enter password to access the chat</p>
           </div>
 
-          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+          <form onSubmit={handlePasswordSubmit} className="space-y-3">
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-xs font-medium text-gray-700 mb-1">
                 Password
               </label>
               <input
@@ -102,7 +101,7 @@ export default function GatePage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none"
                 placeholder="Enter password"
                 autoFocus
                 disabled={isLoading}
@@ -110,13 +109,13 @@ export default function GatePage() {
             </div>
 
             {error && (
-              <div className="text-red-600 text-sm text-center">{error}</div>
+              <div className="text-red-600 text-xs text-center">{error}</div>
             )}
 
             <button
               type="submit"
               disabled={isLoading || !password}
-              className="w-full bg-black text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-black text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Verifying...' : 'Access Chat'}
             </button>
@@ -124,7 +123,7 @@ export default function GatePage() {
             <button
               type="button"
               onClick={() => router.push('/landing')}
-              className="w-full text-gray-600 text-sm hover:text-gray-800 transition-colors"
+              className="w-full text-gray-600 text-xs hover:text-gray-800 transition-colors"
             >
               Back
             </button>
