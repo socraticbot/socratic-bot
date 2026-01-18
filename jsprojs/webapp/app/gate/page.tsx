@@ -110,27 +110,27 @@ export default function GatePage() {
         zIndex: 0
       }}
     >
-      {/* Container that matches image aspect ratio and scales */}
+      {/* Container that centers the image */}
       <div 
         className="absolute"
         style={{
           top: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '100vw',
-          height: '100%',
+          left: 0,
+          right: 0,
+          bottom: 0,
           display: 'flex',
           alignItems: 'flex-start',
           justifyContent: 'center'
         }}
       >
-        {/* Wrapper that contains both image and input - input scales with image */}
+        {/* Wrapper that contains both image and input - matches image size exactly */}
         <div
           style={{
             position: 'relative',
-            width: 'auto',
             height: '100%',
-            display: 'inline-block'
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'center'
           }}
         >
           {/* Gate Image - Scales proportionally */}
@@ -147,19 +147,13 @@ export default function GatePage() {
               margin: 0,
               padding: 0
             }}
-            onLoad={(e) => {
-              // Store image dimensions for scaling calculations
-              const img = e.currentTarget;
-              img.setAttribute('data-width', img.naturalWidth.toString());
-              img.setAttribute('data-height', img.naturalHeight.toString());
-            }}
           />
           
-          {/* Password Input - Positioned relative to image wrapper, scales with it */}
+          {/* Password Input - Positioned relative to image, scales proportionally with it */}
           <div 
             className="absolute"
             style={{
-              // Position relative to image: bottom ~15%, left ~42% (to the left of center where Unlock button is)
+              // Position relative to image wrapper: bottom ~15%, left ~42% (to the left of center where Unlock button is)
               // These percentages are relative to the image's actual rendered size
               bottom: '15%',
               left: '42%',
@@ -180,11 +174,12 @@ export default function GatePage() {
                 }
               }}
               style={{
-                // Scale with viewport - approximately same size as Unlock button in pixel art
-                width: 'clamp(120px, 12vw, 200px)',
-                height: 'clamp(32px, 3.5vh, 48px)',
-                padding: '0 12px',
-                fontSize: 'clamp(12px, 1.2vw, 16px)',
+                // Scale proportionally with image - use percentage of image height
+                // Image is 4320x2430, so input should be ~5-6% of image height
+                width: 'calc(100vh * 0.08)', // ~8% of viewport height, scales with image
+                height: 'calc(100vh * 0.025)', // ~2.5% of viewport height
+                padding: '0 calc(100vh * 0.01)',
+                fontSize: 'calc(100vh * 0.015)',
                 border: '2px solid #9ca3af',
                 borderRadius: '8px',
                 backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -201,7 +196,7 @@ export default function GatePage() {
               <div 
                 className="text-red-600 text-xs text-center mt-2 bg-white/95 px-2 py-1 rounded"
                 style={{
-                  fontSize: 'clamp(10px, 1vw, 12px)'
+                  fontSize: 'calc(100vh * 0.012)'
                 }}
               >
                 {error}
