@@ -1,22 +1,28 @@
-import { getOpenAIModel, getOpenAIModelName } from '@/lib/openai';
 import { streamText } from 'ai';
 import { NextRequest } from 'next/server';
+import { getModelById, getDefaultModel } from '@/lib/models';
 
 /**
  * API route that streams both the response AND internal thoughts.
  * Internal thoughts show what prompts are being sent to the LLM.
+ * Uses Vercel AI Gateway - works with any model via AI_GATEWAY_API_KEY
  */
 export async function POST(request: NextRequest) {
   try {
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.AI_GATEWAY_API_KEY;
     if (!apiKey) {
       return new Response(
-        JSON.stringify({ error: 'OPENAI_API_KEY is not configured' }),
+        JSON.stringify({ error: 'AI_GATEWAY_API_KEY is not configured' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    const { prompt } = await request.json();
+    // CRITICAL: Ensure AI_GATEWAY_API_KEY is set in process.env
+    if (!process.env.AI_GATEWAY_API_KEY) {
+      process.env.AI_GATEWAY_API_KEY = apiKey;
+    }
+
+    const { prompt, modelId } = await request.json();
 
     if (!prompt) {
       return new Response(
@@ -25,20 +31,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const model = getOpenAIModel();
-    const modelName = getOpenAIModelName();
+    // Get model - use provided modelId or default
+    const selectedModel = modelId ? getModelById(modelId) : getDefaultModel();
+    if (!selectedModel) {
+      return new Response(
+        JSON.stringify({ error: `Invalid model ID: ${modelId}` }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const modelName = selectedModel.id; // e.g., 'mistral/mistral-large-latest'
 
     // Create a readable stream for Server-Sent Events
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
         // Emit internal thought about what we're doing
-        const thought = `🤔 Thinking about your question...\n\n💭 Prompt: ${prompt.substring(0, 200)}${prompt.length > 200 ? '...' : ''}\n\n📋 Generating response...`;
+        const thought = `🤔 Thinking about your question with ${selectedModel.name}...\n\n💭 Prompt: ${prompt.substring(0, 200)}${prompt.length > 200 ? '...' : ''}\n\n📋 Generating response using ${selectedModel.provider}...`;
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thought', content: thought })}\n\n`));
 
         try {
+          // Use plain string - Vercel AI Gateway automatically routes when AI_GATEWAY_API_KEY is set
           const result = await streamText({
-            model: model,
+            model: modelName, // Plain string like 'mistral/mistral-large-latest'
             messages: [{ role: 'user', content: prompt }],
             temperature: 0.7,
           });
