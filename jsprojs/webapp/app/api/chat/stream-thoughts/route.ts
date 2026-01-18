@@ -58,13 +58,20 @@ export async function POST(request: NextRequest) {
             temperature: 0.7,
           });
 
+          // Log generation ID for usage tracking (available in response metadata)
+          // Generation IDs are included in chat completion responses as the 'id' field
+          const generationId = result.response?.id;
+          if (generationId) {
+            console.log(`[chat] Generation ID: ${generationId}, Model: ${modelName}`);
+          }
+
           // Stream the text response
           for await (const textPart of result.textStream) {
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: textPart })}\n\n`));
           }
 
-          // Signal completion
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\n\n`));
+          // Signal completion with generation ID if available
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done', generationId: generationId || null })}\n\n`));
           controller.close();
         } catch (error) {
           const errorMsg = error instanceof Error ? error.message : 'Unknown error';
