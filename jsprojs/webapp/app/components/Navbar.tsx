@@ -6,6 +6,11 @@ import { usePathname } from 'next/navigation';
 export default function Navbar() {
   const pathname = usePathname();
 
+  // Hide navbar on landing page
+  if (pathname === '/landing' || pathname === '/') {
+    return null;
+  }
+
   return (
     <nav className="w-full bg-[#FDFBF9] border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-6 py-4">
