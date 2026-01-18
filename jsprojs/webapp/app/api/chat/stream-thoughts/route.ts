@@ -1,4 +1,4 @@
-import { getMistralModel } from '@/lib/mistral';
+import { getOpenAIModel, getOpenAIModelName } from '@/lib/openai';
 import { streamText } from 'ai';
 import { NextRequest } from 'next/server';
 
@@ -8,16 +8,12 @@ import { NextRequest } from 'next/server';
  */
 export async function POST(request: NextRequest) {
   try {
-    const apiKey = process.env.AI_GATEWAY_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return new Response(
-        JSON.stringify({ error: 'AI_GATEWAY_API_KEY is not configured' }),
+        JSON.stringify({ error: 'OPENAI_API_KEY is not configured' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
-    }
-
-    if (!process.env.AI_GATEWAY_API_KEY) {
-      process.env.AI_GATEWAY_API_KEY = apiKey;
     }
 
     const { prompt } = await request.json();
@@ -29,7 +25,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const modelName = getMistralModel();
+    const model = getOpenAIModel();
+    const modelName = getOpenAIModelName();
 
     // Create a readable stream for Server-Sent Events
     const encoder = new TextEncoder();
@@ -41,7 +38,7 @@ export async function POST(request: NextRequest) {
 
         try {
           const result = await streamText({
-            model: modelName,
+            model: model,
             messages: [{ role: 'user', content: prompt }],
             temperature: 0.7,
           });
