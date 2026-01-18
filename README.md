@@ -11,6 +11,9 @@ Socratic Bot is being transformed into a **fully decentralized, open-source crit
 
 **Model Selection & User Choice**: Users will be able to select between AI models to be their Socratic tutor, allowing user-choice with regards to privacy & overall comparison of model capabilities. This empowers users to choose the model that best aligns with their privacy preferences and learning needs, while enabling transparent comparison of how different models approach Socratic tutoring.
 
+<img width="972" height="727" alt="Screenshot 2026-01-18 at 17 30 07" src="https://github.com/user-attachments/assets/ae256080-0d65-4d6b-aa4c-a59b248a0cd8" />
+
+
 ## Migration in Progress
 
 We are currently migrating to a fully decentralized stack:
