@@ -13,6 +13,24 @@ export default function GatePage() {
   // Check if already authenticated on mount
   useEffect(() => {
     checkAuth();
+    
+    // Remove body margins/padding to ensure no white space
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.margin = '0';
+    document.documentElement.style.padding = '0';
+    document.documentElement.style.overflow = 'hidden';
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.style.margin = '';
+      document.body.style.padding = '';
+      document.body.style.overflow = '';
+      document.documentElement.style.margin = '';
+      document.documentElement.style.padding = '';
+      document.documentElement.style.overflow = '';
+    };
   }, []);
 
   const checkAuth = async () => {
@@ -71,7 +89,21 @@ export default function GatePage() {
 
   // Show password gate
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden" style={{ top: 0, left: 0, right: 0, bottom: 0, margin: 0, padding: 0, width: '100vw', height: '100vh' }}>
+    <div 
+      className="fixed inset-0 w-screen h-screen overflow-hidden" 
+      style={{ 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        bottom: 0, 
+        margin: 0, 
+        padding: 0, 
+        width: '100vw', 
+        height: '100vh',
+        position: 'fixed',
+        zIndex: 0
+      }}
+    >
       {/* Gate Image - Full screen, showing only bottom portion where password field is */}
       <div className="absolute inset-0" style={{ top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%', margin: 0, padding: 0 }}>
         <img
