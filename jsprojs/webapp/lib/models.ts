@@ -18,6 +18,12 @@ export const AVAILABLE_MODELS: TutorModel[] = [
     description: 'Efficient and capable open-source model',
   },
   {
+    id: 'mistral/devstral-2',
+    name: 'Devstral 2',
+    provider: 'Mistral',
+    description: 'Fast and efficient for quick responses',
+  },
+  {
     id: 'openai/gpt-5-nano',
     name: 'GPT-5 Nano',
     provider: 'OpenAI',
