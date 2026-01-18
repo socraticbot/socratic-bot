@@ -9,6 +9,8 @@ Socratic Bot is being transformed into a **fully decentralized, open-source crit
 - Uses Mistral models via Vercel AI Gateway for LLM capabilities
 - Is transparent, open-source, and user-owned
 
+**Model Selection & User Choice**: Users will be able to select between AI models to be their Socratic tutor, allowing user-choice with regards to privacy & overall comparison of model capabilities. This empowers users to choose the model that best aligns with their privacy preferences and learning needs, while enabling transparent comparison of how different models approach Socratic tutoring.
+
 ## Migration in Progress
 
 We are currently migrating to a fully decentralized stack:
