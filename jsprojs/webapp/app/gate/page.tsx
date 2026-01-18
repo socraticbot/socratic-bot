@@ -209,6 +209,7 @@ export default function GatePage() {
             )}
           </form>
         </div>
+        </div>
       </div>
     </div>
   );
