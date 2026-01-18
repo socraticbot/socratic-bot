@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import ModelSelector from '../components/ModelSelector';
 import { TutorModel, getDefaultModel } from '@/lib/models';
 
@@ -315,8 +316,19 @@ export default function Home() {
             {/* Streaming text (only show if not already in messages) */}
             {streamingText && !messages.some(m => m.role === 'tutor' && m.content === streamingText) && (
               <div className="text-left fade-in">
-                <div className="inline-block max-w-[80%] text-gray-600">
-                  <p className="text-base leading-relaxed">{streamingText}</p>
+                <div className="flex items-start gap-3 max-w-[80%]">
+                  <div className="flex-shrink-0">
+                    <Image
+                      src="/socraticlogo.png"
+                      alt="Socratic Bot"
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-full"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-base leading-relaxed text-gray-600">{streamingText}</p>
+                  </div>
                 </div>
               </div>
             )}
