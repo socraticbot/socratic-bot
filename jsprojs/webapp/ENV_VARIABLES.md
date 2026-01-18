@@ -10,6 +10,12 @@ VERCEL_AI_GATEWAY_API_KEY=your_vercel_ai_gateway_api_key
 ```
 API key for Vercel AI Gateway. Get this from your Vercel dashboard.
 
+### Mistral Model
+```bash
+MISTRAL_MODEL=mistral/mistral-large-latest
+```
+Mistral model identifier to use via Vercel AI Gateway. Defaults to `mistral/mistral-large-latest`.
+
 ### Swarm
 ```bash
 SWARM_GATEWAY_URL=https://gateway.ethswarm.org
