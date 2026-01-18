@@ -86,15 +86,88 @@ export default function LearnPage() {
 
         {/* Bias Key */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <div className="flex justify-center">
-            <Image
-              src="/biaskey.png"
-              alt="Cognitive Bias Key"
-              width={1200}
-              height={400}
-              className="w-full h-auto rounded-lg"
-              priority
-            />
+          <div className="space-y-6">
+            {/* Category Tabs */}
+            <div className="flex gap-2 flex-wrap justify-center">
+              <div className="px-4 py-2 rounded-lg text-white font-medium" style={{ backgroundColor: '#E63946' }}>
+                Memory
+              </div>
+              <div className="px-4 py-2 rounded-lg text-white font-medium" style={{ backgroundColor: '#1D3557' }}>
+                Social
+              </div>
+              <div className="px-4 py-2 rounded-lg text-white font-medium" style={{ backgroundColor: '#A8DADC' }}>
+                Learning
+              </div>
+              <div className="px-4 py-2 rounded-lg text-white font-medium" style={{ backgroundColor: '#457B9D' }}>
+                Belief
+              </div>
+              <div className="px-4 py-2 rounded-lg text-white font-medium" style={{ backgroundColor: '#90EE90' }}>
+                Money
+              </div>
+              <div className="px-4 py-2 rounded-lg text-white font-medium" style={{ backgroundColor: '#FFD700' }}>
+                Politics
+              </div>
+            </div>
+
+            {/* Bias Cards with Category Indicators */}
+            <div className="flex gap-4 flex-wrap justify-center">
+              {/* Fundamental */}
+              <div className="flex flex-col items-center">
+                <div className="flex gap-1 mb-2">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#1D3557' }}></div>
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#90EE90' }}></div>
+                </div>
+                <div className="px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
+                  Fundamental
+                </div>
+              </div>
+
+              {/* Self-Serving */}
+              <div className="flex flex-col items-center">
+                <div className="flex gap-1 mb-2">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#1D3557' }}></div>
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#A8DADC' }}></div>
+                </div>
+                <div className="px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
+                  Self-Serving
+                </div>
+              </div>
+
+              {/* In-Group */}
+              <div className="flex flex-col items-center">
+                <div className="flex gap-1 mb-2">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#1D3557' }}></div>
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#457B9D' }}></div>
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#FFD700' }}></div>
+                </div>
+                <div className="px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
+                  In-Group
+                </div>
+              </div>
+
+              {/* Bandwagon */}
+              <div className="flex flex-col items-center">
+                <div className="flex gap-1 mb-2">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#1D3557' }}></div>
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#457B9D' }}></div>
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#FFD700' }}></div>
+                </div>
+                <div className="px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
+                  Bandwagon
+                </div>
+              </div>
+
+              {/* Groupthink */}
+              <div className="flex flex-col items-center">
+                <div className="flex gap-1 mb-2">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#1D3557' }}></div>
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#FFD700' }}></div>
+                </div>
+                <div className="px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
+                  Groupthink
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
