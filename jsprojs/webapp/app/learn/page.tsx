@@ -57,22 +57,36 @@ const cognitiveBiases = [
   'Zero-Risk Bias',
 ];
 
-// The composite image appears to be a 10x5 grid (50 biases total)
+// The composite image is 942x3156 pixels in a 10x5 grid (50 biases total)
 const GRID_COLS = 10;
 const GRID_ROWS = 5;
 const TOTAL_BIASES = 50;
+
+// Actual image dimensions (from file inspection)
+const IMAGE_WIDTH = 942;
+const IMAGE_HEIGHT = 3156;
+
+// Calculate cell dimensions
+const CELL_WIDTH = IMAGE_WIDTH / GRID_COLS;  // 94.2px per cell
+const CELL_HEIGHT = IMAGE_HEIGHT / GRID_ROWS; // 631.2px per cell
 
 export default function LearnPage() {
   const [selectedBias, setSelectedBias] = useState<number>(0);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  // Calculate grid position for CSS sprite
+  // Calculate grid position for CSS sprite using actual pixel dimensions
   const getBiasPosition = (index: number) => {
     const row = Math.floor(index / GRID_COLS);
     const col = index % GRID_COLS;
+    // Calculate pixel positions
+    const xPixels = col * CELL_WIDTH;
+    const yPixels = row * CELL_HEIGHT;
+    // Convert to percentage for background-position
+    const xPercent = (xPixels / (IMAGE_WIDTH - CELL_WIDTH)) * 100;
+    const yPercent = (yPixels / (IMAGE_HEIGHT - CELL_HEIGHT)) * 100;
     return {
-      x: -(col * 100),
-      y: -(row * 100),
+      x: -xPercent,
+      y: -yPercent,
     };
   };
 
@@ -101,20 +115,25 @@ export default function LearnPage() {
         <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
           <div className="flex flex-col items-center">
             {/* Bias Image */}
-            <div className="w-64 h-64 mb-6 overflow-hidden rounded-lg border-2 border-gray-200">
+            <div className="w-64 h-64 mb-6 overflow-hidden rounded-lg border-2 border-gray-200 relative">
               <div
-                className="w-full h-full relative"
+                className="w-full h-full"
                 style={{
                   backgroundImage: 'url(/biases.png)',
+                  // Scale background to show exactly one cell (10x5 grid means each cell is 10% width, 20% height)
                   backgroundSize: `${GRID_COLS * 100}% ${GRID_ROWS * 100}%`,
+                  // Position to show the correct cell (using calculated percentages)
                   backgroundPosition: `${position.x}% ${position.y}%`,
                   backgroundRepeat: 'no-repeat',
+                  // Ensure the cell fills the container
+                  backgroundOrigin: 'border-box',
                 }}
               >
+                {/* Invisible image to maintain aspect ratio and trigger onLoad */}
                 <img
                   src="/biases.png"
                   alt="Cognitive biases"
-                  className="opacity-0 w-full h-full"
+                  className="opacity-0 w-full h-full object-none"
                   onLoad={() => setImageLoaded(true)}
                 />
               </div>

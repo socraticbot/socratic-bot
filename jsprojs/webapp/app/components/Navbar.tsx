@@ -52,7 +52,7 @@ export default function Navbar() {
                 pathname === '/chat' ? 'text-black font-medium' : 'text-gray-600 hover:text-black'
               } transition-colors`}
             >
-              Contact
+              Chat
             </Link>
             <a
               href="https://github.com/socratic-bot/socratic-bot"
