@@ -71,20 +71,25 @@ export default function GatePage() {
 
   // Show password gate
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden" style={{ top: 0, left: 0, right: 0, bottom: 0, margin: 0, padding: 0 }}>
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden" style={{ top: 0, left: 0, right: 0, bottom: 0, margin: 0, padding: 0, width: '100vw', height: '100vh' }}>
       {/* Gate Image - Full screen, showing only bottom portion where password field is */}
-      <div className="absolute inset-0 w-full h-full">
+      <div className="absolute inset-0" style={{ top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%', margin: 0, padding: 0 }}>
         <img
           src="/gate.png"
           alt="Socratic Gate"
           style={{ 
             width: '100vw',
             height: '100vh',
+            minWidth: '100vw',
+            minHeight: '100vh',
             objectFit: 'cover',
             objectPosition: 'center bottom', // Show bottom portion of image
             display: 'block',
             margin: 0,
-            padding: 0
+            padding: 0,
+            position: 'absolute',
+            top: 0,
+            left: 0
           }}
         />
       </div>
