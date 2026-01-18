@@ -72,58 +72,65 @@ export default function GatePage() {
 
   // Show password gate
   return (
-    <div className="min-h-screen bg-[#FDFBF9] flex items-center justify-center p-6">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 border border-gray-200">
-        <div className="text-center mb-6">
-          <Image
-            src="/gate.png"
-            alt="Socratic Bot"
-            width={200}
-            height={200}
-            className="w-auto h-auto mx-auto mb-4"
-            priority
-          />
-          <h1 className="text-2xl font-serif text-gray-800 mb-2">Socratic.bot</h1>
-          <p className="text-gray-600">Enter password to access the chat</p>
-        </div>
+    <div className="min-h-screen bg-[#FDFBF9] flex flex-col">
+      {/* Gate Image - Dynamically sized with viewport, matching /about page */}
+      <div className="w-full flex-shrink-0" style={{ height: '40vh', minHeight: '300px', maxHeight: '500px' }}>
+        <Image
+          src="/gate.png"
+          alt="Socratic Gate"
+          width={1200}
+          height={600}
+          className="w-full h-full object-contain"
+          priority
+        />
+      </div>
 
-        <form onSubmit={handlePasswordSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none"
-              placeholder="Enter password"
-              autoFocus
-              disabled={isLoading}
-            />
+      {/* Password Form - Centered below image */}
+      <div className="flex-1 flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 border border-gray-200">
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-serif text-gray-800 mb-2">Socratic.bot</h1>
+            <p className="text-gray-600">Enter password to access the chat</p>
           </div>
 
-          {error && (
-            <div className="text-red-600 text-sm text-center">{error}</div>
-          )}
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none"
+                placeholder="Enter password"
+                autoFocus
+                disabled={isLoading}
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={isLoading || !password}
-            className="w-full bg-black text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Verifying...' : 'Access Chat'}
-          </button>
+            {error && (
+              <div className="text-red-600 text-sm text-center">{error}</div>
+            )}
 
-          <button
-            type="button"
-            onClick={() => router.push('/landing')}
-            className="w-full text-gray-600 text-sm hover:text-gray-800 transition-colors"
-          >
-            Back
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={isLoading || !password}
+              className="w-full bg-black text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? 'Verifying...' : 'Access Chat'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => router.push('/landing')}
+              className="w-full text-gray-600 text-sm hover:text-gray-800 transition-colors"
+            >
+              Back
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
