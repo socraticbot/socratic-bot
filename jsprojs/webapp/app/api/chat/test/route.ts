@@ -25,10 +25,15 @@ export async function POST(request: NextRequest) {
     // Generate text using Mistral via Vercel AI Gateway
     // Use string format "provider/model" - SDK automatically routes through gateway
     // when AI_GATEWAY_API_KEY is set in environment
+    // CRITICAL: Use messages array format, not prompt string (matches votc implementation)
     const modelName = getMistralModel();
+    
+    console.log('[chat] Calling AI Gateway with model:', modelName);
+    console.log('[chat] AI_GATEWAY_API_KEY set:', !!apiKey);
+    
     const result = await generateText({
       model: modelName, // String format like "mistral/mistral-large-latest"
-      prompt: prompt,
+      messages: [{ role: 'user', content: prompt }], // Use messages array, not prompt string
       temperature: 0.7,
     });
 
