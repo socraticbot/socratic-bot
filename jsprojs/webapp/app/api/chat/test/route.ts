@@ -4,6 +4,14 @@ import { getMistralModel, getMistralModelName } from '@/lib/mistral';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if API key is configured
+    if (!process.env.VERCEL_AI_GATEWAY_API_KEY) {
+      return NextResponse.json(
+        { error: 'VERCEL_AI_GATEWAY_API_KEY is not configured. Please set it in .env.local' },
+        { status: 500 }
+      );
+    }
+
     const { prompt } = await request.json();
 
     if (!prompt) {
