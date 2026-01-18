@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
   "installCommand": "npm ci",
-  "buildCommand": "npm run build",
+  "buildCommand": "TURBOPACK_ROOT=. npm run build",
   "outputDirectory": ".next"
 }
