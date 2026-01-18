@@ -234,7 +234,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col p-8">
       {/* Model Selector - Top of page */}
-      <div className="w-full max-w-2xl mx-auto mb-8 fade-in">
+      <div className="w-full max-w-6xl mx-auto mb-8 fade-in">
         <ModelSelector 
           selectedModel={selectedModel} 
           onModelChange={handleModelChange}
@@ -299,14 +299,23 @@ export default function Home() {
                       );
                     })()}
                   </div>
+                ) : message.role === 'tutor' ? (
+                  <div className="flex items-start gap-3 max-w-[80%]">
+                    <div className="flex-shrink-0">
+                      <Image
+                        src="/socraticlogo.png"
+                        alt="Socratic Bot"
+                        width={40}
+                        height={40}
+                        className="w-10 h-10 rounded-full"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-base leading-relaxed text-gray-600">{message.content}</p>
+                    </div>
+                  </div>
                 ) : (
-                  <div
-                    className={`inline-block max-w-[80%] ${
-                      message.role === 'user'
-                        ? 'text-gray-700'
-                        : 'text-gray-600'
-                    }`}
-                  >
+                  <div className="inline-block max-w-[80%] text-gray-700">
                     <p className="text-base leading-relaxed">{message.content}</p>
                   </div>
                 )}
