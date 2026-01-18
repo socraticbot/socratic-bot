@@ -22,6 +22,29 @@ export default function GatePage() {
     document.documentElement.style.padding = '0';
     document.documentElement.style.overflow = 'hidden';
     
+    // Function to update image dimensions for scaling
+    const updateImageDimensions = () => {
+      const img = document.querySelector('img[alt="Socratic Gate"]') as HTMLImageElement;
+      if (img) {
+        const rect = img.getBoundingClientRect();
+        // Set CSS custom properties based on actual rendered image size
+        img.style.setProperty('--image-height', `${rect.height}px`);
+        img.style.setProperty('--image-width', `${rect.width}px`);
+      }
+    };
+    
+    // Update on load and resize
+    const img = document.querySelector('img[alt="Socratic Gate"]') as HTMLImageElement;
+    if (img) {
+      if (img.complete) {
+        updateImageDimensions();
+      } else {
+        img.addEventListener('load', updateImageDimensions);
+      }
+    }
+    
+    window.addEventListener('resize', updateImageDimensions);
+    
     // Cleanup on unmount
     return () => {
       document.body.style.margin = '';
@@ -30,6 +53,10 @@ export default function GatePage() {
       document.documentElement.style.margin = '';
       document.documentElement.style.padding = '';
       document.documentElement.style.overflow = '';
+      window.removeEventListener('resize', updateImageDimensions);
+      if (img) {
+        img.removeEventListener('load', updateImageDimensions);
+      }
     };
   }, []);
 
@@ -144,7 +171,17 @@ export default function GatePage() {
               objectPosition: 'center top',
               display: 'block',
               margin: 0,
-              padding: 0
+              padding: 0,
+              // CSS custom properties will be set by JavaScript
+              '--image-height': '100%',
+              '--image-width': 'auto'
+            } as React.CSSProperties}
+            onLoad={(e) => {
+              // Update dimensions when image loads
+              const img = e.currentTarget;
+              const rect = img.getBoundingClientRect();
+              img.style.setProperty('--image-height', `${rect.height}px`);
+              img.style.setProperty('--image-width', `${rect.width}px`);
             }}
           />
           
@@ -155,8 +192,8 @@ export default function GatePage() {
             style={{
               // Position relative to image: bottom ~15%, left ~42% (to the left of center where Unlock button is)
               // These percentages are relative to the image's actual rendered size
-              bottom: '15%',
-              left: '42%',
+              bottom: '47%',
+              left: '50%',
               transform: 'translateX(-100%)',
               marginRight: '2%', // Small gap between input and Unlock button
               zIndex: 10,
@@ -174,12 +211,12 @@ export default function GatePage() {
                 }
               }}
               style={{
-                // Scale proportionally with image height (which is 100% of container)
-                // Use calc with the container height (100vh - navbar) for scaling
-                width: `calc((100vh - ${NAVBAR_HEIGHT}px) * 0.08)`, // ~8% of image height
-                height: `calc((100vh - ${NAVBAR_HEIGHT}px) * 0.025)`, // ~2.5% of image height
-                padding: `0 calc((100vh - ${NAVBAR_HEIGHT}px) * 0.01)`,
-                fontSize: `calc((100vh - ${NAVBAR_HEIGHT}px) * 0.015)`,
+                // Scale proportionally with actual image dimensions
+                // Use CSS custom properties set from image's rendered size
+                width: 'calc(var(--image-height, 100vh) * 0.2)', // 20% of image height
+                height: 'calc(var(--image-height, 100vh) * 0.025)', // 2.5% of image height
+                padding: '0 calc(var(--image-height, 100vh) * 0.01)',
+                fontSize: 'calc(var(--image-height, 100vh) * 0.015)',
                 border: '2px solid #9ca3af',
                 borderRadius: '8px',
                 backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -196,7 +233,7 @@ export default function GatePage() {
               <div 
                 className="text-red-600 text-xs text-center mt-2 bg-white/95 px-2 py-1 rounded"
                 style={{
-                  fontSize: `calc((100vh - ${NAVBAR_HEIGHT}px) * 0.012)`
+                  fontSize: 'calc(var(--image-height, 100vh) * 0.012)'
                 }}
               >
                 {error}
