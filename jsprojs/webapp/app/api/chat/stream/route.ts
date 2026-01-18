@@ -5,11 +5,18 @@ import { NextRequest } from 'next/server';
 export async function POST(request: NextRequest) {
   try {
     // Check if API key is configured
-    if (!process.env.AI_GATEWAY_API_KEY) {
+    const apiKey = process.env.AI_GATEWAY_API_KEY;
+    if (!apiKey) {
       return new Response(
         JSON.stringify({ error: 'AI_GATEWAY_API_KEY is not configured. Please set it in .env.local' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
+    }
+
+    // CRITICAL: Ensure AI_GATEWAY_API_KEY is set in process.env (matches votc implementation)
+    // The SDK reads this at initialization time
+    if (!process.env.AI_GATEWAY_API_KEY) {
+      process.env.AI_GATEWAY_API_KEY = apiKey;
     }
 
     const { prompt } = await request.json();
@@ -25,10 +32,9 @@ export async function POST(request: NextRequest) {
     // Use string format "provider/model" - SDK automatically routes through gateway
     // CRITICAL: Use messages array format, not prompt string (matches votc implementation)
     const modelName = getMistralModel();
-    const apiKey = process.env.AI_GATEWAY_API_KEY;
     
     console.log('[chat] Streaming with model:', modelName);
-    console.log('[chat] AI_GATEWAY_API_KEY set:', !!apiKey);
+    console.log('[chat] AI_GATEWAY_API_KEY set:', !!process.env.AI_GATEWAY_API_KEY);
     
     const result = await streamText({
       model: modelName, // String format like "mistral/mistral-large-latest"

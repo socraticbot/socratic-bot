@@ -13,6 +13,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // CRITICAL: Ensure AI_GATEWAY_API_KEY is set in process.env (matches votc implementation)
+    // The SDK reads this at initialization time
+    if (!process.env.AI_GATEWAY_API_KEY) {
+      process.env.AI_GATEWAY_API_KEY = apiKey;
+    }
+
     const { prompt } = await request.json();
 
     if (!prompt) {
@@ -29,7 +35,7 @@ export async function POST(request: NextRequest) {
     const modelName = getMistralModel();
     
     console.log('[chat] Calling AI Gateway with model:', modelName);
-    console.log('[chat] AI_GATEWAY_API_KEY set:', !!apiKey);
+    console.log('[chat] AI_GATEWAY_API_KEY set:', !!process.env.AI_GATEWAY_API_KEY);
     
     const result = await generateText({
       model: modelName, // String format like "mistral/mistral-large-latest"
