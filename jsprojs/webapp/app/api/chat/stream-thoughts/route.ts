@@ -51,23 +51,50 @@ export async function POST(request: NextRequest) {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thought', content: thought })}\n\n`));
 
         try {
+          // Step 1: Analyze the question (internal thought)
+          const analyzeThought = `🔍 Step 1: Analyzing your question...\n\n"${prompt.substring(0, 150)}${prompt.length > 150 ? '...' : ''}"\n\n💭 What is the student really asking? What assumptions might they have?`;
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thought', content: analyzeThought })}\n\n`));
+          await new Promise(resolve => setTimeout(resolve, 500)); // Brief pause for readability
+
+          // Step 2: Formulate Socratic approach (internal thought)
+          const approachThought = `🎯 Step 2: Formulating Socratic approach...\n\n📋 Strategy: Instead of giving a direct answer, I'll ask questions that help the student think deeper.\n\n💡 What questions will guide them to discover the answer themselves?`;
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thought', content: approachThought })}\n\n`));
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          // Step 3: Generate response with LLM
+          const generatingThought = `🤖 Step 3: Generating response with ${selectedModel.name}...\n\n📤 Sending prompt to model...`;
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thought', content: generatingThought })}\n\n`));
+
           // Use plain string - Vercel AI Gateway automatically routes when AI_GATEWAY_API_KEY is set
           const result = await streamText({
             model: modelName, // Plain string like 'mistral/mistral-large-latest'
-            messages: [{ role: 'user', content: prompt }],
+            messages: [
+              {
+                role: 'system',
+                content: 'You are a Socratic tutor. Instead of giving direct answers, ask thoughtful questions that guide the student to think deeper and discover answers themselves. Keep responses concise and focused on one question or thought at a time.'
+              },
+              { role: 'user', content: prompt }
+            ],
             temperature: 0.7,
           });
 
-          // Log generation ID for usage tracking (available in response metadata)
-          // Generation IDs are included in chat completion responses as the 'id' field
+          // Log generation ID for usage tracking
           const generationId = result.response?.id;
           if (generationId) {
             console.log(`[chat] Generation ID: ${generationId}, Model: ${modelName}`);
           }
 
           // Stream the text response
+          let hasText = false;
           for await (const textPart of result.textStream) {
+            hasText = true;
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: textPart })}\n\n`));
+          }
+
+          // If no text was streamed, there might be an issue
+          if (!hasText) {
+            console.error('[chat] No text was streamed from model');
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', content: 'No response received from model. Please try again.' })}\n\n`));
           }
 
           // Signal completion with generation ID if available

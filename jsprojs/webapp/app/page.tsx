@@ -23,6 +23,21 @@ export default function Home() {
   const [selectedModel, setSelectedModel] = useState<TutorModel>(getDefaultModel());
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Reset conversation when model changes
+  const handleModelChange = (model: TutorModel) => {
+    setSelectedModel(model);
+    setMessages([]);
+    setShowQuestion(false);
+    setInput('');
+    setError(null);
+    setCurrentThought(null);
+    setStreamingText('');
+    // Show question again after model switch
+    setTimeout(() => {
+      setShowQuestion(true);
+    }, 500);
+  };
+
   useEffect(() => {
     // Show question after a pause (2 seconds) - unhurried
     const timer = setTimeout(() => {
@@ -92,41 +107,92 @@ export default function Home() {
       let buffer = '';
       let tutorMessageId = (Date.now() + 1).toString();
       let accumulatedText = '';
+      const thoughtMessages: Message[] = [];
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
+        // Split by double newline (SSE delimiter) and also handle single newlines
+        const chunks = buffer.split('\n\n');
+        buffer = chunks.pop() || '';
 
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              
-              if (data.type === 'thought') {
-                setCurrentThought(data.content);
-              } else if (data.type === 'text') {
-                accumulatedText += data.content;
-                setStreamingText(accumulatedText);
-              } else if (data.type === 'done') {
-                // Finalize the tutor message
-                const tutorMessage: Message = {
-                  id: tutorMessageId,
-                  role: 'tutor',
-                  content: accumulatedText,
-                  timestamp: new Date(),
-                };
-                setMessages((prev) => [...prev, tutorMessage]);
-                setCurrentThought(null);
-                setStreamingText('');
-              } else if (data.type === 'error') {
-                throw new Error(data.content);
+        for (const chunk of chunks) {
+          // Handle SSE format: "data: {...}"
+          const lines = chunk.split('\n');
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6));
+                
+                if (data.type === 'thought') {
+                  // Add thought as a separate message
+                  const thoughtMessage: Message = {
+                    id: `thought-${Date.now()}-${Math.random()}`,
+                    role: 'thought',
+                    content: data.content,
+                    timestamp: new Date(),
+                  };
+                  setMessages((prev) => {
+                    // Remove any existing temporary thought messages and add the new one
+                    const filtered = prev.filter(msg => msg.role !== 'thought' || !msg.id.startsWith('thought-temp'));
+                    return [...filtered, thoughtMessage];
+                  });
+                  // Also show as current thought for real-time updates
+                  setCurrentThought(data.content);
+                } else if (data.type === 'text') {
+                  accumulatedText += data.content;
+                  setStreamingText(accumulatedText);
+                  // Update or create tutor message in real-time
+                  setMessages((prev) => {
+                    const existingIndex = prev.findIndex(msg => msg.id === tutorMessageId);
+                    if (existingIndex > -1) {
+                      const updated = [...prev];
+                      updated[existingIndex] = {
+                        ...updated[existingIndex],
+                        content: accumulatedText,
+                      };
+                      return updated;
+                    } else {
+                      return [...prev, {
+                        id: tutorMessageId,
+                        role: 'tutor',
+                        content: accumulatedText,
+                        timestamp: new Date(),
+                      }];
+                    }
+                  });
+                } else if (data.type === 'done') {
+                  // Finalize the tutor message
+                  if (accumulatedText) {
+                    setMessages((prev) => {
+                      const existingIndex = prev.findIndex(msg => msg.id === tutorMessageId);
+                      if (existingIndex > -1) {
+                        const updated = [...prev];
+                        updated[existingIndex] = {
+                          ...updated[existingIndex],
+                          content: accumulatedText,
+                        };
+                        return updated;
+                      } else {
+                        return [...prev, {
+                          id: tutorMessageId,
+                          role: 'tutor',
+                          content: accumulatedText,
+                          timestamp: new Date(),
+                        }];
+                      }
+                    });
+                  }
+                  setCurrentThought(null);
+                  setStreamingText('');
+                } else if (data.type === 'error') {
+                  throw new Error(data.content);
+                }
+              } catch (parseErr) {
+                console.error('Error parsing SSE data:', parseErr, 'Line:', line);
               }
-            } catch (parseErr) {
-              console.error('Error parsing SSE data:', parseErr);
             }
           }
         }
@@ -153,7 +219,7 @@ export default function Home() {
       <div className="w-full max-w-2xl mx-auto mb-8 fade-in">
         <ModelSelector 
           selectedModel={selectedModel} 
-          onModelChange={setSelectedModel}
+          onModelChange={handleModelChange}
         />
       </div>
 
