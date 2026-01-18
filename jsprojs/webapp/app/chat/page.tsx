@@ -358,16 +358,27 @@ export default function Home() {
         {/* Input Form */}
         {(showQuestion || messages.length > 0) && (
           <form onSubmit={handleSend} className="fade-in">
-            <div className="flex gap-2">
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Take your time..."
-                className="flex-1 px-4 py-3 text-base text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 resize-none"
-                rows={2}
-                disabled={isListening}
-              />
+            <div className="flex gap-2 relative">
+              <div className="flex-1 relative">
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Take your time..."
+                  className="w-full px-4 py-3 text-base text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 resize-none"
+                  rows={2}
+                  disabled={isListening}
+                />
+                {input.length === 0 && !isListening && (
+                  <span
+                    className={`absolute left-4 top-3 pointer-events-none text-gray-400 transition-opacity duration-500 ${
+                      cursorVisible ? 'opacity-100' : 'opacity-30'
+                    }`}
+                  >
+                    |
+                  </span>
+                )}
+              </div>
               <button
                 type="submit"
                 disabled={!input.trim() || isListening}
