@@ -71,27 +71,27 @@ export default function GatePage() {
 
   // Show password gate
   return (
-    <div className="fixed inset-0 w-full h-full" style={{ top: 0, left: 0, right: 0, bottom: 0, margin: 0, padding: 0 }}>
-      {/* Gate Image - Full screen background */}
-      <div className="absolute inset-0 w-full h-full" style={{ top: 0, left: 0, right: 0, bottom: 0 }}>
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden" style={{ top: 0, left: 0, right: 0, bottom: 0, margin: 0, padding: 0 }}>
+      {/* Gate Image - Full screen, showing only bottom portion where password field is */}
+      <div className="absolute inset-0 w-full h-full">
         <img
           src="/gate.png"
           alt="Socratic Gate"
-          className="w-full h-full"
           style={{ 
+            width: '100vw',
+            height: '100vh',
             objectFit: 'cover',
-            objectPosition: 'center center',
-            width: '100%',
-            height: '100%',
-            display: 'block'
+            objectPosition: 'center bottom', // Show bottom portion of image
+            display: 'block',
+            margin: 0,
+            padding: 0
           }}
         />
       </div>
 
-      {/* Password Form - Positioned over the password field in the image */}
-      {/* The password field in the pixel art appears to be in the lower portion, centered */}
-      {/* Using bottom positioning to align with the pixelated password field in the image */}
-      <div className="absolute inset-0 flex items-end justify-center z-10" style={{ paddingBottom: '15%', pointerEvents: 'none' }}>
+      {/* Password Form - Positioned directly over the password field in the image */}
+      {/* The password field in the pixel art is in the lower portion, centered */}
+      <div className="absolute inset-0 flex items-end justify-center z-10" style={{ paddingBottom: '10%', pointerEvents: 'none' }}>
         <div className="max-w-sm w-full bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-5 border border-gray-300 mx-6" style={{ pointerEvents: 'auto' }}>
           <div className="text-center mb-4">
             <h1 className="text-xl font-serif text-gray-800 mb-1">Socratic.bot</h1>
