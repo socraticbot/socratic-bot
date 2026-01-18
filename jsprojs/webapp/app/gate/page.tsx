@@ -84,8 +84,9 @@ export default function GatePage() {
 
       {/* Password Form - Positioned over the password field in the image */}
       {/* The password field in the pixel art appears to be in the lower portion, centered */}
-      <div className="fixed inset-0 flex items-end justify-center pb-32 px-6">
-        <div className="max-w-md w-full bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-6 border border-gray-300">
+      {/* Using bottom positioning to align with the pixelated password field in the image */}
+      <div className="fixed inset-0 flex items-end justify-center" style={{ paddingBottom: '20%' }}>
+        <div className="max-w-sm w-full bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-5 border border-gray-300 mx-6">
           <div className="text-center mb-4">
             <h1 className="text-xl font-serif text-gray-800 mb-1">Socratic.bot</h1>
             <p className="text-sm text-gray-600">Enter password to access the chat</p>
