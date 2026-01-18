@@ -18,7 +18,6 @@ export async function POST(request: NextRequest) {
       model: getMistralModel(),
       prompt: prompt,
       temperature: 0.7,
-      maxTokens: 500,
     });
 
     return NextResponse.json({

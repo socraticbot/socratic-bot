@@ -18,10 +18,9 @@ export async function POST(request: NextRequest) {
       model: getMistralModel(),
       prompt: prompt,
       temperature: 0.7,
-      maxTokens: 500,
     });
 
-    return result.toDataStreamResponse();
+    return result.toTextStreamResponse();
   } catch (error) {
     console.error('Error streaming text:', error);
     return new Response(
