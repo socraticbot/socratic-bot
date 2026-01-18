@@ -49,8 +49,17 @@ export async function POST(request: NextRequest) {
       model: getMistralModelName(),
     });
   } catch (error) {
-    console.error('Error generating text:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const modelName = getMistralModel();
+    const apiKey = process.env.AI_GATEWAY_API_KEY;
+    
+    console.error('[chat] AI Gateway error:', {
+      message: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+      model: modelName,
+      hasApiKey: !!apiKey,
+      apiKeyPrefix: apiKey ? apiKey.substring(0, 10) : 'none',
+    });
     
     // Check for common errors
     if (errorMessage.includes('API key') || errorMessage.includes('authentication')) {
@@ -60,8 +69,13 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Return more detailed error in development
+    const isDev = process.env.NODE_ENV !== 'production';
     return NextResponse.json(
-      { error: 'Failed to generate text', details: errorMessage },
+      { 
+        error: isDev ? `AI Gateway error: ${errorMessage}` : 'Failed to generate text',
+        ...(isDev && { details: error instanceof Error ? error.stack : undefined })
+      },
       { status: 500 }
     );
   }
