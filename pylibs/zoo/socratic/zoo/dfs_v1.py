@@ -1,6 +1,7 @@
 """This module defines our initial version of DFS."""
 
 # pylint: disable=missing-class-docstring
+import os
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -59,7 +60,6 @@ class DFSV1Prompts(BasePrompts):
 
 model = ConversationModel[DFSV1Prompts]("dfs_v1", lambda: DFSV1Prompts.load_prompt(__file__))
 format_messages = MessageFormatter(human_name="Student", assistant_name="Professor")
-import os
 chat_model = SocraticChatMistral(model=os.getenv("MISTRAL_MODEL", "mistral/mistral-large-latest"))
 
 
