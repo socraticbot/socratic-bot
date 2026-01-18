@@ -20,6 +20,7 @@ python-dotenv = "^1.0.0"
 openai = "^1.3.5"
 pydantic = "^2.5.2"
 aiochannel = "^1.2.1"
+httpx = "^0.27.0"
 
 [tool.poetry.group.dev.dependencies]
 pyright = "^1.1.342"
