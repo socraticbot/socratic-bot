@@ -62,7 +62,7 @@ class SocraticChatMistral:
 
     model: str
     api_key: str
-    base_url: str = "https://gateway.ai.cloud.vercel.com/v1"
+    base_url: str = "https://gateway.ai.vercel.com/v1"
 
     def __init__(self, model: str = "mistral/mistral-large-latest") -> None:
         self.model = model
