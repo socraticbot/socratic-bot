@@ -124,42 +124,51 @@ export default function GatePage() {
           justifyContent: 'center'
         }}
       >
-        {/* Gate Image - Scales proportionally */}
-        <img
-          src="/gate.png"
-          alt="Socratic Gate"
-          style={{ 
+        {/* Wrapper that contains both image and input - input scales with image */}
+        <div
+          style={{
+            position: 'relative',
             width: 'auto',
             height: '100%',
-            maxWidth: '100vw',
-            objectFit: 'contain',
-            objectPosition: 'center top',
-            display: 'block',
-            margin: 0,
-            padding: 0
-          }}
-          onLoad={(e) => {
-            // Store image dimensions for scaling calculations
-            const img = e.currentTarget;
-            img.setAttribute('data-width', img.naturalWidth.toString());
-            img.setAttribute('data-height', img.naturalHeight.toString());
-          }}
-        />
-        
-        {/* Password Input - Positioned relative to image, scales with it */}
-        <div 
-          className="absolute"
-          style={{
-            // Position relative to image: bottom ~15%, left ~42% (to the left of center where Unlock button is)
-            // These percentages are relative to the image's rendered size
-            bottom: '15%',
-            left: '42%',
-            transform: 'translateX(-100%)',
-            marginRight: '2%', // Small gap between input and Unlock button
-            zIndex: 10,
-            pointerEvents: 'auto'
+            display: 'inline-block'
           }}
         >
+          {/* Gate Image - Scales proportionally */}
+          <img
+            src="/gate.png"
+            alt="Socratic Gate"
+            style={{ 
+              width: 'auto',
+              height: '100%',
+              maxWidth: '100vw',
+              objectFit: 'contain',
+              objectPosition: 'center top',
+              display: 'block',
+              margin: 0,
+              padding: 0
+            }}
+            onLoad={(e) => {
+              // Store image dimensions for scaling calculations
+              const img = e.currentTarget;
+              img.setAttribute('data-width', img.naturalWidth.toString());
+              img.setAttribute('data-height', img.naturalHeight.toString());
+            }}
+          />
+          
+          {/* Password Input - Positioned relative to image wrapper, scales with it */}
+          <div 
+            className="absolute"
+            style={{
+              // Position relative to image: bottom ~15%, left ~42% (to the left of center where Unlock button is)
+              // These percentages are relative to the image's actual rendered size
+              bottom: '15%',
+              left: '42%',
+              transform: 'translateX(-100%)',
+              marginRight: '2%', // Small gap between input and Unlock button
+              zIndex: 10,
+              pointerEvents: 'auto'
+            }}
+          >
           <form onSubmit={handlePasswordSubmit}>
             <input
               type="password"
