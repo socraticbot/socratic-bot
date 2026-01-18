@@ -1,94 +1,67 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
-// List of 50 cognitive biases
+// List of all cognitive bias images - using all available images
 const cognitiveBiases = [
-  'Anchoring Bias',
-  'Availability Heuristic',
-  'Confirmation Bias',
-  'Hindsight Bias',
-  'Self-Serving Bias',
-  'Negativity Bias',
-  'Optimism Bias',
-  'Dunning-Kruger Effect',
-  'Fundamental Attribution Error',
-  'Actor-Observer Bias',
-  'False Consensus Effect',
-  'In-Group Bias',
-  'Out-Group Homogeneity Bias',
-  'Halo Effect',
-  'Horn Effect',
-  'Stereotyping',
-  'Implicit Association',
-  'Status Quo Bias',
-  'Loss Aversion',
-  'Endowment Effect',
-  'Sunk Cost Fallacy',
-  'IKEA Effect',
-  'Planning Fallacy',
-  'Pro-innovation Bias',
-  'Bandwagon Effect',
-  'Authority Bias',
-  'Obedience to Authority',
-  'Appeal to Authority',
-  'Appeal to Popularity',
-  'Appeal to Tradition',
-  'False Dilemma',
-  'Straw Man',
-  'Red Herring',
-  'Ad Hominem',
-  'Tu Quoque',
-  'Slippery Slope',
-  'Post Hoc',
-  'Correlation vs Causation',
-  'Gambler\'s Fallacy',
-  'Regression to Mean',
-  'Base Rate Neglect',
-  'Conjunction Fallacy',
-  'Representativeness Heuristic',
-  'Framing Effect',
-  'Anchoring and Adjustment',
-  'Mental Accounting',
-  'Hyperbolic Discounting',
-  'Present Bias',
-  'Choice-Supportive Bias',
-  'Irrational Escalation',
-  'Zero-Risk Bias',
+  { name: 'Anchoring', image: 'anchoring.png' },
+  { name: 'Authority Bias', image: 'authority_bias.png' },
+  { name: 'Automation Bias', image: 'automation_bias.png' },
+  { name: 'Availability Cascade', image: 'availability_cascade_tied.png' },
+  { name: 'Availability Heuristic', image: 'availability_heuristic.png' },
+  { name: 'Belief Bias', image: 'belief_bias.png' },
+  { name: 'Ben Franklin Effect', image: 'ben_franklin_effect.png' },
+  { name: 'Self-Serving Bias', image: 'bias_self.png' },
+  { name: 'Zero-Risk Bias', image: 'bias_zero.png' },
+  { name: 'Blind Spot Bias', image: 'blind_spot_bias.png' },
+  { name: 'Clustering Illusion', image: 'clustering_illusion.png' },
+  { name: 'Confirmation Bias', image: 'confirmation_bias.png' },
+  { name: 'Cryptomnesia', image: 'cryptomnesia.png' },
+  { name: 'Curse of Knowledge', image: 'curse_of_knowledge.png' },
+  { name: 'Declinism', image: 'declinism.png' },
+  { name: 'Defensive Attribution', image: 'defensive_attribution.png' },
+  { name: 'Bystander Effect', image: 'effect_bystander.png' },
+  { name: 'Dunning-Kruger Effect', image: 'effect_dunning.png' },
+  { name: 'Backfire Effect', image: 'effect_of_backfire.png' },
+  { name: 'Bandwagon Effect', image: 'effect_of_bandwagon.png' },
+  { name: 'Forer Effect', image: 'effect_of_forer.png' },
+  { name: 'Framing Effect', image: 'effect_of_framing.png' },
+  { name: 'Halo Effect', image: 'effect_of_halo.png' },
+  { name: 'Placebo Effect', image: 'effect_of_placebo.png' },
+  { name: 'Spotlight Effect', image: 'effect_spotlight.png' },
+  { name: 'Third-Person Effect', image: 'effect_third.png' },
+  { name: 'Zeigarnik Effect', image: 'effect_zeigarnik.png' },
+  { name: 'Gambler\'s Fallacy', image: 'fallacy_fallacy.png' },
+  { name: 'False Memory', image: 'false memory.png' },
+  { name: 'False Consensus', image: 'false_consensus.png' },
+  { name: 'Fundamental Attribution Error', image: 'fundamental_attribution_error.png' },
+  { name: 'Google Effect', image: 'google effect.png' },
+  { name: 'Groupthink', image: 'groupthink.png' },
+  { name: 'IKEA Effect', image: 'ikea_effect.png' },
+  { name: 'In-Group Favoritism', image: 'in_group_favoritism.png' },
+  { name: 'Just-World Hypothesis', image: 'just_world_hypothesis.png' },
+  { name: 'Law of Triviality', image: 'law_of_triviality.png' },
+  { name: 'Moral Luck', image: 'moral_luck.png' },
+  { name: 'Naive Cynicism', image: 'naive_cynicism.png' },
+  { name: 'Optimism Bias', image: 'optimism_bias.png' },
+  { name: 'Out-Group Homogeneity Bias', image: 'outgroup_homogeneity_bias.png' },
+  { name: 'Pessimism Bias', image: 'pessimism_bias.png' },
+  { name: 'Reactance', image: 'reactance.png' },
+  { name: 'Realism', image: 'realism.png' },
+  { name: 'Status Quo Bias', image: 'status_quo_bias.png' },
+  { name: 'Stereotyping', image: 'stereotyping.png' },
+  { name: 'Suggestibility', image: 'suggestibility.png' },
+  { name: 'Sunk Cost Fallacy', image: 'sunk_cost_fallacy.png' },
+  { name: 'Survivorship Bias', image: 'survivorship_bias.png' },
+  { name: 'Tachypsychia', image: 'tachypsychia.png' },
 ];
 
-// The composite image is 942x3156 pixels in a 10x5 grid (50 biases total)
-const GRID_COLS = 10;
-const GRID_ROWS = 5;
-const TOTAL_BIASES = 50;
-
-// Actual image dimensions (from file inspection)
-const IMAGE_WIDTH = 942;
-const IMAGE_HEIGHT = 3156;
-
-// Calculate cell dimensions
-const CELL_WIDTH = IMAGE_WIDTH / GRID_COLS;  // 94.2px per cell
-const CELL_HEIGHT = IMAGE_HEIGHT / GRID_ROWS; // 631.2px per cell
+const TOTAL_BIASES = cognitiveBiases.length;
 
 export default function LearnPage() {
   const [selectedBias, setSelectedBias] = useState<number>(0);
   const [imageLoaded, setImageLoaded] = useState(false);
-
-  // Calculate grid position for CSS sprite using actual pixel dimensions
-  const getBiasPosition = (index: number) => {
-    const row = Math.floor(index / GRID_COLS);
-    const col = index % GRID_COLS;
-    // Calculate pixel positions
-    const xPixels = col * CELL_WIDTH;
-    const yPixels = row * CELL_HEIGHT;
-    // Convert to percentage for background-position
-    const xPercent = (xPixels / (IMAGE_WIDTH - CELL_WIDTH)) * 100;
-    const yPercent = (yPixels / (IMAGE_HEIGHT - CELL_HEIGHT)) * 100;
-    return {
-      x: -xPercent,
-      y: -yPercent,
-    };
-  };
 
   // Auto-advance slider
   useEffect(() => {
@@ -99,51 +72,51 @@ export default function LearnPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const position = getBiasPosition(selectedBias);
+  const currentBias = cognitiveBiases[selectedBias];
 
   return (
     <div className="min-h-screen bg-[#FDFBF9] py-12">
       <div className="max-w-6xl mx-auto px-6">
         <h1 className="text-4xl font-serif text-black mb-4 text-center">
-          50 Cognitive Biases
+          Cognitive Biases
         </h1>
-        <p className="text-center text-gray-600 mb-12">
+        <p className="text-center text-gray-600 mb-8">
           Explore the cognitive biases that shape our thinking
         </p>
+
+        {/* Bias Key */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <div className="flex justify-center">
+            <Image
+              src="/biaskey.png"
+              alt="Cognitive Bias Key"
+              width={1200}
+              height={400}
+              className="w-full h-auto rounded-lg"
+              priority
+            />
+          </div>
+        </div>
 
         {/* Bias Slider */}
         <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
           <div className="flex flex-col items-center">
             {/* Bias Image */}
-            {/* Cell aspect ratio: 94.2px / 631.2px ≈ 0.149 (very tall) */}
-            {/* Display in a container that maintains reasonable aspect ratio */}
-            <div className="w-64 h-96 mb-6 overflow-hidden rounded-lg border-2 border-gray-200 relative bg-gray-50">
-              <div
-                className="w-full h-full"
-                style={{
-                  backgroundImage: 'url(/biases.png)',
-                  // Scale background: 10 columns = 1000% width, 5 rows = 500% height
-                  backgroundSize: `${GRID_COLS * 100}% ${GRID_ROWS * 100}%`,
-                  // Position to show the correct cell
-                  // For 10 columns: each cell is 10% of width, so move by -col*10%
-                  // For 5 rows: each cell is 20% of height, so move by -row*20%
-                  backgroundPosition: `${position.x}% ${position.y}%`,
-                  backgroundRepeat: 'no-repeat',
-                }}
-              >
-                {/* Invisible image to maintain aspect ratio and trigger onLoad */}
-                <img
-                  src="/biases.png"
-                  alt="Cognitive biases"
-                  className="opacity-0 w-full h-full pointer-events-none"
-                  onLoad={() => setImageLoaded(true)}
-                />
-              </div>
+            <div className="w-64 h-96 mb-6 overflow-hidden rounded-lg border-2 border-gray-200 relative bg-gray-50 flex items-center justify-center">
+              <Image
+                src={`/biases/${currentBias.image}`}
+                alt={currentBias.name}
+                width={256}
+                height={384}
+                className="w-full h-full object-contain"
+                onLoad={() => setImageLoaded(true)}
+                unoptimized
+              />
             </div>
 
             {/* Bias Name */}
             <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-              {cognitiveBiases[selectedBias]}
+              {currentBias.name}
             </h2>
 
             {/* Navigation Dots */}
@@ -157,7 +130,7 @@ export default function LearnPage() {
                       ? 'bg-black w-8'
                       : 'bg-gray-300 hover:bg-gray-400'
                   }`}
-                  aria-label={`View ${bias}`}
+                  aria-label={`View ${bias.name}`}
                 />
               ))}
             </div>
@@ -192,7 +165,7 @@ export default function LearnPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              {bias}
+              {bias.name}
             </button>
           ))}
         </div>
