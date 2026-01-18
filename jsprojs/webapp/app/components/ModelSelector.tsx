@@ -11,7 +11,7 @@ interface ModelSelectorProps {
 export default function ModelSelector({ selectedModel, onModelChange }: ModelSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount (only once)
   useEffect(() => {
     const saved = localStorage.getItem('selectedModelId');
     if (saved) {
@@ -20,7 +20,8 @@ export default function ModelSelector({ selectedModel, onModelChange }: ModelSel
         onModelChange(model);
       }
     }
-  }, [onModelChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
 
   // Save to localStorage when model changes
   useEffect(() => {
