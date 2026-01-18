@@ -19,6 +19,13 @@ export default function PasswordGate({ children }: PasswordGateProps) {
     checkAuth();
   }, []);
 
+  // Redirect to /gate if not authenticated (must be at top level, not in conditional)
+  useEffect(() => {
+    if (isAuthenticated === false) {
+      router.push('/gate');
+    }
+  }, [isAuthenticated, router]);
+
   const checkAuth = async () => {
     try {
       const response = await fetch('/api/auth/verify');
@@ -71,11 +78,9 @@ export default function PasswordGate({ children }: PasswordGateProps) {
   }
 
   // Show password prompt if not authenticated - redirect to /gate instead
+  // The redirect is handled by useEffect above (must be at top level per Rules of Hooks)
   if (!isAuthenticated) {
-    useEffect(() => {
-      router.push('/gate');
-    }, [router]);
-    return null;
+    return null; // Component will redirect via useEffect
   }
 
   // Show children if authenticated
