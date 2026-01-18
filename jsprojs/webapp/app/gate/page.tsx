@@ -111,23 +111,24 @@ export default function GatePage() {
         justifyContent: 'flex-start'
       }}
     >
-      {/* Gate Image */}
+      {/* Gate Image - fills viewport minus space for password input */}
       <img
         src="/gate.png"
         alt="Socratic Gate"
         style={{ 
           width: '100%',
-          height: 'auto',
-          maxHeight: 'calc(100vh - 200px)',
-          objectFit: 'contain',
+          height: `calc(100vh - ${NAVBAR_HEIGHT}px - 100px)`,
+          objectFit: 'cover',
+          objectPosition: 'top center',
           display: 'block',
           margin: 0,
-          padding: 0
+          padding: 0,
+          flexShrink: 0
         }}
       />
       
-      {/* Password Input - Simple, underneath the image */}
-      <div className="w-full max-w-md px-6 py-8">
+      {/* Password Input - underneath the image */}
+      <div className="w-full max-w-md px-6 py-4">
         <form onSubmit={handlePasswordSubmit}>
           <input
             type="password"
