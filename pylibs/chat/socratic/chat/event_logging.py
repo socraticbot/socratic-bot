@@ -168,3 +168,32 @@ def log_event(event: Event):
     """
     _fill_event_metadata(event)
     _current_event_logging_handler(event)
+
+
+# Context variable for internal thought callbacks
+_internal_thought_handler_var: ContextVar[Optional[Callable[[str], None]]] = ContextVar(
+    "_internal_thought_handler", default=None
+)
+
+
+def set_internal_thought_handler(handler: Optional[Callable[[str], None]]):
+    """
+    Sets a handler for internal thoughts (prompts being sent to LLM).
+    This allows streaming internal thoughts to the frontend.
+    """
+    _internal_thought_handler_var.set(handler)
+
+
+def get_internal_thought_handler() -> Optional[Callable[[str], None]]:
+    """Gets the current internal thought handler."""
+    return _internal_thought_handler_var.get()
+
+
+def emit_internal_thought(thought: str):
+    """
+    Emits an internal thought (e.g., a prompt being sent to the LLM).
+    This will be displayed to help debug and teach the tutor.
+    """
+    handler = get_internal_thought_handler()
+    if handler:
+        handler(thought)
