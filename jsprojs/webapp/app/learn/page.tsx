@@ -115,25 +115,27 @@ export default function LearnPage() {
         <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
           <div className="flex flex-col items-center">
             {/* Bias Image */}
-            <div className="w-64 h-64 mb-6 overflow-hidden rounded-lg border-2 border-gray-200 relative">
+            {/* Cell aspect ratio: 94.2px / 631.2px ≈ 0.149 (very tall) */}
+            {/* Display in a container that maintains reasonable aspect ratio */}
+            <div className="w-64 h-96 mb-6 overflow-hidden rounded-lg border-2 border-gray-200 relative bg-gray-50">
               <div
                 className="w-full h-full"
                 style={{
                   backgroundImage: 'url(/biases.png)',
-                  // Scale background to show exactly one cell (10x5 grid means each cell is 10% width, 20% height)
+                  // Scale background: 10 columns = 1000% width, 5 rows = 500% height
                   backgroundSize: `${GRID_COLS * 100}% ${GRID_ROWS * 100}%`,
-                  // Position to show the correct cell (using calculated percentages)
+                  // Position to show the correct cell
+                  // For 10 columns: each cell is 10% of width, so move by -col*10%
+                  // For 5 rows: each cell is 20% of height, so move by -row*20%
                   backgroundPosition: `${position.x}% ${position.y}%`,
                   backgroundRepeat: 'no-repeat',
-                  // Ensure the cell fills the container
-                  backgroundOrigin: 'border-box',
                 }}
               >
                 {/* Invisible image to maintain aspect ratio and trigger onLoad */}
                 <img
                   src="/biases.png"
                   alt="Cognitive biases"
-                  className="opacity-0 w-full h-full object-none"
+                  className="opacity-0 w-full h-full pointer-events-none"
                   onLoad={() => setImageLoaded(true)}
                 />
               </div>
