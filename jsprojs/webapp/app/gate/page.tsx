@@ -88,32 +88,35 @@ export default function GatePage() {
   }
 
   // Show password gate
+  // Navbar height is approximately 64px (py-4 = 1rem top + 1rem bottom + content height)
+  const NAVBAR_HEIGHT = 64;
+  
   return (
     <div 
-      className="fixed inset-0 w-screen h-screen overflow-hidden" 
+      className="fixed w-screen overflow-hidden" 
       style={{ 
-        top: 0, 
+        top: `${NAVBAR_HEIGHT}px`, 
         left: 0, 
         right: 0, 
         bottom: 0, 
         margin: 0, 
         padding: 0, 
         width: '100vw', 
-        height: '100vh',
+        height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
         position: 'fixed',
         zIndex: 0
       }}
     >
-      {/* Gate Image - Full screen, showing only bottom portion where password field is */}
-      <div className="absolute inset-0" style={{ top: 0, left: 0, right: 0, bottom: 0, width: '200%', height: '200%', margin: 0, padding: 0 }}>
+      {/* Gate Image - Full screen below navbar, showing only bottom portion where password field is */}
+      <div className="absolute inset-0" style={{ top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%', margin: 0, padding: 0 }}>
         <img
           src="/gate.png"
           alt="Socratic Gate"
           style={{ 
             width: '100vw',
-            height: '100vh',
+            height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
             minWidth: '100vw',
-            minHeight: '100vh',
+            minHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
             objectFit: 'cover',
             objectPosition: 'center bottom', // Show bottom portion of image
             display: 'block',
@@ -126,10 +129,9 @@ export default function GatePage() {
         />
       </div>
 
-      {/* Password Input - Positioned directly over the password field in the image */}
-      {/* The password field in the pixel art is in the lower portion, centered */}
-      <div className="absolute inset-0 flex items-end justify-center z-10" style={{ paddingBottom: '10%', pointerEvents: 'none' }}>
-        <form onSubmit={handlePasswordSubmit} className="max-w-sm w-full mx-6" style={{ pointerEvents: 'auto' }}>
+      {/* Password Input - Positioned lower and to the left, next to the Unlock button in the pixel art */}
+      <div className="absolute inset-0 flex items-end justify-start z-10" style={{ paddingBottom: '8%', paddingLeft: '35%', pointerEvents: 'none' }}>
+        <form onSubmit={handlePasswordSubmit} className="max-w-xs w-full" style={{ pointerEvents: 'auto' }}>
           <input
             type="password"
             value={password}
