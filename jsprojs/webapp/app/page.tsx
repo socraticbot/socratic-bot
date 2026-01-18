@@ -85,6 +85,7 @@ export default function Home() {
 
       let buffer = '';
       let tutorMessageId = (Date.now() + 1).toString();
+      let accumulatedText = '';
 
       while (true) {
         const { done, value } = await reader.read();
@@ -102,13 +103,14 @@ export default function Home() {
               if (data.type === 'thought') {
                 setCurrentThought(data.content);
               } else if (data.type === 'text') {
-                setStreamingText((prev) => prev + data.content);
+                accumulatedText += data.content;
+                setStreamingText(accumulatedText);
               } else if (data.type === 'done') {
                 // Finalize the tutor message
                 const tutorMessage: Message = {
                   id: tutorMessageId,
                   role: 'tutor',
-                  content: streamingText,
+                  content: accumulatedText,
                   timestamp: new Date(),
                 };
                 setMessages((prev) => [...prev, tutorMessage]);
