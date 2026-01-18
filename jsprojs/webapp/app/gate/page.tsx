@@ -76,11 +76,12 @@ export default function GatePage() {
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 border border-gray-200">
         <div className="text-center mb-6">
           <Image
-            src="/socraticlogo.png"
+            src="/gate.png"
             alt="Socratic Bot"
-            width={80}
-            height={80}
-            className="w-20 h-20 mx-auto mb-4"
+            width={200}
+            height={200}
+            className="w-auto h-auto mx-auto mb-4"
+            priority
           />
           <h1 className="text-2xl font-serif text-gray-800 mb-2">Socratic.bot</h1>
           <p className="text-gray-600">Enter password to access the chat</p>
