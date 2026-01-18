@@ -15,6 +15,7 @@ from ..event_logging import Event
 from ..event_logging import EventPhase
 from ..event_logging import event_model
 from ..event_logging import log_event
+from ..event_logging import emit_internal_thought
 
 
 @event_model("mistral_call_start", phase=EventPhase.START)
@@ -106,6 +107,10 @@ class SocraticChatMistral:
         """Generate a string response."""
         messages = self._template_to_messages(prompt, kwargs)
 
+        # Emit internal thought - show what prompt we're sending
+        thought = self._format_thought_for_display(messages, "string")
+        emit_internal_thought(thought)
+
         call_id = str(uuid4())
         log_event(
             MistralCallStartEvent(
@@ -171,6 +176,10 @@ class SocraticChatMistral:
             messages[-1]["content"] = messages[-1]["content"] + json_instruction
         else:
             messages.append({"role": "user", "content": json_instruction})
+
+        # Emit internal thought - show what prompt we're sending
+        thought = self._format_thought_for_display(messages, "json", model_cls.__name__)
+        emit_internal_thought(thought)
 
         call_id = str(uuid4())
         log_event(
@@ -259,3 +268,40 @@ class SocraticChatMistral:
                 continue
 
         raise RuntimeError("Failed to generate valid JSON after retries")
+
+    def _format_thought_for_display(self, messages: list[dict[str, str]], output_type: str, model_name: str = "") -> str:
+        """
+        Format messages as a readable internal thought for display.
+        
+        Args:
+            messages: List of message dicts
+            output_type: "string" or "json"
+            model_name: Name of the Pydantic model (for JSON)
+        
+        Returns:
+            Formatted string showing the internal thought
+        """
+        parts = []
+        
+        # Show the type of generation
+        if output_type == "json":
+            parts.append(f"🤔 Generating JSON response ({model_name})...")
+        else:
+            parts.append("🤔 Generating text response...")
+        
+        # Show system message if present
+        system_msgs = [msg for msg in messages if msg.get("role") == "system"]
+        if system_msgs:
+            parts.append(f"\n📋 System: {system_msgs[0]['content'][:200]}...")
+        
+        # Show user message(s)
+        user_msgs = [msg for msg in messages if msg.get("role") == "user"]
+        if user_msgs:
+            # Show the last user message (most relevant)
+            last_user = user_msgs[-1]["content"]
+            # Truncate if too long
+            if len(last_user) > 300:
+                last_user = last_user[:300] + "..."
+            parts.append(f"\n💭 Prompt: {last_user}")
+        
+        return "\n".join(parts)
