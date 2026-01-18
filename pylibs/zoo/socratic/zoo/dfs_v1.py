@@ -15,7 +15,7 @@ from socratic.chat.interface import post_assistant_reply
 from socratic.chat.schemas import Message
 from socratic.chat.schemas import MessageFormatter
 from socratic.chat.utils.base_prompts import BasePrompts
-from socratic.chat.utils.socratic_chat_openai import SocraticChatModel
+from socratic.chat.utils.socratic_chat_mistral import SocraticChatMistral
 from socratic.chat.workflow import wprint
 
 
@@ -59,7 +59,8 @@ class DFSV1Prompts(BasePrompts):
 
 model = ConversationModel[DFSV1Prompts]("dfs_v1", lambda: DFSV1Prompts.load_prompt(__file__))
 format_messages = MessageFormatter(human_name="Student", assistant_name="Professor")
-chat_model = SocraticChatModel()
+import os
+chat_model = SocraticChatMistral(model=os.getenv("MISTRAL_MODEL", "mistral/mistral-large-latest"))
 
 
 class QuestionRequest(BaseModel):
