@@ -71,21 +71,21 @@ export default function GatePage() {
 
   // Show password gate
   return (
-    <div className="min-h-screen bg-[#FDFBF9] relative overflow-hidden">
+    <div className="fixed inset-0 w-full h-full overflow-hidden">
       {/* Gate Image - Full screen background */}
-      <div className="fixed inset-0 w-full h-full">
+      <div className="absolute inset-0 w-full h-full">
         <img
           src="/gate.png"
           alt="Socratic Gate"
           className="w-full h-full object-cover"
-          style={{ objectPosition: 'center' }}
+          style={{ objectPosition: 'center center' }}
         />
       </div>
 
       {/* Password Form - Positioned over the password field in the image */}
       {/* The password field in the pixel art appears to be in the lower portion, centered */}
       {/* Using bottom positioning to align with the pixelated password field in the image */}
-      <div className="fixed inset-0 flex items-end justify-center" style={{ paddingBottom: '20%' }}>
+      <div className="absolute inset-0 flex items-end justify-center z-10" style={{ paddingBottom: '20%' }}>
         <div className="max-w-sm w-full bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-5 border border-gray-300 mx-6">
           <div className="text-center mb-4">
             <h1 className="text-xl font-serif text-gray-800 mb-1">Socratic.bot</h1>
