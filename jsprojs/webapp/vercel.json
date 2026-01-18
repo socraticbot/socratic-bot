@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "installCommand": "cd jsprojs/webapp && npm ci",
-  "buildCommand": "cd jsprojs/webapp && npm run build",
-  "outputDirectory": "jsprojs/webapp/.next"
+  "installCommand": "npm ci",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next"
 }
