@@ -15,7 +15,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: 'What is our story?',
-    answer: 'After years of teaching critical thinking skills and exploring LLM progress, especially guiding middle and high school students to use LLMs to boost their thinking and study skills, Veronica Schrenk had the idea to create an LLM-powered chatbot for teaching critical thinking. Socratic.bot was born in 2023 at Zuzalu, a 2-month experiment that brought together builders and thinkers in frontier industries, and originally had the title Paideia AI. We started building a critical thinking tutor and researching rationality pedagogy, exploring how emerging LLM capabilities can be directed towards evaluating and improving human reasoning. We built and launched our prototype during the HackZuzalu hackathon in November 2023, where we were awarded 1st place for the AI track and facilitated a community governance discussion with 20 Zuzaluans using our bot to refine their arguments. In early 2024 we participated in the Vitalia and MiraclePlus Startup Accelerator programs. When Paideia decided to pursue a different path, Veronica founded Socratic.Bot to pursue the original mission of building an open-source critical thinking AI tutor. We recently launched our free-to-use tutor, open sourced our code, and integrated as a module with the discussion forum Agora.city.',
+    answer: 'After years of teaching critical thinking skills and exploring LLM progress, especially guiding middle and high school students to use LLMs to boost their thinking and study skills, Veronica Schrenk had the idea to create an LLM-powered chatbot for teaching critical thinking. Socratic.bot was born in 2023 at Zuzalu, a 2-month experiment that brought together builders and thinkers in frontier industries, and originally had the title Paideia AI. We started building a critical thinking tutor and researching rationality pedagogy, exploring how emerging LLM capabilities can be directed towards evaluating and improving human reasoning. We built and launched our prototype during the HackZuzalu hackathon in November 2023, where we were awarded 1st place for the AI track and facilitated a community governance discussion with 20 Zuzaluans using our bot to refine their arguments. In early 2024 we participated in the Vitalia and MiraclePlus Startup Accelerator programs. When Paideia decided to pursue a different path, Veronica founded Socratic.Bot to pursue the original mission of building an open-source critical thinking AI tutor. In 2024, we launched our free-to-use tutor, open sourced our code, and integrated as a module with the discussion forum Agora.city. After a pause in 2025, we are back and building a fully decentralized, open-source critical thinking tutor with a focus on privacy and user control. We are utilizing and exploring the latest research and capabilities on LLMS and human learning sciences to help humanity in a time of unprecedented technological advancement.',
   },
   {
     question: 'How does it work?',
@@ -27,7 +27,7 @@ const faqs: FAQItem[] = [
 - Prompts humans to think better through Socratic questioning
 - Uses EVM-compatible wallets as identity
 - Stores persistent memory in Swarm (decentralized storage)
-- Uses Mistral models via Vercel AI Gateway for LLM capabilities
+- Uses multiple models via Vercel AI Gateway for LLM capabilities
 - Is transparent, open-source, and user-owned
 
 **Model Selection & User Choice**: Users will be able to select between AI models to be their Socratic tutor, allowing user-choice with regards to privacy & overall comparison of model capabilities. This empowers users to choose the model that best aligns with their privacy preferences and learning needs, while enabling transparent comparison of how different models approach Socratic tutoring.`,
@@ -65,7 +65,7 @@ export default function AboutPage() {
       </div>
 
       {/* FAQ Section - Wider container for less squished text */}
-      <div className="max-w-5xl mx-auto p-8 space-y-4 flex-1">
+      <div className="max-w-[2048px] mx-auto p-8 space-y-4 flex-1">
         {faqs.map((faq, index) => (
           <div
             key={index}
@@ -101,6 +101,17 @@ export default function AboutPage() {
             )}
           </div>
         ))}
+      </div>
+
+      {/* Screenshot from README */}
+      <div className="max-w-[2048px] mx-auto p-8">
+        <Image
+          src="https://github.com/user-attachments/assets/ae256080-0d65-4d6b-aa4c-a59b248a0cd8"
+          alt="Socratic Bot Screenshot"
+          width={972}
+          height={727}
+          className="w-full h-auto rounded-lg"
+        />
       </div>
     </div>
   );
