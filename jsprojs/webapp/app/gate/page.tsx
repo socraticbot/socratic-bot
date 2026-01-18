@@ -128,12 +128,11 @@ export default function GatePage() {
           style={{
             position: 'relative',
             height: '100%',
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'center'
+            width: 'auto',
+            display: 'inline-block'
           }}
         >
-          {/* Gate Image - Scales proportionally */}
+          {/* Gate Image - Scales proportionally, wrapper matches its size */}
           <img
             src="/gate.png"
             alt="Socratic Gate"
@@ -150,10 +149,11 @@ export default function GatePage() {
           />
           
           {/* Password Input - Positioned relative to image, scales proportionally with it */}
+          {/* Since image height is 100% of container, use that for scaling */}
           <div 
             className="absolute"
             style={{
-              // Position relative to image wrapper: bottom ~15%, left ~42% (to the left of center where Unlock button is)
+              // Position relative to image: bottom ~15%, left ~42% (to the left of center where Unlock button is)
               // These percentages are relative to the image's actual rendered size
               bottom: '15%',
               left: '42%',
@@ -174,12 +174,12 @@ export default function GatePage() {
                 }
               }}
               style={{
-                // Scale proportionally with image - use percentage of image height
-                // Image is 4320x2430, so input should be ~5-6% of image height
-                width: 'calc(100vh * 0.08)', // ~8% of viewport height, scales with image
-                height: 'calc(100vh * 0.025)', // ~2.5% of viewport height
-                padding: '0 calc(100vh * 0.01)',
-                fontSize: 'calc(100vh * 0.015)',
+                // Scale proportionally with image height (which is 100% of container)
+                // Use calc with the container height (100vh - navbar) for scaling
+                width: `calc((100vh - ${NAVBAR_HEIGHT}px) * 0.08)`, // ~8% of image height
+                height: `calc((100vh - ${NAVBAR_HEIGHT}px) * 0.025)`, // ~2.5% of image height
+                padding: `0 calc((100vh - ${NAVBAR_HEIGHT}px) * 0.01)`,
+                fontSize: `calc((100vh - ${NAVBAR_HEIGHT}px) * 0.015)`,
                 border: '2px solid #9ca3af',
                 borderRadius: '8px',
                 backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -196,7 +196,7 @@ export default function GatePage() {
               <div 
                 className="text-red-600 text-xs text-center mt-2 bg-white/95 px-2 py-1 rounded"
                 style={{
-                  fontSize: 'calc(100vh * 0.012)'
+                  fontSize: `calc((100vh - ${NAVBAR_HEIGHT}px) * 0.012)`
                 }}
               >
                 {error}
