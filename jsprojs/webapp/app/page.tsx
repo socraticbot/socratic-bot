@@ -250,20 +250,28 @@ export default function Home() {
                   message.role === 'user' ? 'text-right' : 'text-left'
                 }`}
               >
-                <div
-                  className={`inline-block max-w-[80%] ${
-                    message.role === 'user'
-                      ? 'text-gray-700'
-                      : 'text-gray-600'
-                  }`}
-                >
-                  <p className="text-base leading-relaxed">{message.content}</p>
-                </div>
+                {message.role === 'thought' ? (
+                  <div className="inline-block max-w-[90%] p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-wrap font-mono">
+                      {message.content}
+                    </p>
+                  </div>
+                ) : (
+                  <div
+                    className={`inline-block max-w-[80%] ${
+                      message.role === 'user'
+                        ? 'text-gray-700'
+                        : 'text-gray-600'
+                    }`}
+                  >
+                    <p className="text-base leading-relaxed">{message.content}</p>
+                  </div>
+                )}
               </div>
             ))}
             
-            {/* Streaming text */}
-            {streamingText && (
+            {/* Streaming text (only show if not already in messages) */}
+            {streamingText && !messages.some(m => m.role === 'tutor' && m.content === streamingText) && (
               <div className="text-left fade-in">
                 <div className="inline-block max-w-[80%] text-gray-600">
                   <p className="text-base leading-relaxed">{streamingText}</p>
@@ -271,8 +279,8 @@ export default function Home() {
               </div>
             )}
             
-            {/* Internal thought display */}
-            {currentThought && (
+            {/* Current thought (for real-time updates during streaming) */}
+            {currentThought && !messages.some(m => m.role === 'thought' && m.content === currentThought) && (
               <div className="text-left fade-in">
                 <div className="inline-block max-w-[90%] p-4 bg-gray-50 border border-gray-200 rounded-lg">
                   <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-wrap font-mono">
