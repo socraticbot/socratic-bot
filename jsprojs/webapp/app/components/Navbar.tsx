@@ -13,20 +13,20 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="w-full bg-[#FDFBF9] border-b border-gray-200">
+    <nav className="w-full bg-[#FDFBF9] border-b border-gray-200 relative z-50">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-                  {/* Logo/Home Link */}
-                  <Link href="/landing" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                    <Image
-                      src="/socraticlogo.png"
-                      alt="Socratic Bot"
-                      width={32}
-                      height={32}
-                      className="w-8 h-8 cursor-pointer"
-                    />
-                    <span className="text-lg font-serif text-black cursor-pointer">Socratic.bot</span>
-                  </Link>
+          {/* Logo/Home Link */}
+          <Link href="/landing" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <Image
+              src="/socraticlogo.png"
+              alt="Socratic Bot"
+              width={32}
+              height={32}
+              className="w-8 h-8 cursor-pointer"
+            />
+            <span className="text-lg font-serif text-black cursor-pointer">Socratic.bot</span>
+          </Link>
 
           {/* Navigation Links */}
           <div className="flex items-center gap-6">
