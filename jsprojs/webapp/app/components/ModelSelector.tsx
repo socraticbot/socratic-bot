@@ -24,15 +24,15 @@ export default function ModelSelector({ selectedModel, onModelChange }: ModelSel
             }`}
           >
             <div className="text-center">
-              {/* Model Avatar/Icon - using first letter for now */}
-              <div
-                className={`w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center text-2xl font-bold ${
-                  selectedModel.id === model.id
-                    ? 'bg-black text-white'
-                    : 'bg-gray-100 text-gray-600'
-                }`}
-              >
-                {model.provider.charAt(0)}
+              {/* Model Avatar */}
+              <div className="w-16 h-16 mx-auto mb-3">
+                <Image
+                  src={model.avatar}
+                  alt={model.name}
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-contain"
+                />
               </div>
               {/* Model Name */}
               <div className="font-medium text-sm text-gray-800 mb-1">{model.name}</div>
