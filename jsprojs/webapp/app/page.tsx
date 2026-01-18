@@ -21,6 +21,7 @@ export default function Home() {
   const [currentThought, setCurrentThought] = useState<string | null>(null);
   const [streamingText, setStreamingText] = useState<string>('');
   const [selectedModel, setSelectedModel] = useState<TutorModel>(getDefaultModel());
+  const [expandedThoughts, setExpandedThoughts] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Reset conversation when model changes
@@ -32,10 +33,24 @@ export default function Home() {
     setError(null);
     setCurrentThought(null);
     setStreamingText('');
+    setExpandedThoughts(new Set());
     // Show question again after model switch
     setTimeout(() => {
       setShowQuestion(true);
     }, 500);
+  };
+
+  // Toggle thought expansion
+  const toggleThought = (thoughtId: string) => {
+    setExpandedThoughts((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(thoughtId)) {
+        newSet.delete(thoughtId);
+      } else {
+        newSet.add(thoughtId);
+      }
+      return newSet;
+    });
   };
 
   useEffect(() => {
@@ -185,6 +200,8 @@ export default function Home() {
                       }
                     });
                   }
+                  // Automatically collapse all thoughts when response is complete
+                  setExpandedThoughts(new Set());
                   setCurrentThought(null);
                   setStreamingText('');
                 } else if (data.type === 'error') {
@@ -251,10 +268,35 @@ export default function Home() {
                 }`}
               >
                 {message.role === 'thought' ? (
-                  <div className="inline-block max-w-[90%] p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                    <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-wrap font-mono">
-                      {message.content}
-                    </p>
+                  <div className="inline-block max-w-[90%]">
+                    <button
+                      onClick={() => toggleThought(message.id)}
+                      className="w-full text-left p-2 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <div className="flex items-center gap-2 text-xs text-gray-400">
+                        <svg
+                          className={`w-4 h-4 transition-transform duration-200 ${
+                            expandedThoughts.has(message.id) ? 'rotate-90' : ''
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                        <span>Internal reasoning</span>
+                        {!expandedThoughts.has(message.id) && (
+                          <span className="text-gray-300">(click to expand)</span>
+                        )}
+                      </div>
+                    </button>
+                    {expandedThoughts.has(message.id) && (
+                      <div className="mt-2 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                        <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-wrap font-mono">
+                          {message.content}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div
