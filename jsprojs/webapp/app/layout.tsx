@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Socratic Bot — Your Decentralized Critical Thinking Tutor",
-  description: "A quiet space for thinking clearly. An open-source tutor that prompts you to think better.",
+  title: "Socratic.bot. Helping humans think better.",
+  description: "An LLM-powered Socratic interviewer to assess and build general cognitive abilities related to rationality and critical thinking.",
 };
 
 export default function RootLayout({
