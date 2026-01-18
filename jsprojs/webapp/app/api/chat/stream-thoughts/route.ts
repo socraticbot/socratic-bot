@@ -104,8 +104,8 @@ export async function POST(request: NextRequest) {
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', content: 'No response received from model. Please try again.' })}\n\n`));
           }
 
-          // Signal completion with generation ID if available
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done', generationId: generationId || null })}\n\n`));
+          // Signal completion
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\n\n`));
           controller.close();
         } catch (error) {
           const errorMsg = error instanceof Error ? error.message : 'Unknown error';
