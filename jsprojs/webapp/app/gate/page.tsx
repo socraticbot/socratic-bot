@@ -90,6 +90,9 @@ export default function GatePage() {
   // Show password gate
   // Navbar height is approximately 64px (py-4 = 1rem top + 1rem bottom + content height)
   const NAVBAR_HEIGHT = 64;
+  // Image dimensions: 4320x2430, aspect ratio ~1.78:1
+  // The input should scale proportionally with the image
+  // Using a container that matches the image's rendered size
   
   return (
     <div 
@@ -107,47 +110,96 @@ export default function GatePage() {
         zIndex: 0
       }}
     >
-      {/* Gate Image - Full screen below navbar, showing only bottom portion where password field is */}
-      <div className="absolute inset-0" style={{ top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%', margin: 0, padding: 0 }}>
+      {/* Container that matches image aspect ratio and scales */}
+      <div 
+        className="absolute"
+        style={{
+          top: 0,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '100vw',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'center'
+        }}
+      >
+        {/* Gate Image - Scales proportionally */}
         <img
           src="/gate.png"
           alt="Socratic Gate"
           style={{ 
-            width: '100vw',
-            height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
+            width: 'auto',
+            height: '100%',
+            maxWidth: '100vw',
             objectFit: 'contain',
-            objectPosition: 'center top', // Align to top, show full image scaling from top
+            objectPosition: 'center top',
             display: 'block',
             margin: 0,
-            padding: 0,
-            position: 'absolute',
-            top: 0,
-            left: 0
+            padding: 0
+          }}
+          onLoad={(e) => {
+            // Store image dimensions for scaling calculations
+            const img = e.currentTarget;
+            img.setAttribute('data-width', img.naturalWidth.toString());
+            img.setAttribute('data-height', img.naturalHeight.toString());
           }}
         />
-      </div>
-
-      {/* Password Input - Positioned lower and to the left, next to the Unlock button in the pixel art */}
-      <div className="absolute inset-0 flex items-end justify-start z-10" style={{ paddingBottom: '8%', paddingLeft: '35%', pointerEvents: 'none' }}>
-        <form onSubmit={handlePasswordSubmit} className="max-w-xs w-full" style={{ pointerEvents: 'auto' }}>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && password && !isLoading) {
-                handlePasswordSubmit(e as any);
-              }
-            }}
-            className="w-full px-4 py-3 text-base border-2 border-gray-400 rounded-lg bg-white/95 backdrop-blur-sm focus:ring-2 focus:ring-black focus:border-black outline-none shadow-lg"
-            placeholder="Enter password"
-            autoFocus
-            disabled={isLoading}
-          />
-          {error && (
-            <div className="text-red-600 text-xs text-center mt-2 bg-white/95 px-2 py-1 rounded">{error}</div>
-          )}
-        </form>
+        
+        {/* Password Input - Positioned relative to image, scales with it */}
+        <div 
+          className="absolute"
+          style={{
+            // Position relative to image: bottom ~15%, left ~42% (to the left of center where Unlock button is)
+            // These percentages are relative to the image's rendered size
+            bottom: '15%',
+            left: '42%',
+            transform: 'translateX(-100%)',
+            marginRight: '2%', // Small gap between input and Unlock button
+            zIndex: 10,
+            pointerEvents: 'auto'
+          }}
+        >
+          <form onSubmit={handlePasswordSubmit}>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && password && !isLoading) {
+                  handlePasswordSubmit(e as any);
+                }
+              }}
+              style={{
+                // Scale with viewport - approximately same size as Unlock button in pixel art
+                width: 'clamp(120px, 12vw, 200px)',
+                height: 'clamp(32px, 3.5vh, 48px)',
+                padding: '0 12px',
+                fontSize: 'clamp(12px, 1.2vw, 16px)',
+                border: '2px solid #9ca3af',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(4px)',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                outline: 'none'
+              }}
+              className="focus:ring-2 focus:ring-black focus:border-black"
+              placeholder="Enter password"
+              autoFocus
+              disabled={isLoading}
+            />
+            {error && (
+              <div 
+                className="text-red-600 text-xs text-center mt-2 bg-white/95 px-2 py-1 rounded"
+                style={{
+                  fontSize: 'clamp(10px, 1vw, 12px)'
+                }}
+              >
+                {error}
+              </div>
+            )}
+          </form>
+        </div>
       </div>
     </div>
   );
