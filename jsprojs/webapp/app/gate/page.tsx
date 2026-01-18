@@ -75,15 +75,12 @@ export default function GatePage() {
     <div className="min-h-screen bg-[#FDFBF9] flex flex-col">
       {/* Gate Image - Dynamically sized with viewport, matching /about page */}
       <div className="w-full flex-shrink-0 bg-[#FDFBF9]" style={{ height: '40vh', minHeight: '300px', maxHeight: '500px' }}>
-        <div className="w-full h-full flex items-center justify-center">
-          <Image
+        <div className="w-full h-full flex items-center justify-center overflow-hidden">
+          <img
             src="/gate.png"
             alt="Socratic Gate"
-            width={1920}
-            height={1080}
             className="max-w-full max-h-full object-contain"
-            priority
-            style={{ width: 'auto', height: 'auto' }}
+            style={{ width: 'auto', height: '100%' }}
           />
         </div>
       </div>
