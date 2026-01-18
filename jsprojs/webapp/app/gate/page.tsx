@@ -105,7 +105,7 @@ export default function GatePage() {
       }}
     >
       {/* Gate Image - Full screen, showing only bottom portion where password field is */}
-      <div className="absolute inset-0" style={{ top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%', margin: 0, padding: 0 }}>
+      <div className="absolute inset-0" style={{ top: 0, left: 0, right: 0, bottom: 0, width: '200%', height: '200%', margin: 0, padding: 0 }}>
         <img
           src="/gate.png"
           alt="Socratic Gate"
