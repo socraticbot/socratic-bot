@@ -89,9 +89,14 @@ export default function AboutPage() {
               </svg>
             </button>
             {expandedItems.has(index) && (
-              <div className="px-4 pb-4 text-gray-700 leading-relaxed whitespace-pre-line">
-                {faq.answer}
-              </div>
+              <div 
+                className="px-4 pb-4 text-gray-700 leading-relaxed whitespace-pre-line"
+                dangerouslySetInnerHTML={{
+                  __html: faq.answer
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\n/g, '<br />')
+                }}
+              />
             )}
           </div>
         ))}
