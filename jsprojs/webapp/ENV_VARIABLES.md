@@ -6,7 +6,7 @@ This document lists all environment variables required for the Socratic Bot weba
 
 ### Vercel AI Gateway
 ```bash
-VERCEL_AI_GATEWAY_API_KEY=your_vercel_ai_gateway_api_key
+AI_GATEWAY_API_KEY=your_vercel_ai_gateway_api_key
 ```
 API key for Vercel AI Gateway. Get this from your Vercel dashboard.
 

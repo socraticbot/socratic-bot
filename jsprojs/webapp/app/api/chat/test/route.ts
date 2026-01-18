@@ -4,10 +4,11 @@ import { getMistralModel, getMistralModelName } from '@/lib/mistral';
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if API key is configured
-    if (!process.env.VERCEL_AI_GATEWAY_API_KEY) {
+    // Check if API key is configured (AI_GATEWAY_API_KEY, not VERCEL_AI_GATEWAY_API_KEY)
+    const apiKey = process.env.AI_GATEWAY_API_KEY;
+    if (!apiKey) {
       return NextResponse.json(
-        { error: 'VERCEL_AI_GATEWAY_API_KEY is not configured. Please set it in .env.local' },
+        { error: 'AI_GATEWAY_API_KEY is not configured. Please set it in .env.local' },
         { status: 500 }
       );
     }
@@ -22,8 +23,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate text using Mistral via Vercel AI Gateway
+    // Use string format "provider/model" - SDK automatically routes through gateway
+    // when AI_GATEWAY_API_KEY is set in environment
+    const modelName = getMistralModel();
     const result = await generateText({
-      model: getMistralModel(),
+      model: modelName, // String format like "mistral/mistral-large-latest"
       prompt: prompt,
       temperature: 0.7,
     });
@@ -40,7 +44,7 @@ export async function POST(request: NextRequest) {
     // Check for common errors
     if (errorMessage.includes('API key') || errorMessage.includes('authentication')) {
       return NextResponse.json(
-        { error: 'API key not configured. Please set VERCEL_AI_GATEWAY_API_KEY in .env.local', details: errorMessage },
+        { error: 'API key not configured. Please set AI_GATEWAY_API_KEY in .env.local', details: errorMessage },
         { status: 401 }
       );
     }

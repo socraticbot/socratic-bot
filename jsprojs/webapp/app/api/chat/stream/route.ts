@@ -4,6 +4,14 @@ import { NextRequest } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if API key is configured
+    if (!process.env.AI_GATEWAY_API_KEY) {
+      return new Response(
+        JSON.stringify({ error: 'AI_GATEWAY_API_KEY is not configured. Please set it in .env.local' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { prompt } = await request.json();
 
     if (!prompt) {
@@ -14,8 +22,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Stream text using Mistral via Vercel AI Gateway
+    // Use string format "provider/model" - SDK automatically routes through gateway
+    const modelName = getMistralModel();
     const result = await streamText({
-      model: getMistralModel(),
+      model: modelName, // String format like "mistral/mistral-large-latest"
       prompt: prompt,
       temperature: 0.7,
     });
