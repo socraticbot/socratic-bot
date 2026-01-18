@@ -2,6 +2,7 @@
 
 # pylint: disable=missing-class-docstring
 import json
+import os
 from enum import Enum
 from typing import List
 from typing import Optional
@@ -17,7 +18,7 @@ from socratic.chat.interface import post_assistant_reply
 from socratic.chat.schemas import Message
 from socratic.chat.schemas import MessageFormatter
 from socratic.chat.utils.base_prompts import BasePrompts
-from socratic.chat.utils.socratic_chat_openai import SocraticChatModel
+from socratic.chat.utils.socratic_chat_mistral import SocraticChatMistral
 from socratic.chat.workflow import wprint
 
 
@@ -33,7 +34,7 @@ class DFSV2Prompts(BasePrompts):
 prompts = DFSV2Prompts.load_prompt(__file__)
 model = ConversationModel[None]("dfs_v2", lambda: None)
 format_messages = MessageFormatter(human_name="Candidate", assistant_name="Interviewer")
-chat_model = SocraticChatModel()
+chat_model = SocraticChatMistral(model=os.getenv("MISTRAL_MODEL", "mistral/mistral-large-latest"))
 
 
 class Skill(str, Enum):
