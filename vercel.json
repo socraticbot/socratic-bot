@@ -1,8 +1,0 @@
-{
-  "buildCommand": "cd jsprojs/webapp && npm install && npm run build",
-  "devCommand": "cd jsprojs/webapp && npm run dev",
-  "installCommand": "cd jsprojs/webapp && npm install",
-  "framework": null,
-  "outputDirectory": "jsprojs/webapp/.next",
-  "regions": ["iad1"]
-}
