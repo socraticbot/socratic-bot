@@ -27,8 +27,18 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error generating text:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    
+    // Check for common errors
+    if (errorMessage.includes('API key') || errorMessage.includes('authentication')) {
+      return NextResponse.json(
+        { error: 'API key not configured. Please set VERCEL_AI_GATEWAY_API_KEY in .env.local', details: errorMessage },
+        { status: 401 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to generate text', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to generate text', details: errorMessage },
       { status: 500 }
     );
   }
