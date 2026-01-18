@@ -62,15 +62,19 @@ const TOTAL_BIASES = cognitiveBiases.length;
 export default function LearnPage() {
   const [selectedBias, setSelectedBias] = useState<number>(0);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [timerDuration, setTimerDuration] = useState(8); // Default 8 seconds
 
   // Auto-advance slider
   useEffect(() => {
+    if (!isPlaying) return;
+    
     const interval = setInterval(() => {
       setSelectedBias((prev) => (prev + 1) % TOTAL_BIASES);
-    }, 3000); // Change every 3 seconds
+    }, timerDuration * 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isPlaying, timerDuration]);
 
   const currentBias = cognitiveBiases[selectedBias];
 
@@ -109,63 +113,32 @@ export default function LearnPage() {
               </div>
             </div>
 
-            {/* Bias Cards with Category Indicators */}
-            <div className="flex gap-4 flex-wrap justify-center">
-              {/* Fundamental */}
-              <div className="flex flex-col items-center">
-                <div className="flex gap-1 mb-2">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#1D3557' }}></div>
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#90EE90' }}></div>
-                </div>
-                <div className="px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
-                  Fundamental
-                </div>
-              </div>
-
-              {/* Self-Serving */}
-              <div className="flex flex-col items-center">
-                <div className="flex gap-1 mb-2">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#1D3557' }}></div>
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#A8DADC' }}></div>
-                </div>
-                <div className="px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
-                  Self-Serving
-                </div>
-              </div>
-
-              {/* In-Group */}
-              <div className="flex flex-col items-center">
-                <div className="flex gap-1 mb-2">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#1D3557' }}></div>
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#457B9D' }}></div>
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#FFD700' }}></div>
-                </div>
-                <div className="px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
-                  In-Group
-                </div>
-              </div>
-
-              {/* Bandwagon */}
-              <div className="flex flex-col items-center">
-                <div className="flex gap-1 mb-2">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#1D3557' }}></div>
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#457B9D' }}></div>
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#FFD700' }}></div>
-                </div>
-                <div className="px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
-                  Bandwagon
-                </div>
-              </div>
-
-              {/* Groupthink */}
-              <div className="flex flex-col items-center">
-                <div className="flex gap-1 mb-2">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#1D3557' }}></div>
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#FFD700' }}></div>
-                </div>
-                <div className="px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
-                  Groupthink
-                </div>
+            {/* Timer Controls */}
+            <div className="flex gap-4 items-center justify-center flex-wrap">
+              <button
+                onClick={() => setIsPlaying(!isPlaying)}
+                className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                  isPlaying 
+                    ? 'bg-red-500 text-white hover:bg-red-600' 
+                    : 'bg-green-500 text-white hover:bg-green-600'
+                }`}
+              >
+                {isPlaying ? 'Stop' : 'Start'}
+              </button>
+              <div className="flex items-center gap-2">
+                <label className="text-gray-700 font-medium">Timer:</label>
+                <select
+                  value={timerDuration}
+                  onChange={(e) => setTimerDuration(Number(e.target.value))}
+                  className="px-3 py-2 border border-gray-300 rounded-lg bg-white"
+                >
+                  <option value={3}>3 seconds</option>
+                  <option value={5}>5 seconds</option>
+                  <option value={8}>8 seconds</option>
+                  <option value={10}>10 seconds</option>
+                  <option value={15}>15 seconds</option>
+                  <option value={20}>20 seconds</option>
+                </select>
               </div>
             </div>
           </div>
