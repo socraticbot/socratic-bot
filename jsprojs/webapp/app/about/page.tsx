@@ -23,25 +23,14 @@ const faqs: FAQItem[] = [
   },
   {
     question: 'What are we up to now?',
-    answer: `We are currently migrating to a fully decentralized stack:
+    answer: `Socratic Bot is being transformed into a **fully decentralized, open-source critical thinking tutor** that:
+- Prompts humans to think better through Socratic questioning
+- Uses EVM-compatible wallets as identity
+- Stores persistent memory in Swarm (decentralized storage)
+- Uses Mistral models via Vercel AI Gateway for LLM capabilities
+- Is transparent, open-source, and user-owned
 
-**Current State:**
-- **Hosting**: Framer (to be migrated)
-- **LLM**: OpenAI GPT-4 via direct API
-- **Storage**: PostgreSQL (centralized)
-- **Identity**: Email-based authentication
-- **Frontend**: Remix app (MVP in jsprojs/mvp/)
-- **Backend**: FastAPI chat server (in pyprojs/chatserver/)
-
-**Target State:**
-- **Hosting**: Vercel (initial), exploring fully decentralized with ENS + Arkiv decentralized database + Swarm storage
-- **LLM**: Multiple models via Vercel AI Gateway (users can choose their preferred model)
-- **Storage**: Swarm (decentralized) for persistent memory
-- **Identity**: EVM-compatible wallet (MetaMask, WalletConnect)
-- **Frontend**: Next.js on Vercel
-- **Backend**: Vercel Serverless Functions + Edge Functions
-
-**Model Selection & User Choice**: Users will be able to select between AI models to be their Socratic tutor, allowing user-choice with regards to privacy & overall comparison of model capabilities.`,
+**Model Selection & User Choice**: Users will be able to select between AI models to be their Socratic tutor, allowing user-choice with regards to privacy & overall comparison of model capabilities. This empowers users to choose the model that best aligns with their privacy preferences and learning needs, while enabling transparent comparison of how different models approach Socratic tutoring.`,
   },
 ];
 
