@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
@@ -17,6 +18,13 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           {/* Logo/Home Link */}
           <Link href="/landing" className="flex items-center gap-2">
+            <Image
+              src="/socraticlogo.png"
+              alt="Socratic Bot"
+              width={32}
+              height={32}
+              className="w-8 h-8"
+            />
             <span className="text-lg font-serif text-black">Socratic.bot</span>
           </Link>
 
