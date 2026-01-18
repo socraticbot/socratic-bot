@@ -71,14 +71,15 @@ export default function GatePage() {
 
   // Show password gate
   return (
-    <div className="relative w-full" style={{ height: 'calc(100vh - 64px)', marginTop: '64px' }}>
-      {/* Gate Image - Full screen background, accounting for navbar */}
-      <div className="absolute inset-0 w-full h-full">
+    <div className="fixed inset-0 w-full h-full" style={{ top: 0, left: 0, right: 0, bottom: 0, margin: 0, padding: 0 }}>
+      {/* Gate Image - Full screen background */}
+      <div className="absolute inset-0 w-full h-full" style={{ top: 0, left: 0, right: 0, bottom: 0 }}>
         <img
           src="/gate.png"
           alt="Socratic Gate"
-          className="w-full h-full object-cover"
+          className="w-full h-full"
           style={{ 
+            objectFit: 'cover',
             objectPosition: 'center center',
             width: '100%',
             height: '100%',
