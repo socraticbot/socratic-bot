@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import ModelSelector from './components/ModelSelector';
+import { TutorModel, getDefaultModel } from '@/lib/models';
 
 interface Message {
   id: string;
@@ -18,6 +20,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [currentThought, setCurrentThought] = useState<string | null>(null);
   const [streamingText, setStreamingText] = useState<string>('');
+  const [selectedModel, setSelectedModel] = useState<TutorModel>(getDefaultModel());
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,7 +70,10 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: userInput }),
+        body: JSON.stringify({ 
+          prompt: userInput,
+          modelId: selectedModel.id,
+        }),
       });
 
       if (!res.ok) {
@@ -142,9 +148,19 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8">
-      <div className="w-full max-w-2xl space-y-6">
-        {/* Initial Question */}
+    <div className="min-h-screen flex flex-col p-8">
+      {/* Model Selector - Top of page */}
+      <div className="w-full max-w-2xl mx-auto mb-8 fade-in">
+        <ModelSelector 
+          selectedModel={selectedModel} 
+          onModelChange={setSelectedModel}
+        />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center">
+        <div className="w-full max-w-2xl space-y-6">
+          {/* Initial Question */}
         {messages.length === 0 && showQuestion && (
           <div className="fade-in">
             <p className="text-2xl text-gray-600 leading-relaxed font-light tracking-tight">
@@ -246,6 +262,7 @@ export default function Home() {
             </div>
           </form>
         )}
+        </div>
       </div>
     </div>
   );
