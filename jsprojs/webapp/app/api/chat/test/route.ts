@@ -1,6 +1,6 @@
-import { mistral } from '@ai-sdk/mistral';
 import { generateText } from 'ai';
 import { NextRequest, NextResponse } from 'next/server';
+import { getMistralModel, getMistralModelName } from '@/lib/mistral';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,12 +13,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get model from environment variable, default to mistral-large-latest
-    const modelName = process.env.MISTRAL_MODEL || 'mistral/mistral-large-latest';
-
     // Generate text using Mistral via Vercel AI Gateway
     const result = await generateText({
-      model: mistral(modelName),
+      model: getMistralModel(),
       prompt: prompt,
       temperature: 0.7,
       maxTokens: 500,
@@ -27,7 +24,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       text: result.text,
       usage: result.usage,
-      model: modelName,
+      model: getMistralModelName(),
     });
   } catch (error) {
     console.error('Error generating text:', error);
