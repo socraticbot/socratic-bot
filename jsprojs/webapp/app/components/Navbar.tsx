@@ -42,7 +42,7 @@ export default function Navbar() {
               Contact
             </Link>
             <a
-              href="https://github.com/your-org/socratic-bot"
+              href="https://github.com/socratic-bot/socratic-bot"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-black transition-colors"
