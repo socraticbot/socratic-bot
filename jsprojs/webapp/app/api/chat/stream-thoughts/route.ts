@@ -78,10 +78,17 @@ export async function POST(request: NextRequest) {
             temperature: 0.7,
           });
 
-          // Log generation ID for usage tracking
-          const generationId = result.response?.id;
-          if (generationId) {
-            console.log(`[chat] Generation ID: ${generationId}, Model: ${modelName}`);
+          // Log generation ID for usage tracking (response is a Promise, await it if needed)
+          let generationId: string | null = null;
+          try {
+            const response = await result.response;
+            generationId = response?.id || null;
+            if (generationId) {
+              console.log(`[chat] Generation ID: ${generationId}, Model: ${modelName}`);
+            }
+          } catch (err) {
+            // Generation ID is optional, continue without it
+            console.log(`[chat] Could not get generation ID, Model: ${modelName}`);
           }
 
           // Stream the text response
