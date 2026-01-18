@@ -116,7 +116,7 @@ export default function GatePage() {
             width: '100vw',
             height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
             objectFit: 'contain',
-            objectPosition: 'center bottom', // Align to bottom, show full image
+            objectPosition: 'center top', // Align to top, show full image scaling from top
             display: 'block',
             margin: 0,
             padding: 0,
