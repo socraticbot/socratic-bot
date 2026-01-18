@@ -35,8 +35,8 @@ const faqs: FAQItem[] = [
 ];
 
 export default function AboutPage() {
-  // Start with all items expanded so all questions are visible
-  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set([0, 1, 2, 3]));
+  // Start with all items collapsed
+  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
 
   const toggleItem = (index: number) => {
     setExpandedItems((prev) => {
@@ -52,20 +52,20 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF9] flex flex-col">
-      {/* Office Image - Dynamically sized with viewport */}
+      {/* Office Image - Dynamically sized with viewport, zoomed out to show full Socrates */}
       <div className="w-full flex-shrink-0" style={{ height: '40vh', minHeight: '300px', maxHeight: '500px' }}>
         <Image
           src="/socraticoffice.png"
           alt="Socratic Office"
           width={1200}
           height={600}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           priority
         />
       </div>
 
-      {/* FAQ Section - All questions visible */}
-      <div className="max-w-4xl mx-auto p-8 space-y-4 flex-1">
+      {/* FAQ Section - Wider container for less squished text */}
+      <div className="max-w-5xl mx-auto p-8 space-y-4 flex-1">
         {faqs.map((faq, index) => (
           <div
             key={index}
