@@ -8,6 +8,7 @@ export interface TutorModel {
   name: string; // Display name (e.g., 'Mistral Large')
   provider: string; // Provider name (e.g., 'Mistral')
   description?: string; // Optional description
+  avatar: string; // Avatar image path (e.g., '/sochat1.png')
 }
 
 export const AVAILABLE_MODELS: TutorModel[] = [
@@ -16,36 +17,42 @@ export const AVAILABLE_MODELS: TutorModel[] = [
     name: 'Llama 3.1 8B',
     provider: 'Meta',
     description: 'Efficient and capable open-source model',
+    avatar: '/sochat1.png',
   },
   {
     id: 'mistral/devstral-2',
     name: 'Devstral 2',
     provider: 'Mistral',
     description: 'Fast and efficient for quick responses',
+    avatar: '/sochat2.png',
   },
   {
     id: 'openai/gpt-5-nano',
     name: 'GPT-5 Nano',
     provider: 'OpenAI',
     description: 'Compact and fast GPT-5 variant',
+    avatar: '/sochat3.png',
   },
   {
     id: 'anthropic/claude-opus-4.5',
     name: 'Claude Opus 4.5',
     provider: 'Anthropic',
     description: 'Most capable for complex reasoning',
+    avatar: '/sochat4.png',
   },
   {
     id: 'xai/grok-4.1-fast-reasoning',
     name: 'Grok 4.1 Fast Reasoning',
     provider: 'xAI',
     description: 'Fast reasoning with deep understanding',
+    avatar: '/sochat5.png',
   },
   {
     id: 'deepseek/deepseek-v3.2',
     name: 'DeepSeek V3.2',
     provider: 'DeepSeek',
     description: 'Advanced reasoning and code capabilities',
+    avatar: '/sochat6.png',
   },
 ];
 
