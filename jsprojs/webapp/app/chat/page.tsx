@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import ModelSelector from '../components/ModelSelector';
 import { TutorModel, getDefaultModel } from '@/lib/models';
+import PasswordGate from '../components/PasswordGate';
 
 interface Message {
   id: string;
@@ -232,7 +233,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col p-8">
+    <PasswordGate>
+      <div className="min-h-screen flex flex-col p-8">
       {/* Model Selector - Top of page */}
       <div className="w-full max-w-6xl mx-auto mb-8 fade-in">
         <ModelSelector 
@@ -413,5 +415,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+    </PasswordGate>
   );
 }

@@ -11,6 +11,13 @@ AI_GATEWAY_API_KEY=your_vercel_ai_gateway_api_key
 API key for Vercel AI Gateway. Get this from your Vercel dashboard. Must start with `vck_`.
 The SDK automatically routes through the gateway when using string model format like `"mistral/mistral-large-latest"`.
 
+### Chat Password Protection
+```bash
+CHAT_PASSWORD=your_secure_password_here
+```
+Password required to access the `/chat` page. This prevents unauthorized usage and protects against unexpected costs.
+**IMPORTANT**: Set a strong password before deployment. If not set, chat access will be denied.
+
 ### Mistral Model
 ```bash
 MISTRAL_MODEL=mistral/mistral-large-latest
