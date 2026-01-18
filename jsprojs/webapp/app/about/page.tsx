@@ -64,8 +64,8 @@ export default function AboutPage() {
         />
       </div>
 
-      {/* FAQ Section - Wider container for less squished text */}
-      <div className="max-w-[2048px] mx-auto p-8 space-y-4 flex-1">
+      {/* FAQ Section - Full width with side padding */}
+      <div className="w-full px-8 md:px-16 lg:px-24 py-8 space-y-4 flex-1">
         {faqs.map((faq, index) => (
           <div
             key={index}
@@ -104,7 +104,7 @@ export default function AboutPage() {
       </div>
 
       {/* Screenshot from README */}
-      <div className="max-w-[2048px] mx-auto p-8">
+      <div className="w-full px-8 md:px-16 lg:px-24 pb-8">
         <Image
           src="/socraticscreenshot.png"
           alt="Socratic Bot Screenshot"
