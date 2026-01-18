@@ -79,8 +79,8 @@ export default function GatePage() {
           <Image
             src="/gate.png"
             alt="Socratic Gate"
-            width={1200}
-            height={600}
+            width={1920}
+            height={1080}
             className="max-w-full max-h-full object-contain"
             priority
             style={{ width: 'auto', height: 'auto' }}
