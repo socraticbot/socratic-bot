@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 
 interface Message {
   id: string;
-  role: 'user' | 'tutor';
+  role: 'user' | 'tutor' | 'thought';
   content: string;
   timestamp: Date;
 }
@@ -16,6 +16,8 @@ export default function Home() {
   const [input, setInput] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [currentThought, setCurrentThought] = useState<string | null>(null);
+  const [streamingText, setStreamingText] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,18 +53,21 @@ export default function Home() {
       timestamp: new Date(),
     };
 
+    const userInput = input;
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsListening(true);
     setError(null);
+    setCurrentThought(null);
+    setStreamingText('');
 
     try {
-      const res = await fetch('/api/chat/test', {
+      const res = await fetch('/api/chat/stream-thoughts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: input }),
+        body: JSON.stringify({ prompt: userInput }),
       });
 
       if (!res.ok) {
@@ -70,18 +75,58 @@ export default function Home() {
         throw new Error(errorData.error || 'Failed to generate response');
       }
 
-      const data = await res.json();
-      
-      const tutorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'tutor',
-        content: data.text,
-        timestamp: new Date(),
-      };
+      // Handle Server-Sent Events
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
 
-      setMessages((prev) => [...prev, tutorMessage]);
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      let buffer = '';
+      let tutorMessageId = (Date.now() + 1).toString();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              
+              if (data.type === 'thought') {
+                setCurrentThought(data.content);
+              } else if (data.type === 'text') {
+                setStreamingText((prev) => prev + data.content);
+              } else if (data.type === 'done') {
+                // Finalize the tutor message
+                const tutorMessage: Message = {
+                  id: tutorMessageId,
+                  role: 'tutor',
+                  content: streamingText,
+                  timestamp: new Date(),
+                };
+                setMessages((prev) => [...prev, tutorMessage]);
+                setCurrentThought(null);
+                setStreamingText('');
+              } else if (data.type === 'error') {
+                throw new Error(data.content);
+              }
+            } catch (parseErr) {
+              console.error('Error parsing SSE data:', parseErr);
+            }
+          }
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      setCurrentThought(null);
+      setStreamingText('');
     } finally {
       setIsListening(false);
     }
@@ -132,6 +177,27 @@ export default function Home() {
                 </div>
               </div>
             ))}
+            
+            {/* Streaming text */}
+            {streamingText && (
+              <div className="text-left fade-in">
+                <div className="inline-block max-w-[80%] text-gray-600">
+                  <p className="text-base leading-relaxed">{streamingText}</p>
+                </div>
+              </div>
+            )}
+            
+            {/* Internal thought display */}
+            {currentThought && (
+              <div className="text-left fade-in">
+                <div className="inline-block max-w-[90%] p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-wrap font-mono">
+                    {currentThought}
+                  </p>
+                </div>
+              </div>
+            )}
+            
             <div ref={messagesEndRef} />
           </div>
         )}
