@@ -1,7 +1,7 @@
 'use client';
 
-import { AVAILABLE_MODELS, TutorModel, getDefaultModel } from '@/lib/models';
-import { useState, useEffect } from 'react';
+import { AVAILABLE_MODELS, TutorModel } from '@/lib/models';
+import Image from 'next/image';
 
 interface ModelSelectorProps {
   selectedModel: TutorModel;
@@ -9,84 +9,39 @@ interface ModelSelectorProps {
 }
 
 export default function ModelSelector({ selectedModel, onModelChange }: ModelSelectorProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  // Load from localStorage on mount (only once)
-  useEffect(() => {
-    const saved = localStorage.getItem('selectedModelId');
-    if (saved) {
-      const model = AVAILABLE_MODELS.find((m) => m.id === saved);
-      if (model) {
-        onModelChange(model);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run on mount
-
-  // Save to localStorage when model changes
-  useEffect(() => {
-    localStorage.setItem('selectedModelId', selectedModel.id);
-  }, [selectedModel.id]);
-
   return (
-    <div className="relative">
-      {/* Selected Model Display */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
-        aria-label="Select tutor model"
-      >
-        <span className="font-light">Your tutor:</span>
-        <span className="font-medium">{selectedModel.name}</span>
-        <span className="text-xs text-gray-400">({selectedModel.provider})</span>
-        <svg
-          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
-            aria-hidden="true"
-          />
-          
-          {/* Menu */}
-          <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-20 fade-in">
-            <div className="p-2">
-              <div className="text-xs text-gray-500 px-3 py-2 mb-1">Choose your tutor</div>
-              {AVAILABLE_MODELS.map((model) => (
-                <button
-                  key={model.id}
-                  onClick={() => {
-                    onModelChange(model);
-                    setIsOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-2 rounded-md transition-colors duration-150 ${
-                    selectedModel.id === model.id
-                      ? 'bg-gray-100 text-gray-900'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="font-medium text-sm">{model.name}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">
-                    {model.provider}
-                    {model.description && ` • ${model.description}`}
-                  </div>
-                </button>
-              ))}
+    <div className="w-full">
+      <h2 className="text-2xl font-serif text-gray-800 mb-6 text-center">Select your tutor</h2>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {AVAILABLE_MODELS.map((model) => (
+          <button
+            key={model.id}
+            onClick={() => onModelChange(model)}
+            className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+              selectedModel.id === model.id
+                ? 'border-black bg-gray-50 shadow-lg scale-105'
+                : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+            }`}
+          >
+            <div className="text-center">
+              {/* Model Avatar/Icon - using first letter for now */}
+              <div
+                className={`w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center text-2xl font-bold ${
+                  selectedModel.id === model.id
+                    ? 'bg-black text-white'
+                    : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                {model.provider.charAt(0)}
+              </div>
+              {/* Model Name */}
+              <div className="font-medium text-sm text-gray-800 mb-1">{model.name}</div>
+              {/* Provider */}
+              <div className="text-xs text-gray-500">{model.provider}</div>
             </div>
-          </div>
-        </>
-      )}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
