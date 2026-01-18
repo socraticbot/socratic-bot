@@ -303,11 +303,11 @@ export default function Home() {
                   <div className="flex items-start gap-3 max-w-[80%]">
                     <div className="flex-shrink-0">
                       <Image
-                        src="/socraticlogo.png"
-                        alt="Socratic Bot"
+                        src={selectedModel.avatar}
+                        alt={selectedModel.name}
                         width={40}
                         height={40}
-                        className="w-10 h-10 rounded-full"
+                        className="w-10 h-10"
                       />
                     </div>
                     <div className="flex-1">
@@ -328,11 +328,11 @@ export default function Home() {
                 <div className="flex items-start gap-3 max-w-[80%]">
                   <div className="flex-shrink-0">
                     <Image
-                      src="/socraticlogo.png"
-                      alt="Socratic Bot"
+                      src={selectedModel.avatar}
+                      alt={selectedModel.name}
                       width={40}
                       height={40}
-                      className="w-10 h-10 rounded-full"
+                      className="w-10 h-10"
                     />
                   </div>
                   <div className="flex-1">
