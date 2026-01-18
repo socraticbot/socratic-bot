@@ -106,7 +106,7 @@ export default function AboutPage() {
       {/* Screenshot from README */}
       <div className="max-w-[2048px] mx-auto p-8">
         <Image
-          src="https://github.com/user-attachments/assets/ae256080-0d65-4d6b-aa4c-a59b248a0cd8"
+          src="/socraticscreenshot.png"
           alt="Socratic Bot Screenshot"
           width={972}
           height={727}
