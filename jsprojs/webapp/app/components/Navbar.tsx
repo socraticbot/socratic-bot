@@ -55,7 +55,7 @@ export default function Navbar() {
               Chat
             </Link>
             <a
-              href="https://github.com/socratic-bot/socratic-bot"
+              href="https://github.com/socraticbot/socratic-bot"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-black transition-colors"
