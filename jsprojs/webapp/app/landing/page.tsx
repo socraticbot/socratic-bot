@@ -2,31 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
 
 export default function LandingPage() {
   const router = useRouter();
-  const [isChecking, setIsChecking] = useState(false);
 
-  const handleBegin = async () => {
-    setIsChecking(true);
-    // Check if already authenticated
-    try {
-      const response = await fetch('/api/auth/verify');
-      const data = await response.json();
-      if (data.authenticated === true) {
-        // Already authenticated, go straight to chat
-        router.push('/chat');
-      } else {
-        // Not authenticated, go to password gate
-        router.push('/gate');
-      }
-    } catch (err) {
-      // On error, go to password gate
-      router.push('/gate');
-    } finally {
-      setIsChecking(false);
-    }
+  const handleBegin = () => {
+    // Go directly to chat - no auth check needed
+    router.push('/chat');
   };
 
   return (
@@ -57,10 +39,9 @@ export default function LandingPage() {
         {/* Begin Button */}
         <button
           onClick={handleBegin}
-          disabled={isChecking}
-          className="px-8 py-4 bg-black text-white rounded-lg text-lg font-medium hover:bg-gray-800 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-8 py-4 bg-black text-white rounded-lg text-lg font-medium hover:bg-gray-800 transition-colors duration-200"
         >
-          {isChecking ? 'Loading...' : 'Begin'}
+          Begin
         </button>
       </div>
     </div>
