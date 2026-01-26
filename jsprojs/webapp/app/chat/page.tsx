@@ -474,6 +474,25 @@ export default function Home() {
         )}
         </div>
       </div>
+
+      {/* Current Model Indicator - Bottom of page */}
+      <div className="w-full max-w-6xl mx-auto mt-8 pb-4 fade-in">
+        <div className="text-sm text-gray-500 text-center">
+          <span>Current model: </span>
+          {selectedModel.referenceUrl ? (
+            <a
+              href={selectedModel.referenceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-700 hover:text-gray-900 underline transition-colors"
+            >
+              {selectedModel.name}
+            </a>
+          ) : (
+            <span className="text-gray-700">{selectedModel.name}</span>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

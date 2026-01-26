@@ -9,6 +9,7 @@ export interface TutorModel {
   provider: string; // Provider name (e.g., 'Mistral')
   description?: string; // Optional description
   avatar: string; // Avatar image path (e.g., '/sochat1.png')
+  referenceUrl?: string; // Reference article/documentation URL
 }
 
 export const AVAILABLE_MODELS: TutorModel[] = [
@@ -18,6 +19,7 @@ export const AVAILABLE_MODELS: TutorModel[] = [
     provider: 'Meta',
     description: 'Efficient and capable open-source model',
     avatar: '/sochat1.png',
+    referenceUrl: 'https://llama.meta.com/llama/',
   },
   {
     id: 'mistral/devstral-2',
@@ -25,6 +27,7 @@ export const AVAILABLE_MODELS: TutorModel[] = [
     provider: 'Mistral',
     description: 'Fast and efficient for quick responses',
     avatar: '/sochat2.png',
+    referenceUrl: 'https://mistral.ai/news/devstral-2/',
   },
   {
     id: 'openai/gpt-5-nano',
@@ -32,6 +35,7 @@ export const AVAILABLE_MODELS: TutorModel[] = [
     provider: 'OpenAI',
     description: 'Compact and fast GPT-5 variant',
     avatar: '/sochat3.png',
+    referenceUrl: 'https://openai.com/index/gpt-5/',
   },
   {
     id: 'anthropic/claude-opus-4.5',
@@ -39,6 +43,7 @@ export const AVAILABLE_MODELS: TutorModel[] = [
     provider: 'Anthropic',
     description: 'Most capable for complex reasoning',
     avatar: '/sochat4.png',
+    referenceUrl: 'https://www.anthropic.com/claude',
   },
   {
     id: 'xai/grok-4.1-fast-reasoning',
@@ -46,6 +51,7 @@ export const AVAILABLE_MODELS: TutorModel[] = [
     provider: 'xAI',
     description: 'Fast reasoning with deep understanding',
     avatar: '/sochat5.png',
+    referenceUrl: 'https://x.ai/grok',
   },
   {
     id: 'deepseek/deepseek-v3.2',
@@ -53,6 +59,7 @@ export const AVAILABLE_MODELS: TutorModel[] = [
     provider: 'DeepSeek',
     description: 'Advanced reasoning and code capabilities',
     avatar: '/sochat6.png',
+    referenceUrl: 'https://www.deepseek.com/',
   },
 ];
 
