@@ -255,7 +255,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col p-8">
+    <div className="min-h-screen flex flex-col p-4 sm:p-8 overflow-x-hidden">
       {/* Model Selector - Top of page (only visible in advanced mode) */}
       {isAdvancedMode && (
         <div className="w-full max-w-6xl mx-auto mb-8 fade-in">
@@ -270,7 +270,7 @@ export default function Home() {
       {!isAdvancedMode && (
         <button
           onClick={() => setShowPasswordModal(true)}
-          className="fixed bottom-4 right-4 px-4 py-2 text-sm text-gray-400 hover:text-gray-600 bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+          className="fixed bottom-4 right-4 sm:right-6 px-3 py-2 sm:px-4 text-xs sm:text-sm text-gray-400 hover:text-gray-600 bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-1.5 sm:gap-2 z-40"
           title="Access multi-model selector"
         >
           <svg
@@ -304,8 +304,8 @@ export default function Home() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center">
-        <div className="w-full max-w-2xl space-y-6">
+      <div className="flex-1 flex items-center justify-center w-full overflow-x-hidden">
+        <div className="w-full max-w-2xl space-y-6 px-0 sm:px-4">
           {/* Initial Question */}
         {messages.length === 0 && showQuestion && (
           <div className="fade-in">
@@ -440,21 +440,21 @@ export default function Home() {
 
         {/* Input Form */}
         {(showQuestion || messages.length > 0) && (
-          <form onSubmit={handleSend} className="fade-in">
-            <div className="flex gap-2 relative">
-              <div className="flex-1 relative">
+          <form onSubmit={handleSend} className="fade-in w-full">
+            <div className="flex gap-2 relative w-full">
+              <div className="flex-1 relative min-w-0">
                 <textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Take your time..."
-                  className="w-full px-4 py-3 text-base text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 resize-none"
+                  className="w-full px-3 sm:px-4 py-3 text-sm sm:text-base text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 resize-none"
                   rows={2}
                   disabled={isListening}
                 />
                 {input.length === 0 && !isListening && (
                   <span
-                    className={`absolute left-4 top-3 pointer-events-none text-gray-400 transition-opacity duration-500 ${
+                    className={`absolute left-3 sm:left-4 top-3 pointer-events-none text-gray-400 transition-opacity duration-500 ${
                       cursorVisible ? 'opacity-100' : 'opacity-30'
                     }`}
                   >
@@ -465,7 +465,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={!input.trim() || isListening}
-                className="px-6 py-3 text-base text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 sm:px-6 py-3 text-sm sm:text-base text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 whitespace-nowrap"
               >
                 Send
               </button>
@@ -476,20 +476,20 @@ export default function Home() {
       </div>
 
       {/* Current Model Indicator - Bottom of page */}
-      <div className="w-full max-w-6xl mx-auto mt-8 pb-4 fade-in">
-        <div className="text-sm text-gray-500 text-center">
+      <div className="w-full max-w-6xl mx-auto mt-4 sm:mt-8 pb-4 sm:pb-8 fade-in px-4">
+        <div className="text-xs sm:text-sm text-gray-500 text-center break-words">
           <span>Current model: </span>
           {selectedModel.referenceUrl ? (
             <a
               href={selectedModel.referenceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-700 hover:text-gray-900 underline transition-colors"
+              className="text-gray-700 hover:text-gray-900 underline transition-colors break-all"
             >
               {selectedModel.name}
             </a>
           ) : (
-            <span className="text-gray-700">{selectedModel.name}</span>
+            <span className="text-gray-700 break-all">{selectedModel.name}</span>
           )}
         </div>
       </div>
