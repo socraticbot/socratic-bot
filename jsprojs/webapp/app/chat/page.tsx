@@ -309,7 +309,7 @@ export default function Home() {
           {/* Initial Question */}
         {messages.length === 0 && showQuestion && (
           <div className="fade-in">
-            <p className="text-2xl text-gray-600 leading-relaxed font-light tracking-tight mb-6">
+            <p className="text-xl sm:text-2xl text-gray-600 leading-relaxed font-light tracking-tight mb-6 px-2 sm:px-0">
               What&apos;s on your mind right now?
             </p>
           </div>
