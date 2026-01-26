@@ -497,25 +497,27 @@ export default function Home() {
             </div>
           </form>
         )}
-        </div>
-      </div>
 
-      {/* Current Model Indicator - Bottom of page */}
-      <div className="w-full max-w-6xl mx-auto mt-3 sm:mt-4 pb-3 sm:pb-4 fade-in px-4">
-        <div className="text-xs sm:text-sm text-gray-500 text-center break-words">
-          <span>Current model: </span>
-          {selectedModel.referenceUrl ? (
-            <a
-              href={selectedModel.referenceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-700 hover:text-gray-900 underline transition-colors break-all"
-            >
-              {selectedModel.name}
-            </a>
-          ) : (
-            <span className="text-gray-700 break-all">{selectedModel.name}</span>
-          )}
+        {/* Current Model Indicator - Directly underneath chat */}
+        {(showQuestion || messages.length > 0) && (
+          <div className="mt-2 sm:mt-3 fade-in">
+            <div className="text-xs sm:text-sm text-gray-500 text-center break-words">
+              <span>Current model: </span>
+              {selectedModel.referenceUrl ? (
+                <a
+                  href={selectedModel.referenceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-700 hover:text-gray-900 underline transition-colors break-all"
+                >
+                  {selectedModel.name}
+                </a>
+              ) : (
+                <span className="text-gray-700 break-all">{selectedModel.name}</span>
+              )}
+            </div>
+          </div>
+        )}
         </div>
       </div>
     </div>
