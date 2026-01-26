@@ -256,6 +256,31 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col p-4 sm:p-8 overflow-x-hidden">
+      {/* Branding Header */}
+      <div className="w-full max-w-6xl mx-auto mb-6 sm:mb-8 fade-in">
+        <div className="text-center space-y-3 sm:space-y-4">
+          {/* Logo */}
+          <div className="flex justify-center">
+            <Image
+              src="/socraticlogo.png"
+              alt="Socratic Bot Logo"
+              width={120}
+              height={120}
+              className="w-20 h-20 sm:w-24 sm:h-24"
+              priority
+            />
+          </div>
+          {/* Title */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-black">
+            Socratic Bot
+          </h1>
+          {/* Tagline */}
+          <p className="text-base sm:text-lg md:text-xl text-gray-700">
+            Helping humans <strong>think</strong> better.
+          </p>
+        </div>
+      </div>
+
       {/* Model Selector - Top of page (only visible in advanced mode) */}
       {isAdvancedMode && (
         <div className="w-full max-w-6xl mx-auto mb-8 fade-in">
