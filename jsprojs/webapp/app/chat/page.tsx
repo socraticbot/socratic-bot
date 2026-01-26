@@ -255,10 +255,10 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col p-4 sm:p-8 overflow-x-hidden">
+    <div className="min-h-screen flex flex-col p-4 sm:p-6 overflow-x-hidden">
       {/* Branding Header */}
-      <div className="w-full max-w-6xl mx-auto mb-6 sm:mb-8 fade-in">
-        <div className="text-center space-y-3 sm:space-y-4">
+      <div className="w-full max-w-6xl mx-auto mb-3 sm:mb-4 fade-in">
+        <div className="text-center space-y-1 sm:space-y-2">
           {/* Logo */}
           <div className="flex justify-center">
             <Image
@@ -266,16 +266,16 @@ export default function Home() {
               alt="Socratic Bot Logo"
               width={120}
               height={120}
-              className="w-20 h-20 sm:w-24 sm:h-24"
+              className="w-16 h-16 sm:w-20 sm:h-20"
               priority
             />
           </div>
           {/* Title */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-black">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif text-black">
             Socratic Bot
           </h1>
           {/* Tagline */}
-          <p className="text-base sm:text-lg md:text-xl text-gray-700">
+          <p className="text-sm sm:text-base md:text-lg text-gray-700">
             Helping humans <strong>think</strong> better.
           </p>
         </div>
@@ -283,7 +283,7 @@ export default function Home() {
 
       {/* Model Selector - Top of page (only visible in advanced mode) */}
       {isAdvancedMode && (
-        <div className="w-full max-w-6xl mx-auto mb-8 fade-in">
+        <div className="w-full max-w-6xl mx-auto mb-4 fade-in">
           <ModelSelector 
             selectedModel={selectedModel} 
             onModelChange={handleModelChange}
@@ -329,12 +329,12 @@ export default function Home() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center w-full overflow-x-hidden">
-        <div className="w-full max-w-2xl space-y-6 px-0 sm:px-4">
+      <div className="flex-1 flex w-full overflow-x-hidden">
+        <div className="w-full max-w-2xl mx-auto space-y-3 sm:space-y-4 px-0 sm:px-4">
           {/* Initial Question */}
         {messages.length === 0 && showQuestion && (
-          <div className="fade-in">
-            <p className="text-xl sm:text-2xl text-gray-600 leading-relaxed font-light tracking-tight mb-6 px-2 sm:px-0">
+          <div className="fade-in pt-2">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-600 leading-relaxed font-light tracking-tight mb-3 sm:mb-4 px-2 sm:px-0">
               What&apos;s on your mind right now?
             </p>
           </div>
@@ -342,7 +342,7 @@ export default function Home() {
 
         {/* Messages */}
         {messages.length > 0 && (
-          <div className="space-y-6 fade-in">
+          <div className="space-y-3 sm:space-y-4 fade-in">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -501,7 +501,7 @@ export default function Home() {
       </div>
 
       {/* Current Model Indicator - Bottom of page */}
-      <div className="w-full max-w-6xl mx-auto mt-4 sm:mt-8 pb-4 sm:pb-8 fade-in px-4">
+      <div className="w-full max-w-6xl mx-auto mt-3 sm:mt-4 pb-3 sm:pb-4 fade-in px-4">
         <div className="text-xs sm:text-sm text-gray-500 text-center break-words">
           <span>Current model: </span>
           {selectedModel.referenceUrl ? (
