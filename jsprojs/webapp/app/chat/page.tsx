@@ -1,29 +1,44 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { Suspense, useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import ModelSelector from '../components/ModelSelector';
 import { TutorModel, getDefaultModel } from '@/lib/models';
+import { getBiasBySlug } from '@/lib/biases/data';
+import { openingLine } from '@/lib/tutor/prompt';
 import PasswordModal from '../components/PasswordModal';
 
 interface Message {
   id: string;
-  role: 'user' | 'tutor' | 'thought';
+  role: 'user' | 'tutor';
   content: string;
-  timestamp: Date;
 }
 
-export default function Home() {
+let nextId = 0;
+const newId = () => `m${Date.now()}-${nextId++}`;
+
+export default function ChatPage() {
+  return (
+    <Suspense>
+      <Chat />
+    </Suspense>
+  );
+}
+
+function Chat() {
+  const searchParams = useSearchParams();
+  const bias = getBiasBySlug(searchParams.get('bias') ?? '');
+  const opener = bias ? openingLine(bias) : null;
+
   const [showQuestion, setShowQuestion] = useState(false);
   const [cursorVisible, setCursorVisible] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentThought, setCurrentThought] = useState<string | null>(null);
-  const [streamingText, setStreamingText] = useState<string>('');
   const [selectedModel, setSelectedModel] = useState<TutorModel>(getDefaultModel());
-  const [expandedThoughts, setExpandedThoughts] = useState<Set<string>>(new Set());
   const [isAdvancedMode, setIsAdvancedMode] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -35,26 +50,10 @@ export default function Home() {
     setShowQuestion(false);
     setInput('');
     setError(null);
-    setCurrentThought(null);
-    setStreamingText('');
-    setExpandedThoughts(new Set());
     // Show question again after model switch
     setTimeout(() => {
       setShowQuestion(true);
     }, 500);
-  };
-
-  // Toggle thought expansion
-  const toggleThought = (thoughtId: string) => {
-    setExpandedThoughts((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(thoughtId)) {
-        newSet.delete(thoughtId);
-      } else {
-        newSet.add(thoughtId);
-      }
-      return newSet;
-    });
   };
 
   // Check if already authenticated on mount
@@ -66,7 +65,7 @@ export default function Home() {
         if (data.authenticated === true) {
           setIsAdvancedMode(true);
         }
-      } catch (err) {
+      } catch {
         // Not authenticated, stay in public mode
       }
     };
@@ -74,13 +73,13 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    // Show question after a pause (2 seconds) - unhurried
+    // Show question after a pause - unhurried, shorter when arriving from today's bias
     const timer = setTimeout(() => {
       setShowQuestion(true);
-    }, 2000);
+    }, opener ? 600 : 2000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [opener]);
 
   useEffect(() => {
     // Slow blinking cursor - not insistent
@@ -99,145 +98,50 @@ export default function Home() {
     e.preventDefault();
     if (!input.trim() || isListening) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: input,
-      timestamp: new Date(),
-    };
-
-    const userInput = input;
-    setMessages((prev) => [...prev, userMessage]);
+    const userMessage: Message = { id: newId(), role: 'user', content: input.trim() };
+    const history = [...messages, userMessage];
+    setMessages(history);
     setInput('');
     setIsListening(true);
     setError(null);
-    setCurrentThought(null);
-    setStreamingText('');
 
+    const tutorId = newId();
     try {
-      const res = await fetch('/api/chat/stream-thoughts', {
+      const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          prompt: userInput,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: history.map((m) => ({
+            role: m.role === 'tutor' ? 'assistant' : 'user',
+            content: m.content,
+          })),
           modelId: selectedModel.id,
+          biasSlug: bias?.slug,
         }),
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed to generate response');
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to generate response');
       }
 
-      // Handle Server-Sent Events
       const reader = res.body?.getReader();
-      const decoder = new TextDecoder();
-
       if (!reader) {
         throw new Error('No response body');
       }
-
-      let buffer = '';
-      let tutorMessageId = (Date.now() + 1).toString();
-      let accumulatedText = '';
-      const thoughtMessages: Message[] = [];
-
+      const decoder = new TextDecoder();
+      let text = '';
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        // Split by double newline (SSE delimiter) and also handle single newlines
-        const chunks = buffer.split('\n\n');
-        buffer = chunks.pop() || '';
-
-        for (const chunk of chunks) {
-          // Handle SSE format: "data: {...}"
-          const lines = chunk.split('\n');
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6));
-                
-                if (data.type === 'thought') {
-                  // Add thought as a separate message
-                  const thoughtMessage: Message = {
-                    id: `thought-${Date.now()}-${Math.random()}`,
-                    role: 'thought',
-                    content: data.content,
-                    timestamp: new Date(),
-                  };
-                  setMessages((prev) => {
-                    // Remove any existing temporary thought messages and add the new one
-                    const filtered = prev.filter(msg => msg.role !== 'thought' || !msg.id.startsWith('thought-temp'));
-                    return [...filtered, thoughtMessage];
-                  });
-                  // Also show as current thought for real-time updates
-                  setCurrentThought(data.content);
-                } else if (data.type === 'text') {
-                  accumulatedText += data.content;
-                  setStreamingText(accumulatedText);
-                  // Update or create tutor message in real-time
-                  setMessages((prev) => {
-                    const existingIndex = prev.findIndex(msg => msg.id === tutorMessageId);
-                    if (existingIndex > -1) {
-                      const updated = [...prev];
-                      updated[existingIndex] = {
-                        ...updated[existingIndex],
-                        content: accumulatedText,
-                      };
-                      return updated;
-                    } else {
-                      return [...prev, {
-                        id: tutorMessageId,
-                        role: 'tutor',
-                        content: accumulatedText,
-                        timestamp: new Date(),
-                      }];
-                    }
-                  });
-                } else if (data.type === 'done') {
-                  // Finalize the tutor message
-                  if (accumulatedText) {
-                    setMessages((prev) => {
-                      const existingIndex = prev.findIndex(msg => msg.id === tutorMessageId);
-                      if (existingIndex > -1) {
-                        const updated = [...prev];
-                        updated[existingIndex] = {
-                          ...updated[existingIndex],
-                          content: accumulatedText,
-                        };
-                        return updated;
-                      } else {
-                        return [...prev, {
-                          id: tutorMessageId,
-                          role: 'tutor',
-                          content: accumulatedText,
-                          timestamp: new Date(),
-                        }];
-                      }
-                    });
-                  }
-                  // Automatically collapse all thoughts when response is complete
-                  setExpandedThoughts(new Set());
-                  setCurrentThought(null);
-                  setStreamingText('');
-                } else if (data.type === 'error') {
-                  throw new Error(data.content);
-                }
-              } catch (parseErr) {
-                console.error('Error parsing SSE data:', parseErr, 'Line:', line);
-              }
-            }
-          }
-        }
+        text += decoder.decode(value, { stream: true });
+        setMessages([...history, { id: tutorId, role: 'tutor', content: text }]);
+      }
+      if (!text.trim()) {
+        throw new Error('No response received from the model. Please try again.');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
-      setCurrentThought(null);
-      setStreamingText('');
     } finally {
       setIsListening(false);
     }
@@ -253,6 +157,25 @@ export default function Home() {
   const handleAuthenticated = () => {
     setIsAdvancedMode(true);
   };
+
+  const tutorBubble = (content: string, key?: string) => (
+    <div key={key} className="text-left">
+      <div className="flex items-start gap-3 max-w-[80%]">
+        <div className="flex-shrink-0">
+          <Image
+            src={selectedModel.avatar}
+            alt={selectedModel.name}
+            width={40}
+            height={40}
+            className="w-10 h-10"
+          />
+        </div>
+        <div className="flex-1">
+          <p className="text-base leading-relaxed text-gray-600 whitespace-pre-wrap">{content}</p>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen flex flex-col p-4 sm:p-6 overflow-x-hidden">
@@ -290,6 +213,7 @@ export default function Home() {
           />
         </div>
       )}
+
 
       {/* Advanced Settings Button (only visible when not in advanced mode) */}
       {!isAdvancedMode && (
@@ -331,8 +255,8 @@ export default function Home() {
       {/* Main Content */}
       <div className="flex-1 flex w-full overflow-x-hidden">
         <div className="w-full max-w-2xl mx-auto space-y-3 sm:space-y-4 px-0 sm:px-4">
-          {/* Initial Question */}
-        {messages.length === 0 && showQuestion && (
+        {/* Initial Question */}
+        {showQuestion && !opener && messages.length === 0 && (
           <div className="fade-in pt-2">
             <p className="text-lg sm:text-xl md:text-2xl text-gray-600 leading-relaxed font-light tracking-tight mb-3 sm:mb-4 px-2 sm:px-0">
               What&apos;s on your mind right now?
@@ -340,106 +264,30 @@ export default function Home() {
           </div>
         )}
 
+        {/* Today's bias opener */}
+        {showQuestion && opener && (
+          <div className="fade-in pt-2 space-y-1">
+            <Link href="/farcaster" className="text-xs text-gray-400 hover:text-gray-600 underline">
+              Back to today&apos;s bias
+            </Link>
+            {tutorBubble(opener)}
+          </div>
+        )}
+
         {/* Messages */}
         {messages.length > 0 && (
-          <div className="space-y-3 sm:space-y-4 fade-in">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`${
-                  message.role === 'user' ? 'text-right' : 'text-left'
-                }`}
-              >
-                {message.role === 'thought' ? (
-                  <div className="inline-block max-w-[90%]">
-                    {(() => {
-                      // Extract step name (first line before newline)
-                      const stepName = message.content.split('\n')[0] || 'Internal reasoning';
-                      return (
-                        <>
-                          <button
-                            onClick={() => toggleThought(message.id)}
-                            className="w-full text-left p-2 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
-                          >
-                            <div className="flex items-center gap-2 text-xs text-gray-500">
-                              <svg
-                                className={`w-4 h-4 transition-transform duration-200 ${
-                                  expandedThoughts.has(message.id) ? 'rotate-90' : ''
-                                }`}
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                              </svg>
-                              <span className="font-mono">{stepName}</span>
-                            </div>
-                          </button>
-                          {expandedThoughts.has(message.id) && (
-                            <div className="mt-2 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                              <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-wrap font-mono">
-                                {message.content}
-          </p>
-        </div>
-                          )}
-                        </>
-                      );
-                    })()}
-                  </div>
-                ) : message.role === 'tutor' ? (
-                  <div className="flex items-start gap-3 max-w-[80%]">
-                    <div className="flex-shrink-0">
-                      <Image
-                        src={selectedModel.avatar}
-                        alt={selectedModel.name}
-                        width={40}
-                        height={40}
-                        className="w-10 h-10"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-base leading-relaxed text-gray-600">{message.content}</p>
-                    </div>
-                  </div>
-                ) : (
+          <div className="space-y-3 sm:space-y-4 fade-in" aria-live="polite">
+            {messages.map((message) =>
+              message.role === 'tutor' ? (
+                tutorBubble(message.content, message.id)
+              ) : (
+                <div key={message.id} className="text-right">
                   <div className="inline-block max-w-[80%] text-gray-700">
-                    <p className="text-base leading-relaxed">{message.content}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-            
-            {/* Streaming text (only show if not already in messages) */}
-            {streamingText && !messages.some(m => m.role === 'tutor' && m.content === streamingText) && (
-              <div className="text-left fade-in">
-                <div className="flex items-start gap-3 max-w-[80%]">
-                  <div className="flex-shrink-0">
-                    <Image
-                      src={selectedModel.avatar}
-                      alt={selectedModel.name}
-                      width={40}
-                      height={40}
-                      className="w-10 h-10"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-base leading-relaxed text-gray-600">{streamingText}</p>
+                    <p className="text-base leading-relaxed whitespace-pre-wrap">{message.content}</p>
                   </div>
                 </div>
-              </div>
+              )
             )}
-            
-            {/* Current thought (for real-time updates during streaming) */}
-            {currentThought && !messages.some(m => m.role === 'thought' && m.content === currentThought) && (
-              <div className="text-left fade-in">
-                <div className="inline-block max-w-[90%] p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                  <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-wrap font-mono">
-                    {currentThought}
-                  </p>
-                </div>
-              </div>
-            )}
-            
             <div ref={messagesEndRef} />
           </div>
         )}
@@ -473,6 +321,8 @@ export default function Home() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Take your time..."
+                  aria-label="Your reply"
+                  maxLength={4000}
                   className="w-full px-3 sm:px-4 py-3 text-sm sm:text-base text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 resize-none"
                   rows={2}
                   disabled={isListening}

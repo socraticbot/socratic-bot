@@ -6,15 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "check:models": "node scripts/check-models.mjs"
   },
   "dependencies": {
-    "@ai-sdk/mistral": "^3.0.9",
-    "@ai-sdk/openai": "^3.0.12",
+    "@farcaster/miniapp-sdk": "^0.3.0",
     "ai": "^6.0.39",
     "next": "15.3.8",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
@@ -26,6 +28,7 @@
     "eslint-config-next": "15.3.8",
     "playwright": "^1.57.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.7"
   }
 }
