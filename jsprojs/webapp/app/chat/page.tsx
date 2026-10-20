@@ -120,26 +120,12 @@ function Chat() {
         }),
       });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Failed to generate response');
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || typeof data.reply !== 'string') {
+        const code = data.code ? ` (${data.code})` : '';
+        throw new Error(`${data.error || 'Failed to generate response'}${code}`);
       }
-
-      const reader = res.body?.getReader();
-      if (!reader) {
-        throw new Error('No response body');
-      }
-      const decoder = new TextDecoder();
-      let text = '';
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        text += decoder.decode(value, { stream: true });
-        setMessages([...history, { id: tutorId, role: 'tutor', content: text }]);
-      }
-      if (!text.trim()) {
-        throw new Error('No response received from the model. Please try again.');
-      }
+      setMessages([...history, { id: tutorId, role: 'tutor', content: data.reply }]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {

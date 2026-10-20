@@ -1,4 +1,4 @@
-import { streamText } from 'ai';
+import { generateText } from 'ai';
 import { NextRequest } from 'next/server';
 import { getBiasBySlug } from '@/lib/biases/data';
 import { getDefaultModel, getModelById } from '@/lib/models';
@@ -40,26 +40,33 @@ export async function POST(request: NextRequest) {
   const bias = biasSlug ? getBiasBySlug(biasSlug) : undefined;
 
   try {
-    const result = streamText({
+    // Non-streaming on purpose: replies are short, and a complete reply can be
+    // checked before it is sent (see notes 08, revision 3).
+    const { text } = await generateText({
       model: model.id,
       system: buildSystemPrompt(bias),
       messages,
       maxOutputTokens: MAX_OUTPUT_TOKENS,
       temperature: 0.7,
-      // Log metadata only, never message text.
-      onError: ({ error }) => {
-        console.error('[chat] stream error', {
-          model: model.id,
-          message: error instanceof Error ? error.message : 'unknown',
-        });
-      },
     });
-    return result.toTextStreamResponse();
+    if (!text.trim()) {
+      return jsonError('The tutor returned an empty reply. Please try again.', 502);
+    }
+    return Response.json({ reply: text.trim(), model: model.id });
   } catch (error) {
-    console.error('[chat] model call failed', {
-      model: model.id,
-      message: error instanceof Error ? error.message : 'unknown',
-    });
-    return jsonError('Failed to generate a response', 500);
+    const code = errorCode(error);
+    // Log metadata only, never message text.
+    console.error('[chat] model call failed', { model: model.id, code });
+    return new Response(
+      JSON.stringify({ error: 'The tutor could not respond. Please try again.', code }),
+      { status: 502, headers: { 'Content-Type': 'application/json' } }
+    );
   }
+}
+
+/** Short, non-sensitive identifier for an upstream failure (error class and HTTP status). */
+function errorCode(error: unknown): string {
+  if (!(error instanceof Error)) return 'unknown';
+  const status = (error as { statusCode?: unknown }).statusCode;
+  return typeof status === 'number' ? `${error.name}:${status}` : error.name;
 }
