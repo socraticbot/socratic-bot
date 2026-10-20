@@ -12,6 +12,10 @@
   },
   "dependencies": {
     "@farcaster/miniapp-sdk": "^0.3.0",
+    "@farcaster/quick-auth": "^0.0.8",
+    "@neynar/nodejs-sdk": "^3.177.0",
+    "@upstash/ratelimit": "^2.2.0",
+    "@upstash/redis": "^1.39.0",
     "ai": "^6.0.39",
     "next": "15.3.8",
     "react": "19.2.3",

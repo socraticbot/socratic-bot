@@ -37,3 +37,9 @@ export function composeIntentUrl(text: string, url: string): string {
   params.append('embeds[]', url);
   return `https://farcaster.xyz/~/compose?${params.toString()}`;
 }
+
+/** fetch() with the user's Quick Auth token attached. Only works inside a Mini App. */
+export async function authedFetch(input: string, init?: RequestInit): Promise<Response> {
+  const sdk = await loadSdk();
+  return sdk.quickAuth.fetch(input, init);
+}

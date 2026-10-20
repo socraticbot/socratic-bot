@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Bias } from '@/lib/biases/data';
 import { BIAS_URL, biasUrlForDay, shareText } from '@/lib/biases/share';
 import { composeCast, composeIntentUrl, isInMiniApp } from '@/lib/miniapp';
+import StreakPanel from './StreakPanel';
 
 interface BiasCardProps {
   bias: Bias;
@@ -126,6 +127,8 @@ export default function BiasCard({ bias, dayNumber, isToday }: BiasCardProps) {
                 {copied ? 'Copied' : 'Copy link'}
               </button>
             </div>
+
+            <StreakPanel day={dayNumber} answer={picked} isToday={isToday} />
           </div>
         )}
       </div>

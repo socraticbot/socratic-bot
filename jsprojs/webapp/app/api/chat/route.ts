@@ -5,6 +5,7 @@ import { getDefaultModel, getModelById } from '@/lib/models';
 import { buildSystemPrompt } from '@/lib/tutor/prompt';
 import { parseChatRequest } from '@/lib/tutor/request';
 import { CRISIS_REPLY, isCrisisMessage } from '@/lib/tutor/safety';
+import { allowChat } from '@/lib/server/ratelimit';
 
 const MAX_OUTPUT_TOKENS = 600;
 
@@ -21,6 +22,10 @@ export async function POST(request: NextRequest) {
   }
   if (!request.headers.get('content-type')?.includes('application/json')) {
     return jsonError('Expected application/json', 415);
+  }
+
+  if (!(await allowChat(request))) {
+    return jsonError('Too many messages for now. Please take a break and try again in a few minutes.', 429);
   }
 
   let body: unknown;
