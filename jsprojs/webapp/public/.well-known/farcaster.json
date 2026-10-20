@@ -1,4 +1,9 @@
 {
+  "accountAssociation": {
+    "header": "eyJmaWQiOjM0MDg4NSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweGM1ODlkNDUyNEQzMDJDOTE1NDBlNDRCM2NCQUVkOTI3NWJFQzBjMDgifQ",
+    "payload": "eyJkb21haW4iOiJ3d3cuc29jcmF0aWMuYm90In0",
+    "signature": "fL5mlXExHrkcgml8hSqmp0hmkucrf4jMLoVIqphX4yZGB1fIoDciPeZ6Mykufy22xLGND3x92JYGcjEkokauCxs="
+  },
   "miniapp": {
     "version": "1",
     "name": "Socratic.bot",
@@ -12,7 +17,12 @@
     "subtitle": "Spot today's cognitive bias",
     "description": "One cognitive bias a day. Spot it in a real-life scenario, then talk it through with a Socratic tutor that asks instead of telling. Free and open source.",
     "primaryCategory": "education",
-    "tags": ["socratic", "tutor", "bias", "rationality"],
+    "tags": [
+      "socratic",
+      "tutor",
+      "bias",
+      "rationality"
+    ],
     "tagline": "Helping humans think better.",
     "ogTitle": "Socratic Bot cognitive bias",
     "ogDescription": "Socratic Bot - Can you spot the daily cognitive bias?",
