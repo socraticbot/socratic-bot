@@ -1,0 +1,22 @@
+{
+  "miniapp": {
+    "version": "1",
+    "name": "Socratic.bot",
+    "iconUrl": "https://www.socratic.bot/icon-1024.png",
+    "homeUrl": "https://www.socratic.bot/farcaster",
+    "imageUrl": "https://www.socratic.bot/preview-3x2.png",
+    "buttonTitle": "Spot today's bias",
+    "splashImageUrl": "https://www.socratic.bot/splash-200.png",
+    "splashBackgroundColor": "#FDFBF9",
+    "webhookUrl": "https://api.neynar.com/f/app/5de14fb6-ea50-410b-94a7-468c69847a36/event",
+    "subtitle": "Spot today's cognitive bias",
+    "description": "One cognitive bias a day. Spot it in a real-life scenario, then talk it through with a Socratic tutor that asks instead of telling. Free and open source.",
+    "primaryCategory": "education",
+    "tags": ["socratic", "tutor", "bias", "rationality"],
+    "tagline": "Helping humans think better.",
+    "ogTitle": "Socratic Bot cognitive bias",
+    "ogDescription": "Socratic Bot - Can you spot the daily cognitive bias?",
+    "heroImageUrl": "https://www.socratic.bot/hero-1200x630.png",
+    "ogImageUrl": "https://www.socratic.bot/hero-1200x630.png"
+  }
+}
