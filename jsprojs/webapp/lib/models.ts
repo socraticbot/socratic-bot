@@ -36,14 +36,6 @@ export const AVAILABLE_MODELS: TutorModel[] = [
     referenceUrl: 'https://deepmind.google/technologies/gemini/',
   },
   {
-    id: 'openai/gpt-5-mini',
-    name: 'GPT-5 mini',
-    provider: 'OpenAI',
-    description: 'Compact GPT-5 variant',
-    avatar: '/sochat3.png',
-    referenceUrl: 'https://openai.com/index/gpt-5/',
-  },
-  {
     id: 'meta/llama-4-maverick',
     name: 'Llama 4 Maverick',
     provider: 'Meta',
