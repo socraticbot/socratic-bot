@@ -34,6 +34,10 @@ We are currently migrating to a fully decentralized stack:
 - **Frontend**: Next.js on Vercel
 - **Backend**: Vercel Serverless Functions + Edge Functions
 
+## Guides
+
+- [Building a Farcaster Mini App](docs/farcaster-mini-app-guide.md): how socratic.bot/farcaster works, the manifest and signing, Quick Auth, Neynar notifications, streaks and a leaderboard, and the gotchas we hit.
+
 ## Getting started
 
 From the root of the repository:
