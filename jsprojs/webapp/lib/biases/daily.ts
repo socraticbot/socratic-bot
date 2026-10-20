@@ -11,6 +11,16 @@ export function dayNumber(date: Date): number {
   return Math.floor((utcMidnight - ROTATION_START) / DAY_MS);
 }
 
+/**
+ * The day to show: a requested past day (from a shared link) or today.
+ * Future days and junk fall back to today, so nobody can peek ahead.
+ */
+export function resolveDay(requested: string | undefined, today: number): number {
+  if (!requested || !/^\d+$/.test(requested)) return today;
+  const day = Number(requested);
+  return day <= today ? day : today;
+}
+
 /** The bias for a given rotation day, cycling through the list. */
 export function getBiasForDay(day: number, biases: Bias[] = BIASES): Bias {
   const n = biases.length;

@@ -3,31 +3,33 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Bias } from '@/lib/biases/data';
-import { BIAS_URL, shareText } from '@/lib/biases/share';
+import { BIAS_URL, biasUrlForDay, shareText } from '@/lib/biases/share';
 import { composeCast, composeIntentUrl, isInMiniApp } from '@/lib/miniapp';
 
 interface BiasCardProps {
   bias: Bias;
   dayNumber: number;
+  isToday: boolean;
 }
 
-export default function BiasCard({ bias, dayNumber }: BiasCardProps) {
+export default function BiasCard({ bias, dayNumber, isToday }: BiasCardProps) {
   const [picked, setPicked] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const isCorrect = picked === bias.name;
   const text = shareText(dayNumber);
+  const shareUrl = biasUrlForDay(dayNumber);
 
   const handleShareFarcaster = async () => {
     if (await isInMiniApp()) {
-      await composeCast(text, BIAS_URL);
+      await composeCast(text, shareUrl);
       return;
     }
-    window.open(composeIntentUrl(text, BIAS_URL), '_blank', 'noopener,noreferrer');
+    window.open(composeIntentUrl(text, shareUrl), '_blank', 'noopener,noreferrer');
   };
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(`${text} ${BIAS_URL}`);
+      await navigator.clipboard.writeText(`${text} ${shareUrl}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -38,9 +40,16 @@ export default function BiasCard({ bias, dayNumber }: BiasCardProps) {
   return (
     <div className="w-full max-w-xl mx-auto space-y-6 fade-in">
       <div className="space-y-2 text-center">
-        <p className="text-xs uppercase tracking-widest text-gray-400">Bias of the day #{dayNumber + 1}</p>
+        <p className="text-xs uppercase tracking-widest text-gray-400">
+          Bias of the day #{dayNumber + 1}
+          {bias.reviewOf && ' · Review'}
+        </p>
         <h1 className="text-2xl sm:text-3xl font-serif text-black">Can you spot it?</h1>
       </div>
+
+      {bias.reviewOf && (
+        <p className="text-sm text-gray-500 text-center">A bias from earlier, in a new situation.</p>
+      )}
 
       <p className="text-base sm:text-lg leading-relaxed text-gray-700">{bias.scenario}</p>
 
@@ -85,6 +94,15 @@ export default function BiasCard({ bias, dayNumber }: BiasCardProps) {
                 <strong>Try this:</strong> {bias.counterMove}
               </p>
             </div>
+
+            {!isToday && (
+              <p className="text-sm text-gray-500">
+                This card is from an earlier day.{' '}
+                <Link href={BIAS_URL} className="underline hover:text-gray-700">
+                  See today&apos;s bias
+                </Link>
+              </p>
+            )}
 
             <div className="flex flex-col sm:flex-row gap-2 pt-2">
               <Link

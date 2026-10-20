@@ -1,12 +1,41 @@
 import { describe, expect, it } from 'vitest';
 import { BIASES, getBiasBySlug } from '@/lib/biases/data';
-import { ROTATION_START, dayNumber, getBiasForDate, getBiasForDay } from '@/lib/biases/daily';
-import { BIAS_URL, miniAppEmbed, shareText } from '@/lib/biases/share';
+import { ROTATION_START, dayNumber, getBiasForDate, getBiasForDay, resolveDay } from '@/lib/biases/daily';
+import { BIAS_URL, biasUrlForDay, miniAppEmbed, shareText } from '@/lib/biases/share';
 
 describe('bias data', () => {
-  it('has unique slugs and names', () => {
+  const originals = BIASES.filter((b) => !b.reviewOf);
+  const reviews = BIASES.filter((b) => b.reviewOf);
+
+  it('has unique slugs, and unique names among non-review cards', () => {
     expect(new Set(BIASES.map((b) => b.slug)).size).toBe(BIASES.length);
-    expect(new Set(BIASES.map((b) => b.name)).size).toBe(BIASES.length);
+    expect(new Set(originals.map((b) => b.name)).size).toBe(originals.length);
+  });
+
+  it('covers every day through 2026-11-30 without repeating', () => {
+    const lastDay = dayNumber(new Date(Date.UTC(2026, 10, 30)));
+    expect(BIASES.length).toBeGreaterThan(lastDay);
+  });
+
+  it('puts a review card on every 7th day', () => {
+    BIASES.forEach((bias, day) => {
+      expect(Boolean(bias.reviewOf)).toBe(day % 7 === 6);
+    });
+  });
+
+  it.each(reviews)('$slug revisits a bias shown at least 6 days earlier, in a new scenario', (review) => {
+    const day = BIASES.indexOf(review);
+    const original = BIASES.findIndex((b) => b.slug === review.reviewOf);
+    expect(original).toBeGreaterThanOrEqual(0);
+    expect(day - original).toBeGreaterThanOrEqual(6);
+    expect(review.name).toBe(BIASES[original].name);
+    expect(review.scenario).not.toBe(BIASES[original].scenario);
+  });
+
+  it.each(reviews)('$slug only offers biases already seen as options', (review) => {
+    const day = BIASES.indexOf(review);
+    const seen = new Set(BIASES.slice(0, day).map((b) => b.name));
+    review.options.forEach((option) => expect(seen.has(option)).toBe(true));
   });
 
   it.each(BIASES)('$slug has exactly one correct option among three distinct ones', (bias) => {
@@ -30,7 +59,8 @@ describe('bias data', () => {
     expect(positions.size).toBe(3);
   });
 
-  it('looks up by slug', () => {
+  it('looks up by slug, including review cards', () => {
+    expect(getBiasBySlug('anchoring-review')?.reviewOf).toBe('anchoring');
     expect(getBiasBySlug('anchoring')?.name).toBe('Anchoring');
     expect(getBiasBySlug('nope')).toBeUndefined();
   });
@@ -55,6 +85,23 @@ describe('daily rotation', () => {
   });
 });
 
+describe('requested day', () => {
+  it('shows a requested past day', () => {
+    expect(resolveDay('3', 10)).toBe(3);
+    expect(resolveDay('10', 10)).toBe(10);
+  });
+
+  it('never shows a future day', () => {
+    expect(resolveDay('11', 10)).toBe(10);
+  });
+
+  it('falls back to today on junk', () => {
+    for (const junk of [undefined, '', '-1', '1.5', 'abc', '3; drop']) {
+      expect(resolveDay(junk, 10)).toBe(10);
+    }
+  });
+});
+
 describe('sharing', () => {
   it('never names the bias in the share text', () => {
     BIASES.forEach((bias, day) => {
@@ -67,7 +114,8 @@ describe('sharing', () => {
     expect(embed.version).toBe('1');
     expect(embed.button.title.length).toBeLessThanOrEqual(32);
     expect(embed.button.action.type).toBe('launch_miniapp');
-    expect(embed.button.action.url).toBe(BIAS_URL);
+    expect(embed.button.action.url).toBe(biasUrlForDay(3));
+    expect(biasUrlForDay(3)).toBe(`${BIAS_URL}?day=3`);
     expect(embed.imageUrl).toMatch(/^https:\/\/www\.socratic\.bot\/api\/og\/today\?day=3$/);
     expect(JSON.stringify(embed).length).toBeLessThan(1024);
   });

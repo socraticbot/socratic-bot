@@ -3,6 +3,11 @@ import { SITE_URL } from '@/lib/miniapp';
 /** Soft-launch home for the daily card and the Farcaster Mini App. */
 export const BIAS_URL = `${SITE_URL}/farcaster`;
 
+/** Link to one day's card, so a shared cast opens the bias it shows. */
+export function biasUrlForDay(day: number): string {
+  return `${BIAS_URL}?day=${day}`;
+}
+
 /** Shares invite people to play; they never reveal the answer. */
 export function shareText(dayNumber: number): string {
   return `Bias of the day #${dayNumber + 1}: can you spot it? 🧠`;
@@ -18,7 +23,7 @@ export function miniAppEmbed(day: number) {
       action: {
         type: 'launch_miniapp',
         name: 'Socratic Bot',
-        url: BIAS_URL,
+        url: biasUrlForDay(day),
         splashImageUrl: `${SITE_URL}/splash-200.png`,
         splashBackgroundColor: '#FDFBF9',
       },
