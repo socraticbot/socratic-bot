@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Redis } from '@upstash/redis';
 import { NEW_PLAYER, applyPlay, liveStreak } from '@/lib/streaks/streak';
-import { recordPlay, setOptIn, topStreaks } from '@/lib/server/players';
+import { getAnswer, recordPlay, setOptIn, topStreaks } from '@/lib/server/players';
 import { clientKey } from '@/lib/server/ratelimit';
 
 describe('applyPlay', () => {
@@ -83,17 +83,17 @@ function fakeRedis() {
 describe('player store', () => {
   it('records one play per day even when called twice', async () => {
     const redis = fakeRedis() as unknown as Redis;
-    await recordPlay(redis, 1, 5, true);
-    const again = await recordPlay(redis, 1, 5, false);
+    await recordPlay(redis, 1, 5, 'Anchoring', true);
+    const again = await recordPlay(redis, 1, 5, 'Anchoring', false);
     expect(again).toMatchObject({ streak: 1, plays: 1, spotted: 1 });
   });
 
   it('only lists opted-in players with live streaks, longest first', async () => {
     const redis = fakeRedis() as unknown as Redis;
-    for (const day of [3, 4, 5]) await recordPlay(redis, 1, day, true); // streak 3
-    for (const day of [4, 5]) await recordPlay(redis, 2, day, true); // streak 2
-    await recordPlay(redis, 3, 1, true); // stale streak
-    await recordPlay(redis, 4, 5, true); // never opts in
+    for (const day of [3, 4, 5]) await recordPlay(redis, 1, day, 'Anchoring', true); // streak 3
+    for (const day of [4, 5]) await recordPlay(redis, 2, day, 'Anchoring', true); // streak 2
+    await recordPlay(redis, 3, 1, 'Anchoring', true); // stale streak
+    await recordPlay(redis, 4, 5, 'Anchoring', true); // never opts in
     await setOptIn(redis, 1, true);
     await setOptIn(redis, 2, true);
     await setOptIn(redis, 3, true);
@@ -105,10 +105,18 @@ describe('player store', () => {
 
   it('removes a player from the board when they opt out', async () => {
     const redis = fakeRedis() as unknown as Redis;
-    await recordPlay(redis, 1, 5, true);
+    await recordPlay(redis, 1, 5, 'Anchoring', true);
     await setOptIn(redis, 1, true);
     await setOptIn(redis, 1, false);
     expect(await topStreaks(redis, 5, 10)).toEqual([]);
+  });
+
+  it("remembers the first answer of the day", async () => {
+    const redis = fakeRedis() as unknown as Redis;
+    await recordPlay(redis, 1, 5, 'Halo Effect', false);
+    await recordPlay(redis, 1, 5, 'Anchoring', true);
+    expect(await getAnswer(redis, 1, 5)).toBe('Halo Effect');
+    expect(await getAnswer(redis, 1, 6)).toBeNull();
   });
 
   it('cannot opt in before playing', async () => {

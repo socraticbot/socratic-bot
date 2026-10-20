@@ -25,6 +25,6 @@ export async function POST(request: Request) {
   const bias = getBiasForDay(today);
   if (!bias.options.includes(parsed.data.answer)) return json({ error: 'Invalid answer' }, 400);
 
-  const player = await recordPlay(redis, fid, today, parsed.data.answer === bias.name);
+  const player = await recordPlay(redis, fid, today, parsed.data.answer, parsed.data.answer === bias.name);
   return json({ player: { ...player, streak: liveStreak(player, today) } });
 }

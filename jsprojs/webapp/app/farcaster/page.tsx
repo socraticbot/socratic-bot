@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { dayNumber, getBiasForDay, resolveDay } from '@/lib/biases/daily';
 import { biasUrlForDay, miniAppEmbed, shareText } from '@/lib/biases/share';
 import { SITE_URL } from '@/lib/miniapp';
-import BiasCard from './BiasCard';
+import FarcasterApp from './FarcasterApp';
 
 // The bias changes at UTC midnight, so render per request.
 export const dynamic = 'force-dynamic';
@@ -40,7 +40,7 @@ export default async function FarcasterPage({ searchParams }: PageProps) {
   const day = await requestedDay(searchParams);
   return (
     <div className="min-h-screen p-4 sm:p-6 pt-8 sm:pt-12 bg-[#FDFBF9]">
-      <BiasCard bias={getBiasForDay(day)} dayNumber={day} isToday={day === dayNumber(new Date())} />
+      <FarcasterApp bias={getBiasForDay(day)} dayNumber={day} isToday={day === dayNumber(new Date())} />
     </div>
   );
 }

@@ -5,16 +5,17 @@ import Link from 'next/link';
 import { Bias } from '@/lib/biases/data';
 import { BIAS_URL, biasUrlForDay, shareText } from '@/lib/biases/share';
 import { composeCast, composeIntentUrl, isInMiniApp } from '@/lib/miniapp';
-import StreakPanel from './StreakPanel';
 
 interface BiasCardProps {
   bias: Bias;
   dayNumber: number;
   isToday: boolean;
+  picked: string | null;
+  onPick: (option: string) => void;
+  onShowBoard: () => void;
 }
 
-export default function BiasCard({ bias, dayNumber, isToday }: BiasCardProps) {
-  const [picked, setPicked] = useState<string | null>(null);
+export default function BiasCard({ bias, dayNumber, isToday, picked, onPick, onShowBoard }: BiasCardProps) {
   const [copied, setCopied] = useState(false);
   const isCorrect = picked === bias.name;
   const text = shareText(dayNumber);
@@ -63,7 +64,7 @@ export default function BiasCard({ bias, dayNumber, isToday }: BiasCardProps) {
             <button
               key={option}
               type="button"
-              onClick={() => setPicked(option)}
+              onClick={() => onPick(option)}
               disabled={picked !== null}
               aria-pressed={chosen}
               className={`w-full px-4 py-3 text-left text-gray-700 border rounded-lg transition-colors duration-200 disabled:cursor-default ${
@@ -128,7 +129,13 @@ export default function BiasCard({ bias, dayNumber, isToday }: BiasCardProps) {
               </button>
             </div>
 
-            <StreakPanel day={dayNumber} answer={picked} isToday={isToday} />
+            <button
+              type="button"
+              onClick={onShowBoard}
+              className="w-full text-sm text-gray-500 underline hover:text-gray-700"
+            >
+              See leaderboard
+            </button>
           </div>
         )}
       </div>

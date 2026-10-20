@@ -1,14 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
-import { authedFetch, isInMiniApp } from '@/lib/miniapp';
+import { authedFetch } from '@/lib/miniapp';
 import { PlayerState } from '@/lib/streaks/streak';
 
-interface StreakPanelProps {
-  day: number;
-  answer: string;
-  isToday: boolean;
+interface LeaderboardProps {
+  inMiniApp: boolean;
+  player: PlayerState | null;
+  playedToday: boolean;
+  onPlayerChange: (player: PlayerState) => void;
+  onPlay: () => void;
 }
 
 interface BoardEntry {
@@ -20,47 +22,25 @@ interface BoardEntry {
 
 const days = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
 
-/**
- * Streak and leaderboard, shown after answering. Hidden entirely when the
- * server has no storage configured. Copy celebrates showing up and never
- * shames a missed day.
- */
-export default function StreakPanel({ day, answer, isToday }: StreakPanelProps) {
-  const [available, setAvailable] = useState(true);
-  const [inMiniApp, setInMiniApp] = useState(false);
-  const [player, setPlayer] = useState<PlayerState | null>(null);
+/** Your streak, the opt-in toggle, and the top live streaks. Copy celebrates showing up. */
+export default function Leaderboard({ inMiniApp, player, playedToday, onPlayerChange, onPlay }: LeaderboardProps) {
   const [board, setBoard] = useState<BoardEntry[] | null>(null);
+  const [unavailable, setUnavailable] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const loadBoard = async () => {
-    const res = await fetch('/api/leaderboard');
-    if (res.status === 503) return setAvailable(false);
-    if (res.ok) setBoard((await res.json()).entries);
-  };
+  const loadBoard = useCallback(async () => {
+    try {
+      const res = await fetch('/api/leaderboard', { cache: 'no-store' });
+      if (!res.ok) return setUnavailable(true);
+      setBoard((await res.json()).entries);
+    } catch {
+      setUnavailable(true);
+    }
+  }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const inApp = await isInMiniApp();
-      if (cancelled) return;
-      setInMiniApp(inApp);
-      if (inApp) {
-        const res = isToday
-          ? await authedFetch('/api/rep', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ day, answer }),
-            })
-          : await authedFetch('/api/me');
-        if (res.status === 503) return setAvailable(false);
-        if (res.ok && !cancelled) setPlayer((await res.json()).player);
-      }
-      await loadBoard();
-    })().catch(() => setAvailable(false));
-    return () => {
-      cancelled = true;
-    };
-  }, [day, answer, isToday]);
+    loadBoard();
+  }, [loadBoard]);
 
   const toggleOptIn = async () => {
     if (!player) return;
@@ -72,7 +52,7 @@ export default function StreakPanel({ day, answer, isToday }: StreakPanelProps) 
         body: JSON.stringify({ optIn: !player.optIn }),
       });
       if (res.ok) {
-        setPlayer((await res.json()).player);
+        onPlayerChange((await res.json()).player);
         await loadBoard();
       }
     } finally {
@@ -80,13 +60,11 @@ export default function StreakPanel({ day, answer, isToday }: StreakPanelProps) 
     }
   };
 
-  if (!available) return null;
-
   return (
-    <section className="space-y-4 pt-4 border-t border-gray-200" aria-label="Streaks">
-      {inMiniApp && player && (
+    <div className="w-full max-w-xl mx-auto space-y-6 fade-in">
+      {inMiniApp && player && player.plays > 0 && (
         <div className="space-y-2">
-          <p className="text-base text-gray-800">
+          <p className="text-lg text-gray-800">
             <strong>Your streak:</strong> {days(player.streak)} in a row
           </p>
           <p className="text-sm text-gray-500">
@@ -104,13 +82,27 @@ export default function StreakPanel({ day, answer, isToday }: StreakPanelProps) 
           </label>
         </div>
       )}
+
+      {!playedToday && (
+        <button
+          type="button"
+          onClick={onPlay}
+          className="w-full px-4 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors duration-200"
+        >
+          Play today's card
+        </button>
+      )}
       {!inMiniApp && (
         <p className="text-sm text-gray-500">Open Socratic Bot in Farcaster to keep a streak.</p>
       )}
 
-      <div className="space-y-2">
+      <section className="space-y-3" aria-label="Top streaks">
         <h2 className="text-sm uppercase tracking-widest text-gray-400">Top streaks</h2>
-        {board === null ? null : board.length === 0 ? (
+        {unavailable ? (
+          <p className="text-sm text-gray-500">The leaderboard isn&apos;t available right now.</p>
+        ) : board === null ? (
+          <p className="text-sm text-gray-400">Loading…</p>
+        ) : board.length === 0 ? (
           <p className="text-sm text-gray-500">No one on the board yet. Opt in to be the first.</p>
         ) : (
           <ol className="space-y-2">
@@ -135,7 +127,7 @@ export default function StreakPanel({ day, answer, isToday }: StreakPanelProps) 
             ))}
           </ol>
         )}
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }

@@ -19,15 +19,21 @@ async function savePlayer(redis: Redis, fid: number, player: PlayerState): Promi
   }
 }
 
+/** The answer `fid` gave on `day`, so a reopened app can show the result instead of the question. */
+export async function getAnswer(redis: Redis, fid: number, day: number): Promise<string | null> {
+  return (await redis.get<string>(playedKey(fid, day))) ?? null;
+}
+
 /** Record that `fid` played `day`'s card. Safe to call more than once per day. */
 export async function recordPlay(
   redis: Redis,
   fid: number,
   day: number,
+  answer: string,
   correct: boolean
 ): Promise<PlayerState> {
   // First play of the day wins; repeats and retries return the stored state.
-  const first = await redis.set(playedKey(fid, day), 1, { nx: true, ex: TWO_DAYS_S });
+  const first = await redis.set(playedKey(fid, day), answer, { nx: true, ex: TWO_DAYS_S });
   const prev = await getPlayer(redis, fid);
   if (!first) return prev ?? applyPlay(null, day, correct);
   const next = applyPlay(prev, day, correct);
