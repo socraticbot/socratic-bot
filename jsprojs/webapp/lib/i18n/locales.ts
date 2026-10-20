@@ -3,11 +3,15 @@ export type Locale = (typeof LOCALES)[number];
 
 /**
  * Locales offered in the picker and chosen automatically from the browser.
- * Others work only through `?lang=` links, until a native speaker has
- * reviewed their crisis phrases and terminology
- * (notes/roadmap-2026/12-multilingual-scope.md).
+ * Any locale not listed here works only through `?lang=` links.
  */
-export const PUBLIC_LOCALES: readonly Locale[] = ['en'];
+export const PUBLIC_LOCALES: readonly Locale[] = ['en', 'zh', 'de', 'es'];
+
+/**
+ * Public but not yet reviewed by a native speaker; labelled "Beta" in the
+ * picker (review checklist: notes/roadmap-2026/14-language-review-guide.md).
+ */
+export const BETA_LOCALES: readonly Locale[] = ['zh', 'de', 'es'];
 
 export const LOCALE_LABELS: Record<Locale, string> = {
   en: 'English',

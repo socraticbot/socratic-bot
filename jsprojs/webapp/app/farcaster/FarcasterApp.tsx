@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Bias } from '@/lib/biases/data';
 import { loadAnswer, saveAnswer } from '@/lib/biases/answers';
 import { localizeBias } from '@/lib/biases/localized';
-import { LOCALE_LABELS, Locale, pickerLocales } from '@/lib/i18n/locales';
+import { BETA_LOCALES, LOCALE_LABELS, Locale, pickerLocales } from '@/lib/i18n/locales';
 import { t } from '@/lib/i18n/ui';
 import { authedFetch, isInMiniApp } from '@/lib/miniapp';
 import { PlayerState } from '@/lib/streaks/streak';
@@ -92,7 +92,7 @@ export default function FarcasterApp({ bias, locale, dayNumber, isToday }: Farca
   return (
     <div className="w-full max-w-xl mx-auto space-y-6">
       {pickerLocales(locale).length > 1 && (
-        <nav aria-label={t(locale, 'language')} className="flex justify-end gap-3 text-sm">
+        <nav aria-label={t(locale, 'language')} className="flex flex-wrap justify-end gap-x-3 gap-y-1 text-sm">
           {pickerLocales(locale).map((l) => (
             <a
               key={l}
@@ -101,6 +101,7 @@ export default function FarcasterApp({ bias, locale, dayNumber, isToday }: Farca
               className={l === locale ? 'text-black font-medium' : 'text-gray-500 hover:text-gray-800'}
             >
               {LOCALE_LABELS[l]}
+              {BETA_LOCALES.includes(l) && <sup className="ml-0.5 text-[10px] text-gray-400">Beta</sup>}
             </a>
           ))}
         </nav>
