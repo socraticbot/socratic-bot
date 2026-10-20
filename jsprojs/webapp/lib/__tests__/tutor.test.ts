@@ -110,3 +110,14 @@ describe('crisis check', () => {
     expect(CRISIS_REPLY).not.toContain('?');
   });
 });
+
+describe('localized prompt', () => {
+  it('asks for replies in the reader\'s language and names the bias both ways', async () => {
+    const { buildSystemPrompt: build } = await import('@/lib/tutor/prompt');
+    const { localizeBias } = await import('@/lib/biases/localized');
+    const prompt = build(BIASES[0], 'de');
+    expect(prompt).toContain('German');
+    expect(prompt).toContain(localizeBias(BIASES[0], 'de').name);
+    expect(prompt).toContain(BIASES[0].name);
+  });
+});

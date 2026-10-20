@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Bias } from '@/lib/biases/data';
 import { loadAnswer, saveAnswer } from '@/lib/biases/answers';
+import { localizeBias } from '@/lib/biases/localized';
+import { LOCALE_LABELS, Locale, pickerLocales } from '@/lib/i18n/locales';
+import { t } from '@/lib/i18n/ui';
 import { authedFetch, isInMiniApp } from '@/lib/miniapp';
 import { PlayerState } from '@/lib/streaks/streak';
 import BiasCard from './BiasCard';
@@ -11,7 +14,9 @@ import Leaderboard from './Leaderboard';
 type Tab = 'card' | 'board';
 
 interface FarcasterAppProps {
+  /** The card in English: its option names are the keys answers are stored by. */
   bias: Bias;
+  locale: Locale;
   dayNumber: number;
   isToday: boolean;
 }
@@ -20,7 +25,8 @@ interface FarcasterAppProps {
  * Two views behind a toggle: today's card and the leaderboard. Someone who has
  * already played today lands on the leaderboard, and the card shows their result.
  */
-export default function FarcasterApp({ bias, dayNumber, isToday }: FarcasterAppProps) {
+export default function FarcasterApp({ bias, locale, dayNumber, isToday }: FarcasterAppProps) {
+  const localized = localizeBias(bias, locale);
   const [tab, setTab] = useState<Tab>('card');
   const [picked, setPicked] = useState<string | null>(null);
   const [inMiniApp, setInMiniApp] = useState(false);
@@ -85,6 +91,21 @@ export default function FarcasterApp({ bias, dayNumber, isToday }: FarcasterAppP
 
   return (
     <div className="w-full max-w-xl mx-auto space-y-6">
+      {pickerLocales(locale).length > 1 && (
+        <nav aria-label={t(locale, 'language')} className="flex justify-end gap-3 text-sm">
+          {pickerLocales(locale).map((l) => (
+            <a
+              key={l}
+              href={`?day=${dayNumber}${l === 'en' ? '' : `&lang=${l}`}`}
+              aria-current={l === locale ? 'true' : undefined}
+              className={l === locale ? 'text-black font-medium' : 'text-gray-500 hover:text-gray-800'}
+            >
+              {LOCALE_LABELS[l]}
+            </a>
+          ))}
+        </nav>
+      )}
+
       <div role="tablist" aria-label="Views" className="flex gap-1 p-1 bg-gray-100 rounded-lg">
         <button
           type="button"
@@ -93,7 +114,7 @@ export default function FarcasterApp({ bias, dayNumber, isToday }: FarcasterAppP
           onClick={() => setTab('card')}
           className={tabClass('card')}
         >
-          Bias of the day
+          {t(locale, 'tabCard')}
         </button>
         <button
           type="button"
@@ -102,13 +123,16 @@ export default function FarcasterApp({ bias, dayNumber, isToday }: FarcasterAppP
           onClick={() => setTab('board')}
           className={tabClass('board')}
         >
-          Leaderboard
+          {t(locale, 'tabBoard')}
         </button>
       </div>
 
       {!ready ? null : tab === 'card' ? (
         <BiasCard
-          bias={bias}
+          bias={localized}
+          optionKeys={bias.options}
+          answerKey={bias.name}
+          locale={locale}
           dayNumber={dayNumber}
           isToday={isToday}
           picked={picked}
@@ -117,6 +141,7 @@ export default function FarcasterApp({ bias, dayNumber, isToday }: FarcasterAppP
         />
       ) : (
         <Leaderboard
+          locale={locale}
           inMiniApp={inMiniApp}
           player={player}
           playedToday={isToday ? picked !== null : true}

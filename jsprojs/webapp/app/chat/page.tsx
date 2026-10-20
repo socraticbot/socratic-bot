@@ -8,6 +8,8 @@ import ModelSelector from '../components/ModelSelector';
 import { TutorModel, getDefaultModel } from '@/lib/models';
 import { getBiasBySlug } from '@/lib/biases/data';
 import { openingLine } from '@/lib/tutor/prompt';
+import { resolveLocale } from '@/lib/i18n/locales';
+import { t } from '@/lib/i18n/ui';
 import PasswordModal from '../components/PasswordModal';
 
 interface Message {
@@ -30,7 +32,9 @@ export default function ChatPage() {
 function Chat() {
   const searchParams = useSearchParams();
   const bias = getBiasBySlug(searchParams.get('bias') ?? '');
-  const opener = bias ? openingLine(bias) : null;
+  const locale = resolveLocale(searchParams.get('lang'));
+  const opener = bias ? openingLine(bias, locale) : null;
+  const backHref = locale === 'en' ? '/farcaster' : `/farcaster?lang=${locale}`;
 
   const [showQuestion, setShowQuestion] = useState(false);
   const [cursorVisible, setCursorVisible] = useState(true);
@@ -117,6 +121,7 @@ function Chat() {
           })),
           modelId: selectedModel.id,
           biasSlug: bias?.slug,
+          locale,
         }),
       });
 
@@ -185,7 +190,13 @@ function Chat() {
           </h1>
           {/* Tagline */}
           <p className="text-sm sm:text-base md:text-lg text-gray-700">
-            Helping humans <strong>think</strong> better.
+            {locale === 'en' ? (
+              <>
+                Helping humans <strong>think</strong> better.
+              </>
+            ) : (
+              t(locale, 'tagline')
+            )}
           </p>
         </div>
       </div>
@@ -245,7 +256,7 @@ function Chat() {
         {showQuestion && !opener && messages.length === 0 && (
           <div className="fade-in pt-2">
             <p className="text-lg sm:text-xl md:text-2xl text-gray-600 leading-relaxed font-light tracking-tight mb-3 sm:mb-4 px-2 sm:px-0">
-              What&apos;s on your mind right now?
+              {t(locale, 'chatPrompt')}
             </p>
           </div>
         )}
@@ -253,8 +264,8 @@ function Chat() {
         {/* Today's bias opener */}
         {showQuestion && opener && (
           <div className="fade-in pt-2 space-y-1">
-            <Link href="/farcaster" className="text-xs text-gray-400 hover:text-gray-600 underline">
-              Back to today&apos;s bias
+            <Link href={backHref} className="text-xs text-gray-400 hover:text-gray-600 underline">
+              {t(locale, 'chatBack')}
             </Link>
             {tutorBubble(opener)}
           </div>
@@ -286,7 +297,7 @@ function Chat() {
               <div className="w-1 h-1 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
               <div className="w-1 h-1 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
             </div>
-            <span className="text-sm">Listening</span>
+            <span className="text-sm">{t(locale, 'chatListening')}</span>
           </div>
         )}
 
@@ -306,8 +317,8 @@ function Chat() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Take your time..."
-                  aria-label="Your reply"
+                  placeholder={t(locale, 'chatPlaceholder')}
+                  aria-label={t(locale, 'chatReplyLabel')}
                   maxLength={4000}
                   className="w-full px-3 sm:px-4 py-3 text-sm sm:text-base text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 resize-none"
                   rows={2}
@@ -328,7 +339,7 @@ function Chat() {
                 disabled={!input.trim() || isListening}
                 className="px-4 sm:px-6 py-3 text-sm sm:text-base text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 whitespace-nowrap"
               >
-                Send
+                {t(locale, 'chatSend')}
               </button>
             </div>
           </form>
@@ -338,7 +349,7 @@ function Chat() {
         {(showQuestion || messages.length > 0) && (
           <div className="mt-2 sm:mt-3 fade-in">
             <div className="text-xs sm:text-sm text-gray-500 text-center break-words">
-              <span>Current model: </span>
+              <span>{t(locale, 'chatModel')} </span>
               {selectedModel.referenceUrl ? (
                 <a
                   href={selectedModel.referenceUrl}

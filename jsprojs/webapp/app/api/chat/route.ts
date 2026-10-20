@@ -4,7 +4,7 @@ import { getBiasBySlug } from '@/lib/biases/data';
 import { getDefaultModel, getModelById } from '@/lib/models';
 import { buildSystemPrompt } from '@/lib/tutor/prompt';
 import { parseChatRequest } from '@/lib/tutor/request';
-import { CRISIS_REPLY, isCrisisMessage } from '@/lib/tutor/safety';
+import { CRISIS_REPLIES, crisisLocale } from '@/lib/tutor/safety';
 import { allowChat } from '@/lib/server/ratelimit';
 
 const MAX_OUTPUT_TOKENS = 600;
@@ -40,15 +40,16 @@ export async function POST(request: NextRequest) {
     return jsonError(parsed.error, 400);
   }
 
-  const { messages, modelId, biasSlug } = parsed.data;
+  const { messages, modelId, biasSlug, locale = 'en' } = parsed.data;
   // Only models from the server-side allowlist; unknown ids fall back to the default.
   const model = (modelId && getModelById(modelId)) || getDefaultModel();
   const bias = biasSlug ? getBiasBySlug(biasSlug) : undefined;
 
   // Crisis language never reaches the model (see lib/tutor/safety.ts).
-  if (isCrisisMessage(messages[messages.length - 1].content)) {
-    console.info('[chat] crisis reply sent', { model: model.id });
-    return Response.json({ reply: CRISIS_REPLY, model: model.id, safety: 'crisis' });
+  const crisis = crisisLocale(messages[messages.length - 1].content);
+  if (crisis) {
+    console.info('[chat] crisis reply sent', { model: model.id, locale: crisis });
+    return Response.json({ reply: CRISIS_REPLIES[crisis], model: model.id, safety: 'crisis' });
   }
 
   try {
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
     // checked before it is sent (see notes 08, revision 3).
     const { text } = await generateText({
       model: model.id,
-      system: buildSystemPrompt(bias),
+      system: buildSystemPrompt(bias, locale),
       messages,
       maxOutputTokens: MAX_OUTPUT_TOKENS,
       temperature: 0.7,

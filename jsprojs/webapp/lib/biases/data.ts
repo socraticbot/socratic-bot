@@ -87,7 +87,7 @@ export const BIASES: Bias[] = [
     definition: 'Drawing conclusions only from the cases that made it through.',
     scenario:
       'A magazine profiles ten college dropouts who became billionaires and concludes that leaving college is a smart path to success.',
-    options: ['Survivorship Bias', 'Halo Effect', 'False Consensus'],
+    options: ['Survivorship Bias', 'Halo Effect', 'False Consensus Effect'],
     explanation:
       'The many dropouts who did not become billionaires are not in the magazine, so the sample only shows the winners.',
     counterMove: 'Ask: who tried the same thing and failed, and why am I not seeing them?',
@@ -132,7 +132,7 @@ export const BIASES: Bias[] = [
     definition: 'Letting one good impression color our judgment of unrelated qualities.',
     scenario:
       'A job candidate is confident and well dressed. The interviewer rates them higher on honesty and technical skill, neither of which the interview actually tested.',
-    options: ['Anchoring', 'False Consensus', 'Halo Effect'],
+    options: ['Anchoring', 'False Consensus Effect', 'Halo Effect'],
     explanation:
       'One positive trait spilled over into ratings of traits the interviewer had no evidence about.',
     counterMove: 'Rate each quality separately, using only the evidence for that quality.',

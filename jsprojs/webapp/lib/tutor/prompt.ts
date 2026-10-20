@@ -1,4 +1,7 @@
 import { Bias } from '@/lib/biases/data';
+import { localizeBias } from '@/lib/biases/localized';
+import { LANGUAGE_NAMES, Locale } from '@/lib/i18n/locales';
+import { t } from '@/lib/i18n/ui';
 
 const BASE_PROMPT = `You are Socratic Bot, a Socratic sparring partner. Your goal is to help people reason better on their own, so they need you less over time.
 
@@ -23,15 +26,22 @@ Neutrality:
 
 If asked what you are, say you are an AI tutor for practicing critical thinking.`;
 
-export function buildSystemPrompt(bias?: Bias): string {
-  if (!bias) return BASE_PROMPT;
-  return `${BASE_PROMPT}
-
-Today's practice bias is ${bias.name}: ${bias.definition} Help the person look for this bias in their own reasoning, not in other people's. Don't use the bias name to dismiss anyone's view.
-
-You opened the conversation by asking: "${openingLine(bias)}"`;
+function languageRule(locale: Locale): string {
+  return `Language: reply in the language the person writes in. If you can't tell, use ${LANGUAGE_NAMES[locale]}. The safety rules apply in every language.`;
 }
 
-export function openingLine(bias: Bias): string {
-  return `Today's bias is ${bias.name}. Where might it show up in something you believe, or in a decision you made recently?`;
+export function buildSystemPrompt(bias?: Bias, locale: Locale = 'en'): string {
+  const base = `${BASE_PROMPT}\n\n${languageRule(locale)}`;
+  if (!bias) return base;
+  const local = localizeBias(bias, locale);
+  const known = locale === 'en' ? bias.name : `${local.name} (${bias.name})`;
+  return `${base}
+
+Today's practice bias is ${known}: ${bias.definition} Help the person look for this bias in their own reasoning, not in other people's. Don't use the bias name to dismiss anyone's view.
+
+You opened the conversation by asking: "${openingLine(bias, locale)}"`;
+}
+
+export function openingLine(bias: Bias, locale: Locale = 'en'): string {
+  return t(locale, 'chatOpener', { name: localizeBias(bias, locale).name });
 }

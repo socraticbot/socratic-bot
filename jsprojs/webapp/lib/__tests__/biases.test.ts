@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BIASES, getBiasBySlug } from '@/lib/biases/data';
+import { EXTRA_OPTION_NAMES } from '@/lib/biases/localized';
 import { ROTATION_START, dayNumber, getBiasForDate, getBiasForDay, resolveDay } from '@/lib/biases/daily';
 import { BIAS_URL, biasUrlForDay, miniAppEmbed, shareText } from '@/lib/biases/share';
 
@@ -42,6 +43,11 @@ describe('bias data', () => {
     expect(bias.options).toHaveLength(3);
     expect(new Set(bias.options).size).toBe(3);
     expect(bias.options.filter((o) => o === bias.name)).toHaveLength(1);
+  });
+
+  it.each(BIASES)('$slug only offers options that are real bias names', (bias) => {
+    const names = new Set([...BIASES.map((b) => b.name), ...EXTRA_OPTION_NAMES]);
+    bias.options.forEach((option) => expect(names.has(option)).toBe(true));
   });
 
   it.each(BIASES)('$slug scenario does not give away the answer', (bias) => {

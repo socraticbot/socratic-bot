@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { LOCALES } from '@/lib/i18n/locales';
 
 export const MAX_MESSAGES = 20;
 export const MAX_MESSAGE_CHARS = 4000;
@@ -13,6 +14,7 @@ const chatRequestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
   modelId: z.string().optional(),
   biasSlug: z.string().max(64).optional(),
+  locale: z.enum(LOCALES).optional(),
 });
 
 export type ChatMessage = z.infer<typeof messageSchema>;

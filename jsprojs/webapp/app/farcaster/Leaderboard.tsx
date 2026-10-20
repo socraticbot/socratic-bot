@@ -3,9 +3,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { authedFetch } from '@/lib/miniapp';
+import { Locale } from '@/lib/i18n/locales';
+import { dayCount, t } from '@/lib/i18n/ui';
 import { PlayerState } from '@/lib/streaks/streak';
 
 interface LeaderboardProps {
+  locale: Locale;
   inMiniApp: boolean;
   player: PlayerState | null;
   playedToday: boolean;
@@ -20,10 +23,10 @@ interface BoardEntry {
   streak: number;
 }
 
-const days = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
 
 /** Your streak, the opt-in toggle, and the top live streaks. Copy celebrates showing up. */
-export default function Leaderboard({ inMiniApp, player, playedToday, onPlayerChange, onPlay }: LeaderboardProps) {
+export default function Leaderboard({ locale, inMiniApp, player, playedToday, onPlayerChange, onPlay }: LeaderboardProps) {
+  const days = (n: number) => dayCount(locale, n);
   const [board, setBoard] = useState<BoardEntry[] | null>(null);
   const [unavailable, setUnavailable] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -65,10 +68,10 @@ export default function Leaderboard({ inMiniApp, player, playedToday, onPlayerCh
       {inMiniApp && player && player.plays > 0 && (
         <div className="space-y-2">
           <p className="text-lg text-gray-800">
-            <strong>Your streak:</strong> {days(player.streak)} in a row
+            <strong>{t(locale, 'yourStreak')}</strong> {t(locale, 'inARow', { days: days(player.streak) })}
           </p>
           <p className="text-sm text-gray-500">
-            Best {days(player.best)} · Spotted {player.spotted} of {player.plays}
+            {t(locale, 'bestSpotted', { best: days(player.best), spotted: player.spotted, plays: player.plays })}
           </p>
           <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
             <input
@@ -78,7 +81,7 @@ export default function Leaderboard({ inMiniApp, player, playedToday, onPlayerCh
               disabled={saving}
               className="h-4 w-4"
             />
-            Show me on the leaderboard
+            {t(locale, 'showMe')}
           </label>
         </div>
       )}
@@ -89,21 +92,21 @@ export default function Leaderboard({ inMiniApp, player, playedToday, onPlayerCh
           onClick={onPlay}
           className="w-full px-4 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors duration-200"
         >
-          Play today's card
+          {t(locale, 'playToday')}
         </button>
       )}
       {!inMiniApp && (
-        <p className="text-sm text-gray-500">Open Socratic Bot in Farcaster to keep a streak.</p>
+        <p className="text-sm text-gray-500">{t(locale, 'openInFarcaster')}</p>
       )}
 
-      <section className="space-y-3" aria-label="Top streaks">
-        <h2 className="text-sm uppercase tracking-widest text-gray-400">Top streaks</h2>
+      <section className="space-y-3" aria-label={t(locale, 'topStreaks')}>
+        <h2 className="text-sm uppercase tracking-widest text-gray-400">{t(locale, 'topStreaks')}</h2>
         {unavailable ? (
-          <p className="text-sm text-gray-500">The leaderboard isn&apos;t available right now.</p>
+          <p className="text-sm text-gray-500">{t(locale, 'boardUnavailable')}</p>
         ) : board === null ? (
-          <p className="text-sm text-gray-400">Loading…</p>
+          <p className="text-sm text-gray-400">{t(locale, 'loading')}</p>
         ) : board.length === 0 ? (
-          <p className="text-sm text-gray-500">No one on the board yet. Opt in to be the first.</p>
+          <p className="text-sm text-gray-500">{t(locale, 'boardEmpty')}</p>
         ) : (
           <ol className="space-y-2">
             {board.map((entry, i) => (
