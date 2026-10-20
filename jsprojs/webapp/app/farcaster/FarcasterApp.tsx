@@ -30,7 +30,9 @@ export default function FarcasterApp({ bias, dayNumber, isToday }: FarcasterAppP
 
   useEffect(() => {
     let cancelled = false;
-    const local = loadAnswer(dayNumber);
+    const isOption = (a: unknown): a is string => typeof a === 'string' && bias.options.includes(a);
+    const stored = loadAnswer(dayNumber);
+    const local = isOption(stored) ? stored : null;
     if (local) {
       setPicked(local);
       if (isToday) setTab('board');
@@ -46,7 +48,7 @@ export default function FarcasterApp({ bias, dayNumber, isToday }: FarcasterAppP
       const { player: me, todayAnswer } = await res.json();
       setPlayer(me);
       // Played on another device: show that result, unless the user has already acted here.
-      if (isToday && todayAnswer && !local && !interacted.current) {
+      if (isToday && isOption(todayAnswer) && !local && !interacted.current) {
         setPicked(todayAnswer);
         saveAnswer(dayNumber, todayAnswer);
         setTab('board');
@@ -57,7 +59,7 @@ export default function FarcasterApp({ bias, dayNumber, isToday }: FarcasterAppP
     return () => {
       cancelled = true;
     };
-  }, [dayNumber, isToday]);
+  }, [bias, dayNumber, isToday]);
 
   const handlePick = async (option: string) => {
     interacted.current = true;

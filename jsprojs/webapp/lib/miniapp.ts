@@ -43,3 +43,12 @@ export async function authedFetch(input: string, init?: RequestInit): Promise<Re
   const sdk = await loadSdk();
   return sdk.quickAuth.fetch(input, init);
 }
+
+/** Open an external URL: through the host inside a Mini App (webviews can block new tabs), else a new tab. */
+export async function openExternal(url: string): Promise<void> {
+  if (await isInMiniApp()) {
+    await (await loadSdk()).actions.openUrl(url);
+    return;
+  }
+  window.open(url, '_blank', 'noopener,noreferrer');
+}

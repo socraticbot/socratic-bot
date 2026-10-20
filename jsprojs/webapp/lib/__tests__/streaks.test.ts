@@ -132,3 +132,11 @@ describe('rate limit key', () => {
     expect(clientKey(new Request('https://x'))).toBe('unknown');
   });
 });
+
+describe('stored answers', () => {
+  it('ignores placeholder values from plays recorded before answers were stored', async () => {
+    const redis = fakeRedis();
+    await redis.set('played:1:5', 1);
+    expect(await getAnswer(redis as unknown as Redis, 1, 5)).toBeNull();
+  });
+});

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import ExternalLink from '../components/ExternalLink';
 
 // List of all cognitive bias images - using all available images
 const cognitiveBiases = [
@@ -80,8 +81,18 @@ export default function LearnPage() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF9] py-12">
-      <div className="max-w-6xl mx-auto px-6">
-        <h1 className="text-4xl font-serif text-black mb-4 text-center">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="flex justify-center mb-8">
+          <ExternalLink
+            href="https://veritatem.vercel.app"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-6 py-3 text-base text-gray-800 border border-gray-300 rounded-lg hover:bg-white transition-colors duration-200"
+          >
+            How to Think Clearly slides
+            <span aria-hidden="true">↗</span>
+          </ExternalLink>
+        </div>
+
+        <h1 className="text-3xl sm:text-4xl font-serif text-black mb-4 text-center">
           Cognitive Biases
         </h1>
         <p className="text-center text-gray-600 mb-8">

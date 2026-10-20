@@ -21,7 +21,9 @@ async function savePlayer(redis: Redis, fid: number, player: PlayerState): Promi
 
 /** The answer `fid` gave on `day`, so a reopened app can show the result instead of the question. */
 export async function getAnswer(redis: Redis, fid: number, day: number): Promise<string | null> {
-  return (await redis.get<string>(playedKey(fid, day))) ?? null;
+  // Plays recorded before answers were stored hold a placeholder, not an answer.
+  const value = await redis.get<unknown>(playedKey(fid, day));
+  return typeof value === 'string' ? value : null;
 }
 
 /** Record that `fid` played `day`'s card. Safe to call more than once per day. */
