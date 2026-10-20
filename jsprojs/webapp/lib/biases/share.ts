@@ -19,7 +19,7 @@ export function miniAppEmbed(day: number) {
         type: 'launch_miniapp',
         name: 'Socratic Bot',
         url: BIAS_URL,
-        splashImageUrl: `${SITE_URL}/socraticlogo.png`,
+        splashImageUrl: `${SITE_URL}/splash-200.png`,
         splashBackgroundColor: '#FDFBF9',
       },
     },
