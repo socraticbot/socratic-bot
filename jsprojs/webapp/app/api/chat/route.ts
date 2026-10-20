@@ -4,6 +4,7 @@ import { getBiasBySlug } from '@/lib/biases/data';
 import { getDefaultModel, getModelById } from '@/lib/models';
 import { buildSystemPrompt } from '@/lib/tutor/prompt';
 import { parseChatRequest } from '@/lib/tutor/request';
+import { CRISIS_REPLY, isCrisisMessage } from '@/lib/tutor/safety';
 
 const MAX_OUTPUT_TOKENS = 600;
 
@@ -38,6 +39,12 @@ export async function POST(request: NextRequest) {
   // Only models from the server-side allowlist; unknown ids fall back to the default.
   const model = (modelId && getModelById(modelId)) || getDefaultModel();
   const bias = biasSlug ? getBiasBySlug(biasSlug) : undefined;
+
+  // Crisis language never reaches the model (see lib/tutor/safety.ts).
+  if (isCrisisMessage(messages[messages.length - 1].content)) {
+    console.info('[chat] crisis reply sent', { model: model.id });
+    return Response.json({ reply: CRISIS_REPLY, model: model.id, safety: 'crisis' });
+  }
 
   try {
     // Non-streaming on purpose: replies are short, and a complete reply can be

@@ -44,14 +44,6 @@ export const AVAILABLE_MODELS: TutorModel[] = [
     referenceUrl: 'https://openai.com/index/gpt-5/',
   },
   {
-    id: 'spacexai/grok-4.1-fast-non-reasoning',
-    name: 'Grok 4.1 Fast',
-    provider: 'xAI',
-    description: 'Fast conversational model',
-    avatar: '/sochat6.png',
-    referenceUrl: 'https://x.ai/grok',
-  },
-  {
     id: 'meta/llama-4-maverick',
     name: 'Llama 4 Maverick',
     provider: 'Meta',
