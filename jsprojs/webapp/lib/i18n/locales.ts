@@ -5,13 +5,13 @@ export type Locale = (typeof LOCALES)[number];
  * Locales offered in the picker and chosen automatically from the browser.
  * Any locale not listed here works only through `?lang=` links.
  */
-export const PUBLIC_LOCALES: readonly Locale[] = ['en', 'zh', 'de', 'es'];
+export const PUBLIC_LOCALES: readonly Locale[] = ['en', 'zh', 'de', 'es', 'ru'];
 
 /**
  * Public but not yet reviewed by a native speaker; labelled "Beta" in the
  * picker (review checklist: notes/roadmap-2026/14-language-review-guide.md).
  */
-export const BETA_LOCALES: readonly Locale[] = ['zh', 'de', 'es'];
+export const BETA_LOCALES: readonly Locale[] = ['zh', 'de', 'es', 'ru'];
 
 export const LOCALE_LABELS: Record<Locale, string> = {
   en: 'English',
