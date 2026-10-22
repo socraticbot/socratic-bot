@@ -1,48 +1,48 @@
-# socratic-bot
+# Socratic Bot
 
-## Vision
+**Try the daily bias mini app on Farcaster: [socratic.bot/farcaster](https://www.socratic.bot/farcaster)**
 
-Socratic Bot is being transformed into a **fully decentralized, open-source critical thinking tutor** that:
-- Prompts humans to think better through Socratic questioning
-- Uses EVM-compatible wallets as identity
-- Stores persistent memory in Swarm (decentralized storage)
-- Uses Mistral models via Vercel AI Gateway for LLM capabilities
-- Is transparent, open-source, and user-owned
+One cognitive bias a day. Spot it in a real-life scenario, then talk it through with a Socratic tutor that asks instead of telling. Keep a streak and, if you like, join the leaderboard. Available in English, 中文, Deutsch and Español.
 
-**Model Selection & User Choice**: Users will be able to select between AI models to be their Socratic tutor, allowing user-choice with regards to privacy & overall comparison of model capabilities. This empowers users to choose the model that best aligns with their privacy preferences and learning needs, while enabling transparent comparison of how different models approach Socratic tutoring.
+Share the link in a cast and it opens as a mini app inside Farcaster. It also works in any browser.
 
-<img width="972" height="727" alt="Screenshot 2026-01-18 at 17 30 07" src="https://github.com/user-attachments/assets/ae256080-0d65-4d6b-aa4c-a59b248a0cd8" />
+## What it is
 
+Socratic Bot is a free, open-source critical-thinking tutor. Its goal is to help people reason better on their own, so they need it less over time.
 
-## Migration in Progress
+- **Socratic chat** ([socratic.bot/chat](https://www.socratic.bot/chat)): one question at a time, naming the reasoning move it uses, never giving a verdict on contested values.
+- **Bias of the day**: a spot-the-bias card with instant feedback and a "Try this" thinking tool. Every 7th day reviews an earlier bias.
+- **Private by default**: only models whose providers don't train on prompts, no conversation text stored or logged, and a crisis check that runs before any model call.
 
-We are currently migrating to a fully decentralized stack:
-
-**Current State**:
-- **Hosting**: Framer (to be migrated)
-- **LLM**: OpenAI GPT-4 via direct API
-- **Storage**: PostgreSQL (centralized)
-- **Identity**: Email-based authentication
-- **Frontend**: Remix app (MVP in `jsprojs/mvp/`)
-- **Backend**: FastAPI chat server (in `pyprojs/chatserver/`)
-
-**Target State**:
-- **Hosting**: Vercel (initial), exploring fully decentralized with ENS + Arkiv decentralized database + Swarm storage
-- **LLM**: Mistral Large 3 via Vercel AI Gateway
-- **Storage**: Swarm (decentralized) for persistent memory
-- **Identity**: EVM-compatible wallet (MetaMask, WalletConnect)
-- **Frontend**: Next.js on Vercel
-- **Backend**: Vercel Serverless Functions + Edge Functions
+<img width="972" height="727" alt="Socratic Bot chat" src="https://github.com/user-attachments/assets/ae256080-0d65-4d6b-aa4c-a59b248a0cd8" />
 
 ## Guides
 
 - [Building a Farcaster Mini App](docs/farcaster-mini-app-guide.md): how socratic.bot/farcaster works, the manifest and signing, Quick Auth, Neynar notifications, streaks and a leaderboard, and the gotchas we hit.
 
-## Getting started
+## Run it locally
 
-From the root of the repository:
+The live app is the Next.js project in [`jsprojs/webapp`](jsprojs/webapp) (Vercel, AI SDK, Vercel AI Gateway).
 
 ```
-$ docker build -f pyprojs/chatserver/Dockerfile -t socraticbot .
-$ docker run -p 8000:8000 -e OPENAI_API_KEY="<insert your own openai key>" -e SOCRATIC_CHATSERVER_TOKEN="any string" socraticbot
+cd jsprojs/webapp
+npm install
+echo "AI_GATEWAY_API_KEY=<your key>" > .env.local
+npm run dev     # http://localhost:3000/farcaster
+npm test        # unit tests
 ```
+
+Streaks and the leaderboard also need Upstash Redis and `NEYNAR_API_KEY`. Without them, those features switch themselves off.
+
+## Repository
+
+| Path | What it is |
+| --- | --- |
+| `jsprojs/webapp` | The live site: chat, bias of the day, mini app |
+| `pylibs/zoo` | The original depth-first Socratic workflows (dfs_v1, dfs_v2) and prompts |
+| `pyprojs`, `pylibs/chat`, `jsprojs/mvp`, `jsprojs/farcaster`, `magictool` | Earlier 2024 versions, kept for reference |
+| `docs` | Guides |
+
+## Where it's heading
+
+The longer-term vision is a user-owned tutor: model choice for privacy and comparison, wallet-based identity, and decentralized storage (ENS, Swarm, Arkiv), added only where they keep conversations private.
