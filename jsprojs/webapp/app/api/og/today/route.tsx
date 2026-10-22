@@ -2,17 +2,19 @@ import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 import { dayNumber, getBiasForDay, resolveDay } from '@/lib/biases/daily';
 import { localizeBias } from '@/lib/biases/localized';
-import { resolveLocale } from '@/lib/i18n/locales';
+import { Locale, resolveLocale } from '@/lib/i18n/locales';
 import { t } from '@/lib/i18n/ui';
 
 /**
- * The default `next/og` font has no CJK glyphs, so for Chinese we fetch just
- * the characters we need from Google Fonts (Noto Sans SC). Falls back to the
+ * The default `next/og` font is Latin-only, so for Chinese and Russian we
+ * fetch just the characters we need from Google Fonts. Falls back to the
  * default font if the fetch fails.
  */
-async function loadCjkFont(text: string): Promise<ArrayBuffer | null> {
+const FONTS: Partial<Record<Locale, string>> = { zh: 'Noto Sans SC', ru: 'Noto Serif' };
+
+async function loadFont(family: string, text: string): Promise<ArrayBuffer | null> {
   try {
-    const cssUrl = `https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400&text=${encodeURIComponent(text)}`;
+    const cssUrl = `https://fonts.googleapis.com/css2?family=${family.replace(/ /g, '+')}:wght@400&text=${encodeURIComponent(text)}`;
     const css = await (await fetch(cssUrl)).text();
     const src = css.match(/src: url\((.+?)\) format\('(opentype|truetype)'\)/)?.[1];
     if (!src) return null;
@@ -32,7 +34,8 @@ export async function GET(request: NextRequest) {
 
   const label = `${t(locale, 'cardLabel', { n: day + 1 })}${bias.reviewOf ? ` · ${t(locale, 'review')}` : ''}`;
   const heading = t(locale, 'heading');
-  const font = locale === 'zh' ? await loadCjkFont(`${label}${heading}${bias.scenario}socratic.bot`) : null;
+  const family = FONTS[locale];
+  const font = family ? await loadFont(family, `${label}${heading}${bias.scenario}socratic.bot`) : null;
 
   return new ImageResponse(
     (
@@ -46,7 +49,7 @@ export async function GET(request: NextRequest) {
           padding: '72px 88px',
           background: '#FDFBF9',
           color: '#111111',
-          fontFamily: font ? 'Noto Sans SC' : 'serif',
+          fontFamily: font ? family : 'serif',
         }}
       >
         <div style={{ fontSize: 30, letterSpacing: locale === 'zh' ? 2 : 6, color: '#888888', textTransform: 'uppercase' }}>
@@ -60,7 +63,7 @@ export async function GET(request: NextRequest) {
     {
       width: 1200,
       height: 800,
-      fonts: font ? [{ name: 'Noto Sans SC', data: font, weight: 400, style: 'normal' }] : undefined,
+      fonts: font ? [{ name: family!, data: font, weight: 400, style: 'normal' }] : undefined,
       headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=86400' },
     }
   );

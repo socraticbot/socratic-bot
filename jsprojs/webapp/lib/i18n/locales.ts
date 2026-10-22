@@ -1,4 +1,4 @@
-export const LOCALES = ['en', 'zh', 'de', 'es'] as const;
+export const LOCALES = ['en', 'zh', 'de', 'es', 'ru'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 /**
@@ -18,6 +18,7 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   zh: '中文',
   de: 'Deutsch',
   es: 'Español',
+  ru: 'Русский',
 };
 
 /** BCP 47 tags for <html lang> and the model prompt. */
@@ -26,6 +27,7 @@ export const LOCALE_TAGS: Record<Locale, string> = {
   zh: 'zh-Hans',
   de: 'de',
   es: 'es',
+  ru: 'ru',
 };
 
 export const LANGUAGE_NAMES: Record<Locale, string> = {
@@ -33,6 +35,7 @@ export const LANGUAGE_NAMES: Record<Locale, string> = {
   zh: 'Simplified Chinese',
   de: 'German',
   es: 'Spanish',
+  ru: 'Russian',
 };
 
 export function isLocale(value: unknown): value is Locale {

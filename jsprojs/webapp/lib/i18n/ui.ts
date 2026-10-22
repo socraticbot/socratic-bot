@@ -179,12 +179,60 @@ const es: Record<UiKey, string> = {
   language: 'Idioma',
 };
 
-export const UI: Record<Locale, Record<UiKey, string>> = { en, zh, de, es };
+const ru: Record<UiKey, string> = {
+  tabCard: 'Искажение дня',
+  tabBoard: 'Рейтинг',
+  cardLabel: 'Искажение дня № {n}',
+  review: 'Повторение',
+  heading: 'Сможешь распознать?',
+  reviewNote: 'Знакомое искажение в новой ситуации.',
+  question: 'Какое это искажение?',
+  correct: 'Да, всё верно.',
+  incorrect: 'Не совсем. Правильный ответ: {name}.',
+  tryThis: 'Попробуй так:',
+  pastDay: 'Эта карточка с одного из прошлых дней.',
+  seeToday: 'К сегодняшнему искажению',
+  talk: 'Обсудить',
+  shareFarcaster: 'Поделиться в Farcaster',
+  copyLink: 'Скопировать ссылку',
+  copied: 'Скопировано',
+  seeBoard: 'Открыть рейтинг',
+  yourStreak: 'Твоя серия:',
+  inARow: '{days} подряд',
+  bestSpotted: 'Рекорд {best} · Угадано {spotted} из {plays}',
+  showMe: 'Показывать меня в рейтинге',
+  playToday: 'Открыть сегодняшнюю карточку',
+  openInFarcaster: 'Открой Socratic Bot в Farcaster, чтобы вести серию.',
+  topStreaks: 'Самые длинные серии',
+  boardUnavailable: 'Рейтинг сейчас недоступен.',
+  loading: 'Загрузка…',
+  boardEmpty: 'В рейтинге пока пусто. Присоединяйся, чтобы открыть список.',
+  day: '{n} день',
+  days: '{n} дней',
+  shareText: 'Искажение дня № {n}: сможешь распознать? 🧠',
+  embedButton: 'Распознай искажение дня',
+  tagline: 'Помогаем людям мыслить лучше.',
+  chatOpener: 'Сегодняшнее искажение: {name}. Где оно может проявиться в твоих убеждениях или в каком-нибудь недавнем решении?',
+  chatPrompt: 'О чём ты сейчас думаешь?',
+  chatPlaceholder: 'Не торопись...',
+  chatSend: 'Отправить',
+  chatListening: 'Слушаю',
+  chatBack: 'К сегодняшнему искажению',
+  chatModel: 'Текущая модель:',
+  chatReplyLabel: 'Твой ответ',
+  language: 'Язык',
+};
+
+export const UI: Record<Locale, Record<UiKey, string>> = { en, zh, de, es, ru };
 
 export function t(locale: Locale, key: UiKey, vars: Record<string, string | number> = {}): string {
   return UI[locale][key].replace(/\{(\w+)\}/g, (_, name) => String(vars[name] ?? `{${name}}`));
 }
 
+/** Russian has three day forms: 1 день, 2 дня, 5 дней. */
+const RU_DAYS: Partial<Record<Intl.LDMLPluralRule, string>> = { one: 'день', few: 'дня', many: 'дней' };
+
 export function dayCount(locale: Locale, n: number): string {
+  if (locale === 'ru') return `${n} ${RU_DAYS[new Intl.PluralRules('ru').select(n)] ?? 'дня'}`;
   return t(locale, n === 1 ? 'day' : 'days', { n });
 }

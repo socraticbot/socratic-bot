@@ -8,9 +8,9 @@ import { Locale } from '@/lib/i18n/locales';
  * Every language's patterns run on every message, and the reply uses the
  * language that matched. This is a floor, not a classifier: ambiguous phrases
  * that people also use about stress ("ich kann nicht mehr", "ya no puedo más",
- * "撑不下去了") are left to the system prompt's safety rules.
+ * "撑不下去了", "хоть вешайся") are left to the system prompt's safety rules.
  *
- * zh, de and es patterns were drafted from public suicide-prevention guidance
+ * zh, de, es and ru patterns were drafted from public suicide-prevention guidance
  * (notes/roadmap-2026/13-multilingual-sources.md) and need native-speaker review.
  */
 
@@ -79,6 +79,22 @@ const PATTERNS: Record<Locale, RegExp[]> = {
     /割腕|自残|伤害自己/,
     /没有人会(在乎|想念)我/,
   ],
+  ru: [
+    word('суицид\\p{L}*|самоубийств\\p{L}*|селфхарм\\p{L}*'),
+    word('(не\\s+хочу|не\\s+хочется)\\s+(больше\\s+)?жить|жить\\s+(больше\\s+)?не\\s+хоч(у|ется)'),
+    word('(хочу|хочется)\\s+(умереть|сдохнуть)(?!\\s+(со|от)\\s)|сдохнуть\\s+хочу'),
+    word('лучше\\s+бы\\s+я\\s+(умер|умерла|не\\s+родил(ся|ась))'),
+    word('поконч(у|ить|ил|ила)\\s+с\\s+(собой|жизнью)|св(ести|еду|ела?)\\s+сч(ё|е)ты\\s+с\\s+жизнью'),
+    word('(убью|убить|убила?)\\s+себя'),
+    word('(не\\s+могу|невозможно)\\s+так\\s+(дальше\\s+)?жить|так\\s+(дальше\\s+)?жить\\s+невозможно'),
+    word('без\\s+меня\\s+(всем|вам)\\s+(будет\\s+|было\\s+бы\\s+)?(лучше|проще)|(всем|вам)\\s+(будет\\s+|было\\s+бы\\s+)?(лучше|проще)\\s+без\\s+меня'),
+    word('я\\s+(для\\s+всех\\s+|всем\\s+)?(только\\s+)?(обуза|в\\s+тягость)'),
+    word('(уснуть|заснуть)\\s+и\\s+не\\s+проснуться'),
+    word('не\\s+вижу\\s+(никакого\\s+)?выхода'),
+    word('(скоро\\s+меня|меня\\s+скоро)\\s+не\\s+станет'),
+    word('режу\\s+себя|(по)?резать\\s+(себе\\s+)?вены|причиняю\\s+себе\\s+боль|наношу\\s+себе\\s+порезы|наглотаться\\s+таблеток'),
+    word('никто\\s+(не\\s+)?(будет\\s+)?скучать\\s+по\\s+мне|по\\s+мне\\s+никто\\s+не\\s+(будет\\s+)?скучать'),
+  ],
 };
 
 export const CRISIS_REPLIES: Record<Locale, string> = {
@@ -109,6 +125,14 @@ export const CRISIS_REPLIES: Record<Locale, string> = {
     '在新加坡，可以拨打 1767。其他国家和地区可以在 findahelpline.com 查找。' +
     '如果你现在有危险，请拨打 120 或 110。' +
     '如果之后你想聊聊别的，我会在这里。',
+  ru:
+    'Мне очень жаль, что тебе сейчас так тяжело, и хорошо, что ты об этом говоришь. ' +
+    'Я ИИ-тьютор и не смогу дать нужную поддержку, но справляться с этим в одиночку не обязательно. ' +
+    'Бесплатно и анонимно: в России Центр экстренной психологической помощи МЧС 8 495 989-50-50 (круглосуточно), ' +
+    'для детей, подростков и родителей 8 800 2000 122; в Казахстане 111; в Беларуси 8 801 100-16-11 (для детей и подростков) ' +
+    'и 8 017 352-44-44 (для взрослых, Минск). Другие страны можно найти на findahelpline.com. ' +
+    'Если ты в опасности прямо сейчас, звони 112. ' +
+    'Если потом захочешь поговорить о чём-то другом, я буду здесь.',
 };
 
 /** Back-compat for callers that only need the English reply. */
@@ -117,7 +141,7 @@ export const CRISIS_REPLY = CRISIS_REPLIES.en;
 /** The language whose crisis patterns match `text`, or null. */
 export function crisisLocale(text: string): Locale | null {
   // English last: its broad /suicid/ also matches Spanish words, which should get the Spanish reply.
-  for (const locale of ['de', 'es', 'zh', 'en'] as Locale[]) {
+  for (const locale of ['de', 'es', 'zh', 'ru', 'en'] as Locale[]) {
     if (PATTERNS[locale].some((pattern) => pattern.test(text))) return locale;
   }
   return null;
