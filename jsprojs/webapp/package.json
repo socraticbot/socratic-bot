@@ -17,7 +17,7 @@
     "@upstash/ratelimit": "^2.2.0",
     "@upstash/redis": "^1.39.0",
     "ai": "^6.0.39",
-    "next": "15.3.8",
+    "next": "15.5.28",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "zod": "^3.25.76"
@@ -29,10 +29,16 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.3.8",
+    "eslint-config-next": "15.5.28",
     "playwright": "^1.57.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^3.2.7"
+  },
+  "overrides": {
+    "nanoid@^3": "^3.3.18",
+    "postcss@^8": "^8.5.31",
+    "sharp@^0.34 || ^0.35": "^0.35.5",
+    "source-map-js@^1": "^1.2.2"
   }
 }
