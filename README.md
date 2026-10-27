@@ -12,6 +12,7 @@ Socratic Bot is a free, open-source critical-thinking tutor. Its goal is to help
 
 - **Socratic chat** ([socratic.bot/chat](https://www.socratic.bot/chat)): one question at a time, naming the reasoning move it uses, never giving a verdict on contested values.
 - **Bias of the day**: a spot-the-bias card with instant feedback and a "Try this" thinking tool. Every 7th day reviews an earlier bias.
+- **Steel-Man Arena** ([socratic.bot/steel-man](https://www.socratic.bot/steel-man)): a weekly contested claim. Write the strongest case for the side you disagree with, get feedback on how charitably and strongly you represented it, revise, then see how others argued it. Also a Farcaster mini app.
 - **Private by default**: only models whose providers don't train on prompts, no conversation text stored or logged, and a crisis check that runs before any model call.
 
 <img width="972" height="727" alt="Socratic Bot chat" src="https://github.com/user-attachments/assets/ae256080-0d65-4d6b-aa4c-a59b248a0cd8" />
