@@ -15,8 +15,8 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.11"
 pydantic = "^2.5.2"
-fastapi = "^0.109.0"
-uvicorn = "^0.25.0"
+fastapi = "^0.115.0"
+uvicorn = "^0.32.0"
 socratic-chat = { path = "../../pylibs/chat", develop = true }
 socratic-zoo = { path = "../../pylibs/zoo", develop = true }
 setuptools = "^69.0.3"

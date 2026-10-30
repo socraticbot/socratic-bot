@@ -17,7 +17,7 @@ python = "^3.11"
 socratic-chat = { path = "../../pylibs/chat", develop = true }
 socratic-zoo = { path = "../../pylibs/zoo", develop = true }
 setuptools = "^69.0.3"
-python-telegram-bot = {version="^20.8", extras=["all"]}
+python-telegram-bot = {version="^21.0.1", extras=["all"]}
 python-dotenv = "^1.0.1"
 sqlitedict = "^2.1.0"
 pydantic = "^2.6.1"
