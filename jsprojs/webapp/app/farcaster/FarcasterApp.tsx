@@ -6,7 +6,7 @@ import { loadAnswer, saveAnswer } from '@/lib/biases/answers';
 import { localizeBias } from '@/lib/biases/localized';
 import { BETA_LOCALES, LOCALE_LABELS, Locale, pickerLocales } from '@/lib/i18n/locales';
 import { t } from '@/lib/i18n/ui';
-import { authedFetch, isInMiniApp } from '@/lib/miniapp';
+import { authedFetch, enableNotifications, isInMiniApp } from '@/lib/miniapp';
 import { PlayerState } from '@/lib/streaks/streak';
 import BiasCard from './BiasCard';
 import Leaderboard from './Leaderboard';
@@ -32,6 +32,10 @@ export default function FarcasterApp({ bias, locale, dayNumber, isToday }: Farca
   const [inMiniApp, setInMiniApp] = useState(false);
   const [player, setPlayer] = useState<PlayerState | null>(null);
   const [ready, setReady] = useState(false);
+  /** Reminder opt-in; null until known (and stays null outside the Mini App or without storage). */
+  const [reminders, setReminders] = useState<boolean | null>(null);
+  const [savingReminders, setSavingReminders] = useState(false);
+  const [notificationsOff, setNotificationsOff] = useState(false);
   const interacted = useRef(false);
 
   useEffect(() => {
@@ -51,8 +55,17 @@ export default function FarcasterApp({ bias, locale, dayNumber, isToday }: Farca
       setInMiniApp(true);
       const res = await authedFetch('/api/me');
       if (!res.ok || cancelled) return;
-      const { player: me, todayAnswer } = await res.json();
+      const { player: me, todayAnswer, reminders: reminderLocale } = await res.json();
       setPlayer(me);
+      setReminders(reminderLocale != null);
+      // Reminders follow the language the app was last opened in.
+      if (reminderLocale != null && reminderLocale !== locale) {
+        authedFetch('/api/reminders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: true, locale }),
+        }).catch(() => {});
+      }
       // Played on another device: show that result, unless the user has already acted here.
       if (isToday && isOption(todayAnswer) && !local && !interacted.current) {
         setPicked(todayAnswer);
@@ -65,7 +78,36 @@ export default function FarcasterApp({ bias, locale, dayNumber, isToday }: Farca
     return () => {
       cancelled = true;
     };
-  }, [bias, dayNumber, isToday]);
+  }, [bias, dayNumber, isToday, locale]);
+
+  const saveReminders = async (enabled: boolean): Promise<boolean> => {
+    const res = await authedFetch('/api/reminders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enabled, locale }),
+    });
+    return res.ok;
+  };
+
+  /** Opt-in only: turning reminders on asks the host for notification permission first. */
+  const toggleReminders = async () => {
+    const enable = !reminders;
+    setSavingReminders(true);
+    try {
+      if (enable) {
+        const status = await enableNotifications();
+        if (status === 'rejected') return;
+        setNotificationsOff(status === 'off');
+      } else {
+        setNotificationsOff(false);
+      }
+      if (await saveReminders(enable)) setReminders(enable);
+    } catch {
+      // Not saved; the toggle stays as it was.
+    } finally {
+      setSavingReminders(false);
+    }
+  };
 
   const handlePick = async (option: string) => {
     interacted.current = true;
@@ -91,6 +133,25 @@ export default function FarcasterApp({ bias, locale, dayNumber, isToday }: Farca
 
   return (
     <div className="w-full max-w-xl mx-auto space-y-6">
+      {inMiniApp && reminders !== null && (
+        <div className="flex flex-col items-end gap-1 text-sm">
+          <label className="flex items-center gap-2 text-gray-700 cursor-pointer">
+            <input
+              type="checkbox"
+              role="switch"
+              checked={reminders}
+              onChange={toggleReminders}
+              disabled={savingReminders}
+              className="h-4 w-4"
+            />
+            {t(locale, 'remindMe')}
+          </label>
+          {reminders && notificationsOff && (
+            <p className="text-xs text-gray-500 text-right">{t(locale, 'notificationsOff')}</p>
+          )}
+        </div>
+      )}
+
       {pickerLocales(locale).length > 1 && (
         <nav aria-label={t(locale, 'language')} className="flex flex-wrap justify-end gap-x-3 gap-y-1 text-sm">
           {pickerLocales(locale).map((l) => (

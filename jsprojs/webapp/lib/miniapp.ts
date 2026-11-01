@@ -52,3 +52,21 @@ export async function openExternal(url: string): Promise<void> {
   }
   window.open(url, '_blank', 'noopener,noreferrer');
 }
+
+/**
+ * Make sure the host will deliver our notifications: if they aren't on yet,
+ * ask the user to add the app (which offers to turn notifications on).
+ * 'on': notifications enabled. 'off': app added, notifications still off.
+ * 'rejected': the user declined, or the host couldn't add the app.
+ */
+export async function enableNotifications(): Promise<'on' | 'off' | 'rejected'> {
+  const sdk = await loadSdk();
+  const context = await sdk.context;
+  if (context.client.notificationDetails) return 'on';
+  try {
+    const result = await sdk.actions.addMiniApp();
+    return result.notificationDetails ? 'on' : 'off';
+  } catch {
+    return 'rejected';
+  }
+}
