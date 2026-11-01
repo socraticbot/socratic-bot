@@ -18,6 +18,12 @@ CHAT_PASSWORD=your_secure_password_here
 Password required to access the `/chat` page. This prevents unauthorized usage and protects against unexpected costs.
 **IMPORTANT**: Set a strong password before deployment. If not set, chat access will be denied.
 
+### Daily reminders (optional)
+```bash
+CRON_SECRET=a_long_random_string
+```
+Protects `/api/cron/reminders`, which Vercel Cron calls daily (see `vercel.json`). Vercel sends it automatically as a bearer token. Reminders also need Upstash Redis and `NEYNAR_API_KEY`; without any of them the cron route returns 503 and nothing is sent.
+
 ### Mistral Model
 ```bash
 MISTRAL_MODEL=mistral/mistral-large-latest

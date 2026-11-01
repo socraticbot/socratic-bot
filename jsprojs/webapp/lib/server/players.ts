@@ -2,7 +2,7 @@ import { Redis } from '@upstash/redis';
 import { PlayerState, applyPlay, liveStreak } from '@/lib/streaks/streak';
 
 const playerKey = (fid: number) => `player:${fid}`;
-const playedKey = (fid: number, day: number) => `played:${fid}:${day}`;
+export const playedKey = (fid: number, day: number) => `played:${fid}:${day}`;
 const BOARD_KEY = 'board:streak';
 const TWO_DAYS_S = 2 * 24 * 60 * 60;
 

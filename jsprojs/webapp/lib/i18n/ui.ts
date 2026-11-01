@@ -1,6 +1,6 @@
 import { Locale } from './locales';
 
-/** Interface text. Placeholders like {n} are filled by `t()`. Keep the embed button title at 32 characters or fewer. */
+/** Interface text. Placeholders like {n} are filled by `t()`. Keep the embed button title and reminder title at 32 characters or fewer, and the reminder body at 128. */
 const en = {
   tabCard: 'Bias of the day',
   tabBoard: 'Leaderboard',
@@ -43,6 +43,10 @@ const en = {
   chatModel: 'Current model:',
   chatReplyLabel: 'Your reply',
   language: 'Language',
+  remindMe: 'Remind me daily',
+  notificationsOff: 'Turn on notifications for Socratic Bot in Farcaster to get reminders.',
+  reminderTitle: "Today's bias is ready",
+  reminderBody: 'A new cognitive bias is waiting. Can you spot it?',
 };
 
 export type UiKey = keyof typeof en;
@@ -89,6 +93,10 @@ const zh: Record<UiKey, string> = {
   chatModel: '当前模型：',
   chatReplyLabel: '你的回复',
   language: '语言',
+  remindMe: '每天提醒我',
+  notificationsOff: '在 Farcaster 中为 Socratic Bot 打开通知，才能收到提醒。',
+  reminderTitle: '今天的偏差已上线',
+  reminderBody: '一个新的认知偏差在等你。你能识别出来吗？',
 };
 
 const de: Record<UiKey, string> = {
@@ -133,6 +141,10 @@ const de: Record<UiKey, string> = {
   chatModel: 'Aktuelles Modell:',
   chatReplyLabel: 'Deine Antwort',
   language: 'Sprache',
+  remindMe: 'Täglich erinnern',
+  notificationsOff: 'Aktiviere in Farcaster die Benachrichtigungen für Socratic Bot, um Erinnerungen zu bekommen.',
+  reminderTitle: 'Der Denkfehler des Tages ist da',
+  reminderBody: 'Ein neuer Denkfehler wartet auf dich. Erkennst du ihn?',
 };
 
 const es: Record<UiKey, string> = {
@@ -177,6 +189,10 @@ const es: Record<UiKey, string> = {
   chatModel: 'Modelo actual:',
   chatReplyLabel: 'Tu respuesta',
   language: 'Idioma',
+  remindMe: 'Recordármelo cada día',
+  notificationsOff: 'Activa las notificaciones de Socratic Bot en Farcaster para recibir recordatorios.',
+  reminderTitle: 'Ya está el sesgo de hoy',
+  reminderBody: 'Un nuevo sesgo cognitivo te espera. ¿Puedes detectarlo?',
 };
 
 export const UI: Record<Locale, Record<UiKey, string>> = { en, zh, de, es };

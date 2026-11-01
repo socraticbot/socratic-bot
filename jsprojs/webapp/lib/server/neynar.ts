@@ -34,3 +34,21 @@ export async function trustedProfiles(fids: number[]): Promise<Map<number, Profi
   }
   return result;
 }
+
+export interface MiniAppNotification {
+  title: string;
+  body: string;
+  target_url: string;
+  uuid: string;
+}
+
+/**
+ * Send `notification` to exactly `fids` (those with notifications enabled for the app).
+ * Never calls Neynar with an empty list: that would send to every user.
+ */
+export async function sendNotification(fids: number[], notification: MiniAppNotification): Promise<void> {
+  const neynar = getClient();
+  if (!neynar) throw new Error('Neynar is not configured');
+  if (fids.length === 0) return;
+  await neynar.publishFrameNotifications({ targetFids: fids, notification });
+}
