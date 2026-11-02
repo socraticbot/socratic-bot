@@ -11,9 +11,14 @@ export function arenaOgImageUrl(week: number): string {
   return `${SITE_URL}/api/og/steel-man?week=${week}`;
 }
 
-/** Shares invite people to write; they never include the sharer's entry. */
+/** Shares invite people to write. */
 export function arenaShareText(week: number): string {
   return `Steel-Man Arena #${week + 1}: can you argue the side you disagree with better than its own fans? 🛡️`;
+}
+
+/** The start of a steel-man cast: names the claim, then the writer's case follows in the composer. */
+export function steelmanCastText(week: number, claim: string): string {
+  return `Steel-man #${week + 1}, arguing a side I don't hold: "${claim}"\n\n`;
 }
 
 /** `fc:miniapp` embed: a cast containing the link shows this image and a launch button. */
