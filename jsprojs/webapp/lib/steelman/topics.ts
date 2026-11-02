@@ -39,7 +39,7 @@ export const TOPICS: Topic[] = [
   {
     slug: 'nuclear-power',
     claim: 'Nuclear power should be a central part of decarbonizing the grid.',
-    counter: 'Renewables and storage, not new nuclear, should lead decarbonization.',
+    counter: 'Decarbonization should rely on renewables and storage, with no new nuclear plants.',
     context:
       'Both camps want low-carbon electricity. They disagree on cost, speed of construction, safety, waste and reliability.',
   },
@@ -104,7 +104,7 @@ export const TOPICS: Topic[] = [
     claim: 'Religion does more good than harm in modern societies.',
     counter: 'Religion does more harm than good in modern societies.',
     context:
-      'Religion shapes community, charity, conflict and moral life. The dispute is about its net effect today, not whether any religion is true.',
+      'Religion shapes community, charity, conflict and moral life. The question here is its net effect on societies today.',
   },
   {
     slug: 'embryo-selection',

@@ -16,8 +16,8 @@ const STANCES: { stance: Stance; label: string }[] = [
 /** Read before posting, in place of feedback: the questions a proponent would ask of your steel-man. */
 const CHECKS = [
   'Would someone who believes this read it and say, “Yes, that’s exactly why”?',
-  'Does it start from what they value, not from what you value?',
-  'Does it use their best evidence, not the weakest version you’ve heard?',
+  'Does it start from what they value?',
+  'Does it use the strongest evidence they rely on?',
   'Does it answer the objection you’d raise, the way they would?',
   'No sarcasm or hedging: is it written as if you believed it?',
 ];
@@ -45,7 +45,7 @@ interface SteelManArenaProps {
 /**
  * Say where you stand, then write the strongest case for the side you don't
  * hold, as a cast. The cast embeds this page, so everyone who reads it can
- * write their own: the feed is the arena.
+ * write their own.
  */
 export default function SteelManArena({ topic, week, isThisWeek }: SteelManArenaProps) {
   const [stance, setStance] = useState<Stance | null>(null);
@@ -117,7 +117,7 @@ export default function SteelManArena({ topic, week, isThisWeek }: SteelManArena
             <p className="text-sm text-gray-500">Your task: write the strongest case that</p>
             <p className="text-lg font-serif text-black">“{claimFor(topic, side)}”</p>
             <p className="text-sm text-gray-500">
-              Not your view: the best version of theirs.{' '}
+              Write it the way a thoughtful believer would.{' '}
               <button
                 type="button"
                 onClick={() => {
@@ -162,8 +162,8 @@ export default function SteelManArena({ topic, week, isThisWeek }: SteelManArena
         <summary className="cursor-pointer hover:text-gray-700">Why steel-man?</summary>
         <div className="mt-3 space-y-2 leading-relaxed">
           <p>
-            Arguing the strongest version of a view you reject trains actively open-minded thinking: weighing reasons on
-            their merits rather than by which side they serve. People who score higher on it are better at judging an
+            Arguing the strongest version of a view you reject trains actively open-minded thinking, the habit of
+            weighing each reason on its merits. People who score higher on it are better at judging an
             argument&apos;s quality independently of whether they agree with it (Stanovich &amp; West, 1997; Baron, 2019).
           </p>
           <p>
