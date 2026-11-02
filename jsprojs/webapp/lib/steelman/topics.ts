@@ -39,7 +39,7 @@ export const TOPICS: Topic[] = [
   {
     slug: 'nuclear-power',
     claim: 'Nuclear power should be a central part of decarbonizing the grid.',
-    counter: 'Decarbonization should rely on renewables and storage, with no new nuclear plants.',
+    counter: 'Renewables and storage should lead decarbonization, with no new nuclear.',
     context:
       'Both camps want low-carbon electricity. They disagree on cost, speed of construction, safety, waste and reliability.',
   },
