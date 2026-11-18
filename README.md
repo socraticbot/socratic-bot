@@ -39,9 +39,9 @@ Streaks and the leaderboard also need Upstash Redis and `NEYNAR_API_KEY`. Withou
 | Path | What it is |
 | --- | --- |
 | `jsprojs/webapp` | The live site: chat, bias of the day, mini app |
-| `pylibs/zoo` | The original depth-first Socratic workflows (dfs_v1, dfs_v2) and prompts |
-| `pyprojs`, `pylibs/chat`, `jsprojs/mvp`, `jsprojs/farcaster`, `magictool` | Earlier 2024 versions, kept for reference |
 | `docs` | Guides |
+
+Earlier 2024 versions (Python chat server, Telegram bot, original prompts) were removed. They are in git history at commit `bf698f0`.
 
 ## Where it's heading
 
