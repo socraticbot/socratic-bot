@@ -206,6 +206,17 @@ Things to know:
 - Hosts limit each token to about 1 notification per 30 seconds and 100 per day.
 - Neynar's docs still use some older names (`frame`, `addFrame`). Use the current ones (`miniapp`, `addMiniApp`).
 
+### 5.1 Opt-in daily reminders
+
+Adding the app in Farcaster is not the same as asking for a daily nudge, so reminders are a separate opt-in:
+
+- A **"Remind me daily"** toggle sits above the language picker, shown only inside the Mini App when storage is available. It starts off.
+- Turning it on first calls `sdk.actions.addMiniApp()` if the host has no notification details for us yet. If the user declines, nothing is saved. If they add the app but leave notifications off, we save the opt-in and tell them to turn notifications on.
+- The opt-in is a Redis hash, `reminders`: FID to the language to remind in. Reopening the app in another language updates it. Turning the toggle off deletes the entry.
+- A Vercel Cron job (`vercel.json`, 15:00 UTC) calls `/api/cron/reminders`, which sends **only to opted-in FIDs who haven't played today**, grouped by language and in batches of 100. It never calls Neynar with an empty `targetFids`, since that would send to everyone who enabled notifications.
+- The route requires `CRON_SECRET` (Vercel sends it as `Authorization: Bearer <secret>`) and returns 503 without it, Redis or `NEYNAR_API_KEY`.
+- Each reminder's `uuid` is a UUIDv5 of its target URL, so a retried run doesn't double-send.
+
 ## 6. Storage, streaks and a leaderboard
 
 We wanted daily streaks and an opt-in leaderboard.
@@ -260,5 +271,6 @@ We wanted daily streaks and an opt-in leaderboard.
 | Streak rules | [`lib/streaks/streak.ts`](../jsprojs/webapp/lib/streaks/streak.ts) |
 | Redis store, leaderboard | [`lib/server/players.ts`](../jsprojs/webapp/lib/server/players.ts) |
 | Neynar profiles and bot filter | [`lib/server/neynar.ts`](../jsprojs/webapp/lib/server/neynar.ts) |
+| Daily reminders: text, store, opt-in API, cron | [`lib/reminders/notification.ts`](../jsprojs/webapp/lib/reminders/notification.ts), [`lib/server/reminders.ts`](../jsprojs/webapp/lib/server/reminders.ts), [`app/api/reminders`](../jsprojs/webapp/app/api/reminders), [`app/api/cron/reminders`](../jsprojs/webapp/app/api/cron/reminders) |
 | Streak and leaderboard API | [`app/api/rep`](../jsprojs/webapp/app/api/rep), [`app/api/me`](../jsprojs/webapp/app/api/me), [`app/api/leaderboard`](../jsprojs/webapp/app/api/leaderboard) |
 | Tests | [`lib/__tests__/`](../jsprojs/webapp/lib/__tests__) (`npm test` in `jsprojs/webapp`) |
