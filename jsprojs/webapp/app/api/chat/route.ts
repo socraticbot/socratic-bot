@@ -1,7 +1,7 @@
 import { generateText } from 'ai';
 import { NextRequest } from 'next/server';
 import { getBiasBySlug } from '@/lib/biases/data';
-import { getDefaultModel, getModelById } from '@/lib/models';
+import { AVAILABLE_MODELS, getDefaultModel, getModelById } from '@/lib/models';
 import { buildSystemPrompt } from '@/lib/tutor/prompt';
 import { parseChatRequest } from '@/lib/tutor/request';
 import { CRISIS_REPLIES, crisisLocale } from '@/lib/tutor/safety';
@@ -52,29 +52,44 @@ export async function POST(request: NextRequest) {
     return Response.json({ reply: CRISIS_REPLIES[crisis], model: model.id, safety: 'crisis' });
   }
 
-  try {
-    // Non-streaming on purpose: replies are short, and a complete reply can be
-    // checked before it is sent (see notes 08, revision 3).
-    const { text } = await generateText({
-      model: model.id,
-      system: buildSystemPrompt(bias, locale),
-      messages,
-      maxOutputTokens: MAX_OUTPUT_TOKENS,
-      temperature: 0.7,
-    });
-    if (!text.trim()) {
-      return jsonError('The tutor returned an empty reply. Please try again.', 502);
+  // Try the chosen model first, then the other allowlisted models. A model can
+  // fail or return no text (for example, a content filter or an upstream
+  // change); the user should still get a reply.
+  const candidates = [model, ...AVAILABLE_MODELS.filter((m) => m.id !== model.id)];
+  const system = buildSystemPrompt(bias, locale);
+  let lastCode = 'empty';
+
+  for (const candidate of candidates) {
+    try {
+      // Non-streaming on purpose: replies are short, and a complete reply can be
+      // checked before it is sent (see notes 08, revision 3).
+      const { text, finishReason } = await generateText({
+        model: candidate.id,
+        system,
+        messages,
+        maxOutputTokens: MAX_OUTPUT_TOKENS,
+        temperature: 0.7,
+      });
+      const reply = text.trim();
+      if (reply) {
+        if (candidate.id !== model.id) {
+          console.warn('[chat] used fallback model', { requested: model.id, used: candidate.id });
+        }
+        return Response.json({ reply, model: candidate.id });
+      }
+      lastCode = `empty:${finishReason}`;
+      // Log metadata only, never message text.
+      console.error('[chat] model returned empty reply', { model: candidate.id, finishReason });
+    } catch (error) {
+      lastCode = errorCode(error);
+      console.error('[chat] model call failed', { model: candidate.id, code: lastCode });
     }
-    return Response.json({ reply: text.trim(), model: model.id });
-  } catch (error) {
-    const code = errorCode(error);
-    // Log metadata only, never message text.
-    console.error('[chat] model call failed', { model: model.id, code });
-    return new Response(
-      JSON.stringify({ error: 'The tutor could not respond. Please try again.', code }),
-      { status: 502, headers: { 'Content-Type': 'application/json' } }
-    );
   }
+
+  return new Response(
+    JSON.stringify({ error: 'The tutor could not respond. Please try again.', code: lastCode }),
+    { status: 502, headers: { 'Content-Type': 'application/json' } }
+  );
 }
 
 /** Short, non-sensitive identifier for an upstream failure (error class and HTTP status). */

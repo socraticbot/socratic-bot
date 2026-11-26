@@ -20,14 +20,6 @@ export interface TutorModel {
 
 export const AVAILABLE_MODELS: TutorModel[] = [
   {
-    id: 'mistral/mistral-large-3',
-    name: 'Mistral Large 3',
-    provider: 'Mistral',
-    description: 'Open-weight model from Mistral',
-    avatar: '/sochat2.png',
-    referenceUrl: 'https://mistral.ai/',
-  },
-  {
     id: 'google/gemini-2.5-flash',
     name: 'Gemini 2.5 Flash',
     provider: 'Google',
@@ -43,8 +35,17 @@ export const AVAILABLE_MODELS: TutorModel[] = [
     avatar: '/sochat1.png',
     referenceUrl: 'https://www.llama.com/',
   },
+  {
+    id: 'mistral/mistral-large-3',
+    name: 'Mistral Large 3',
+    provider: 'Mistral',
+    description: 'Open-weight model from Mistral',
+    avatar: '/sochat2.png',
+    referenceUrl: 'https://mistral.ai/',
+  },
 ];
 
+// Gemini is first: Mistral Large 3 began returning empty replies (2026-11-26).
 export const DEFAULT_MODEL = AVAILABLE_MODELS[0];
 
 /**
