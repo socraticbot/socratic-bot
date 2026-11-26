@@ -47,6 +47,14 @@ export default function Navbar() {
               Learn
             </Link>
             <Link
+              href="/farcaster"
+              className={`text-xs sm:text-sm whitespace-nowrap ${
+                pathname === '/farcaster' ? 'text-black font-medium' : 'text-gray-600 hover:text-black'
+              } transition-colors`}
+            >
+              Bias of the Day
+            </Link>
+            <Link
               href="/chat"
               className={`text-xs sm:text-sm whitespace-nowrap ${
                 pathname === '/chat' ? 'text-black font-medium' : 'text-gray-600 hover:text-black'

@@ -84,7 +84,7 @@ export default function PasswordModal({ isOpen, onClose, onAuthenticated }: Pass
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && password && !isLoading) {
-                  handleSubmit(e as any);
+                  handleSubmit(e);
                 }
               }}
               className="w-full px-4 py-3 text-base border-2 border-gray-400 rounded-lg bg-white focus:ring-2 focus:ring-black focus:border-black outline-none shadow-lg"

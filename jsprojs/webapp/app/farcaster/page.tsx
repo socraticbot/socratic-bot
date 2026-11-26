@@ -26,8 +26,6 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   return {
     title: `${t(locale, 'tabCard')} | Socratic Bot`,
     description: shareText(day, locale),
-    // Soft launch: reachable by link only until it's promoted on the main site.
-    robots: { index: false, follow: false },
     openGraph: {
       title: `${t(locale, 'tabCard')}: ${t(locale, 'heading')}`,
       description: shareText(day, locale),
