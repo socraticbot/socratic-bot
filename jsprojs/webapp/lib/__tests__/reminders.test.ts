@@ -96,14 +96,15 @@ describe('reminder store', () => {
 
   it('reminds only opted-in users who have not played today, grouped by language', async () => {
     const redis = fakeRedis();
-    expect(await dueReminders(redis, 5)).toEqual(new Map());
+    expect(await dueReminders(redis, 5)).toEqual({ due: new Map(), optedIn: 0, played: 0 });
     await setReminder(redis, 1, 'en');
     await setReminder(redis, 2, 'en');
     await setReminder(redis, 3, 'zh');
     await setReminder(redis, 4, 'es');
     await recordPlay(redis, 2, 5, 'x', true); // played today
     await recordPlay(redis, 4, 4, 'x', true); // played yesterday only
-    const due = await dueReminders(redis, 5);
+    const { due, optedIn, played } = await dueReminders(redis, 5);
     expect(Object.fromEntries(due)).toEqual({ en: [1], zh: [3], es: [4] });
+    expect({ optedIn, played }).toEqual({ optedIn: 4, played: 1 });
   });
 });

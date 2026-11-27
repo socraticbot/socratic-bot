@@ -54,19 +54,36 @@ export async function openExternal(url: string): Promise<void> {
 }
 
 /**
- * Make sure the host will deliver our notifications: if they aren't on yet,
- * ask the user to add the app (which offers to turn notifications on).
- * 'on': notifications enabled. 'off': app added, notifications still off.
- * 'rejected': the user declined, or the host couldn't add the app.
+ * 'on': the host will deliver our notifications.
+ * 'off': the app is added but notifications are off (the user turns them on in the host).
+ * 'declined': the user said no to adding the app.
+ * 'error': the host couldn't add the app (for example a manifest problem).
  */
-export async function enableNotifications(): Promise<'on' | 'off' | 'rejected'> {
+export type NotificationStatus = 'on' | 'off' | 'declined' | 'error';
+
+/** Whether the host will deliver our notifications right now. */
+export async function notificationsEnabled(): Promise<boolean> {
+  const context = await (await loadSdk()).context;
+  return Boolean(context.client.notificationDetails);
+}
+
+/**
+ * Make sure the host will deliver our notifications. If the app isn't added yet,
+ * ask the user to add it (which offers to turn notifications on). An app that is
+ * already added can't be re-added, so then the user has to turn notifications on
+ * in the host themselves.
+ */
+export async function enableNotifications(): Promise<NotificationStatus> {
   const sdk = await loadSdk();
   const context = await sdk.context;
   if (context.client.notificationDetails) return 'on';
+  if (context.client.added) return 'off';
   try {
     const result = await sdk.actions.addMiniApp();
     return result.notificationDetails ? 'on' : 'off';
-  } catch {
-    return 'rejected';
+  } catch (error) {
+    if ((error as Error)?.name === 'AddMiniApp.RejectedByUser') return 'declined';
+    console.error('addMiniApp failed', error);
+    return 'error';
   }
 }

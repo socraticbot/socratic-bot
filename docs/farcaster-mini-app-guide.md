@@ -216,6 +216,13 @@ Adding the app in Farcaster is not the same as asking for a daily nudge, so remi
 - A Vercel Cron job (`vercel.json`, 15:00 UTC) calls `/api/cron/reminders`, which sends **only to opted-in FIDs who haven't played today**, grouped by language and in batches of 100. It never calls Neynar with an empty `targetFids`, since that would send to everyone who enabled notifications.
 - The route requires `CRON_SECRET` (Vercel sends it as `Authorization: Bearer <secret>`) and returns 503 without it, Redis or `NEYNAR_API_KEY`.
 - Each reminder's `uuid` is a UUIDv5 of its target URL, so a retried run doesn't double-send.
+- Debugging: run the job from Vercel (Settings, Cron Jobs, Run) and read the JSON or the `reminders` log line:
+  - `optedIn: 0`: nobody's toggle saved.
+  - `alreadyPlayed`: skipped because they played today.
+  - `neynar.notAttempted`: Neynar has no token for them. Notifications are off for the app in Farcaster, or the app was added before `webhookUrl` was set, or `NEYNAR_API_KEY` belongs to a different Neynar app than the one in `webhookUrl`.
+  - `neynar.failure`: Farcaster rejected the token.
+  - `errors`: the Neynar call failed; the status and message are included.
+- A second run on the same day won't show again on phones that already got it, because hosts drop repeats of the same `uuid`.
 
 ## 6. Storage, streaks and a leaderboard
 

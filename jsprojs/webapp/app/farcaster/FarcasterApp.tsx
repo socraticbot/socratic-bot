@@ -5,8 +5,8 @@ import { Bias } from '@/lib/biases/data';
 import { loadAnswer, saveAnswer } from '@/lib/biases/answers';
 import { localizeBias } from '@/lib/biases/localized';
 import { BETA_LOCALES, LOCALE_LABELS, Locale, pickerLocales } from '@/lib/i18n/locales';
-import { t } from '@/lib/i18n/ui';
-import { authedFetch, enableNotifications, isInMiniApp } from '@/lib/miniapp';
+import { UiKey, t } from '@/lib/i18n/ui';
+import { authedFetch, enableNotifications, isInMiniApp, notificationsEnabled } from '@/lib/miniapp';
 import { PlayerState } from '@/lib/streaks/streak';
 import BiasCard from './BiasCard';
 import Leaderboard from './Leaderboard';
@@ -35,7 +35,8 @@ export default function FarcasterApp({ bias, locale, dayNumber, isToday }: Farca
   /** Reminder opt-in; null until known (and stays null outside the Mini App or without storage). */
   const [reminders, setReminders] = useState<boolean | null>(null);
   const [savingReminders, setSavingReminders] = useState(false);
-  const [notificationsOff, setNotificationsOff] = useState(false);
+  /** A short message under the toggle when reminders can't be delivered yet. */
+  const [reminderNotice, setReminderNotice] = useState<UiKey | null>(null);
   const interacted = useRef(false);
 
   useEffect(() => {
@@ -58,6 +59,10 @@ export default function FarcasterApp({ bias, locale, dayNumber, isToday }: Farca
       const { player: me, todayAnswer, reminders: reminderLocale } = await res.json();
       setPlayer(me);
       setReminders(reminderLocale != null);
+      // Opted in, but the host has notifications off: say so, or reminders never arrive.
+      if (reminderLocale != null && !(await notificationsEnabled().catch(() => true)) && !cancelled) {
+        setReminderNotice('notificationsOff');
+      }
       // Reminders follow the language the app was last opened in.
       if (reminderLocale != null && reminderLocale !== locale) {
         authedFetch('/api/reminders', {
@@ -93,17 +98,21 @@ export default function FarcasterApp({ bias, locale, dayNumber, isToday }: Farca
   const toggleReminders = async () => {
     const enable = !reminders;
     setSavingReminders(true);
+    setReminderNotice(null);
     try {
       if (enable) {
         const status = await enableNotifications();
-        if (status === 'rejected') return;
-        setNotificationsOff(status === 'off');
-      } else {
-        setNotificationsOff(false);
+        if (status === 'declined') return setReminderNotice('remindersDeclined');
+        if (status === 'error') return setReminderNotice('remindersError');
+        if (status === 'off') setReminderNotice('notificationsOff');
       }
-      if (await saveReminders(enable)) setReminders(enable);
+      if (await saveReminders(enable)) {
+        setReminders(enable);
+      } else {
+        setReminderNotice('remindersError');
+      }
     } catch {
-      // Not saved; the toggle stays as it was.
+      setReminderNotice('remindersError');
     } finally {
       setSavingReminders(false);
     }
@@ -146,8 +155,10 @@ export default function FarcasterApp({ bias, locale, dayNumber, isToday }: Farca
             />
             {t(locale, 'remindMe')}
           </label>
-          {reminders && notificationsOff && (
-            <p className="text-xs text-gray-500 text-right">{t(locale, 'notificationsOff')}</p>
+          {reminderNotice && (
+            <p role="status" className="text-xs text-gray-500 text-right">
+              {t(locale, reminderNotice)}
+            </p>
           )}
         </div>
       )}

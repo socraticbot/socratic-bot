@@ -20,21 +20,34 @@ export async function setReminder(redis: Redis, fid: number, locale: Locale | nu
   }
 }
 
-/** Opted-in FIDs who haven't played `day` yet, grouped by language. */
-export async function dueReminders(redis: Redis, day: number): Promise<Map<Locale, number[]>> {
+export interface DueReminders {
+  /** Opted-in FIDs who haven't played yet, grouped by language. */
+  due: Map<Locale, number[]>;
+  /** Everyone with reminders on. */
+  optedIn: number;
+  /** Opted in but already played `day`, so skipped. */
+  played: number;
+}
+
+/** Who to remind on `day`: opted-in users who haven't played it yet. */
+export async function dueReminders(redis: Redis, day: number): Promise<DueReminders> {
   const all = (await redis.hgetall<Record<string, unknown>>(REMINDERS_KEY)) ?? {};
   const optedIn = Object.entries(all)
     .map(([fid, locale]) => ({ fid: Number(fid), locale }))
     .filter((e): e is { fid: number; locale: Locale } => Number.isInteger(e.fid) && e.fid > 0 && isLocale(e.locale));
 
   const due = new Map<Locale, number[]>();
+  let played = 0;
   for (let i = 0; i < optedIn.length; i += 500) {
     const batch = optedIn.slice(i, i + 500);
-    const played = await redis.mget<unknown[]>(...batch.map((e) => playedKey(e.fid, day)));
+    const answers = await redis.mget<unknown[]>(...batch.map((e) => playedKey(e.fid, day)));
     batch.forEach((e, j) => {
-      if (played[j] !== null && played[j] !== undefined) return;
+      if (answers[j] !== null && answers[j] !== undefined) {
+        played += 1;
+        return;
+      }
       due.set(e.locale, [...(due.get(e.locale) ?? []), e.fid]);
     });
   }
-  return due;
+  return { due, optedIn: optedIn.length, played };
 }

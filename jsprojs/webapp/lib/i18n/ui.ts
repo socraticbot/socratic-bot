@@ -45,6 +45,8 @@ const en = {
   language: 'Language',
   remindMe: 'Remind me daily',
   notificationsOff: 'Turn on notifications for Socratic Bot in Farcaster to get reminders.',
+  remindersDeclined: 'Add Socratic Bot in Farcaster to get reminders.',
+  remindersError: "Couldn't turn on reminders. Please try again.",
   reminderTitle: "Today's bias is ready",
   reminderBody: 'A new cognitive bias is waiting. Can you spot it?',
 };
@@ -95,6 +97,8 @@ const zh: Record<UiKey, string> = {
   language: '语言',
   remindMe: '每天提醒我',
   notificationsOff: '在 Farcaster 中为 Socratic Bot 打开通知，才能收到提醒。',
+  remindersDeclined: '在 Farcaster 中添加 Socratic Bot 才能收到提醒。',
+  remindersError: '无法开启提醒，请重试。',
   reminderTitle: '今天的偏差已上线',
   reminderBody: '一个新的认知偏差在等你。你能识别出来吗？',
 };
@@ -143,6 +147,8 @@ const de: Record<UiKey, string> = {
   language: 'Sprache',
   remindMe: 'Täglich erinnern',
   notificationsOff: 'Aktiviere in Farcaster die Benachrichtigungen für Socratic Bot, um Erinnerungen zu bekommen.',
+  remindersDeclined: 'Füge Socratic Bot in Farcaster hinzu, um Erinnerungen zu bekommen.',
+  remindersError: 'Erinnerungen konnten nicht eingeschaltet werden. Bitte versuch es noch einmal.',
   reminderTitle: 'Der Denkfehler des Tages ist da',
   reminderBody: 'Ein neuer Denkfehler wartet auf dich. Erkennst du ihn?',
 };
@@ -191,6 +197,8 @@ const es: Record<UiKey, string> = {
   language: 'Idioma',
   remindMe: 'Recordármelo cada día',
   notificationsOff: 'Activa las notificaciones de Socratic Bot en Farcaster para recibir recordatorios.',
+  remindersDeclined: 'Añade Socratic Bot en Farcaster para recibir recordatorios.',
+  remindersError: 'No se pudieron activar los recordatorios. Inténtalo de nuevo.',
   reminderTitle: 'Ya está el sesgo de hoy',
   reminderBody: 'Un nuevo sesgo cognitivo te espera. ¿Puedes detectarlo?',
 };
